@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CountryFlag } from '@/components/game/CountryFlag';
 import { getAllCountries } from '@/data/countries';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 interface MainMenuProps {
@@ -9,11 +9,21 @@ interface MainMenuProps {
   onTraining: () => void;
   onSelectCountry: () => void;
   onSettings: () => void;
+  onLeaderboard: () => void;
+  onProfile: () => void;
 }
 
-export const MainMenu = ({ onPlayOnline, onTraining, onSelectCountry, onSettings }: MainMenuProps) => {
+export const MainMenu = ({ 
+  onPlayOnline, 
+  onTraining, 
+  onSelectCountry, 
+  onSettings,
+  onLeaderboard,
+  onProfile,
+}: MainMenuProps) => {
   const countries = getAllCountries();
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const { user, profile, signOut } = useAuth();
 
   return (
     <div className="relative min-h-screen bg-background overflow-hidden">
@@ -60,6 +70,27 @@ export const MainMenu = ({ onPlayOnline, onTraining, onSelectCountry, onSettings
         })}
       </div>
 
+      {/* User Info Bar */}
+      {user && profile && (
+        <div className="absolute top-4 right-4 z-20">
+          <div className="game-panel px-4 py-2 flex items-center gap-4 animate-fade-in">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{countries.find(c => c.id === profile.country_id)?.flag || '🏳️'}</span>
+              <div className="text-right">
+                <p className="text-sm font-medium text-foreground">{profile.username}</p>
+                <p className="text-xs text-gold">{profile.rank_points} pts</p>
+              </div>
+            </div>
+            <button
+              onClick={signOut}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
         {/* Logo / Title */}
@@ -101,6 +132,16 @@ export const MainMenu = ({ onPlayOnline, onTraining, onSelectCountry, onSettings
               Modo Treino
             </Button>
 
+            <Button
+              variant="gameOutline"
+              size="lg"
+              onClick={onLeaderboard}
+              className="w-full"
+            >
+              <span className="mr-2">🏆</span>
+              Ranking Global
+            </Button>
+
             <div className="border-t border-border/50 my-2" />
 
             <Button
@@ -112,6 +153,28 @@ export const MainMenu = ({ onPlayOnline, onTraining, onSelectCountry, onSettings
               <span className="mr-2">🏳️</span>
               Escolher Civilização
             </Button>
+
+            {user ? (
+              <Button
+                variant="gameGhost"
+                size="lg"
+                onClick={onProfile}
+                className="w-full"
+              >
+                <span className="mr-2">👤</span>
+                Meu Perfil
+              </Button>
+            ) : (
+              <Button
+                variant="gameGhost"
+                size="lg"
+                onClick={onProfile}
+                className="w-full"
+              >
+                <span className="mr-2">🔑</span>
+                Entrar / Criar Conta
+              </Button>
+            )}
 
             <Button
               variant="gameGhost"
