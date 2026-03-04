@@ -7,6 +7,7 @@ import { AuthScreen } from '@/components/screens/AuthScreen';
 import { LeaderboardScreen } from '@/components/screens/LeaderboardScreen';
 import { MultiplayerLobby } from '@/components/screens/MultiplayerLobby';
 import { useGameStore } from '@/store/gameStore';
+
 import { useAuth } from '@/hooks/useAuth';
 import { Country } from '@/types/game';
 import { toast } from 'sonner';
