@@ -39,6 +39,12 @@ export interface Unit {
   carryingResource?: { type: ResourceType; amount: number };
 }
 
+export interface TrainingQueueItem {
+  unitType: UnitType;
+  progress: number;
+  totalTime: number;
+}
+
 export type BuildingType = 
   | 'townCenter' 
   | 'house' 
@@ -66,6 +72,7 @@ export interface Building {
   isConstructing: boolean;
   constructionProgress: number;
   rallyPoint?: Position;
+  trainingQueue: TrainingQueueItem[];
 }
 
 export type TerrainType = 'grass' | 'forest' | 'water' | 'mountain' | 'sand' | 'snow';

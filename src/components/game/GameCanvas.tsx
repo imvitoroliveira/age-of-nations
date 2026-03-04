@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useGameStore } from '@/store/gameStore';
-import { MapTile, Position, TerrainType } from '@/types/game';
-import { cn } from '@/lib/utils';
+import { Position, TerrainType } from '@/types/game';
 
 const TILE_SIZE = 40;
 
@@ -14,15 +13,6 @@ const terrainColors: Record<TerrainType, string> = {
   snow: '#e5e7eb',
 };
 
-const terrainPatterns: Record<TerrainType, string> = {
-  grass: '🌿',
-  forest: '🌲',
-  water: '🌊',
-  mountain: '⛰️',
-  sand: '🏜️',
-  snow: '❄️',
-};
-
 const resourceIcons: Record<string, string> = {
   wood: '🪵',
   food: '🌾',
@@ -30,11 +20,31 @@ const resourceIcons: Record<string, string> = {
   stone: '🪨',
 };
 
+const buildingIcons: Record<string, string> = {
+  townCenter: '🏛️',
+  house: '🏠',
+  barracks: '⚔️',
+  archeryRange: '🏹',
+  stable: '🐎',
+  tower: '🗼',
+  lumberCamp: '🪵',
+  mill: '🌾',
+  miningCamp: '⛏️',
+};
+
+const unitIcons: Record<string, string> = {
+  villager: '👷',
+  infantry: '⚔️',
+  archer: '🏹',
+  cavalry: '🐎',
+};
+
+const dist = (a: Position, b: Position) => Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+
 export const GameCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState<Position>({ x: 0, y: 0 });
   const [selectionBox, setSelectionBox] = useState<{ start: Position; end: Position } | null>(null);
 
   const {
@@ -42,25 +52,26 @@ export const GameCanvas = () => {
     cameraPosition,
     zoomLevel,
     selectedUnits,
+    placementMode,
     setCameraPosition,
     setZoomLevel,
     selectUnits,
+    selectBuilding,
     moveUnits,
+    gatherResource,
+    attackMove,
+    constructBuilding,
     updateGameState,
   } = useGameStore();
 
   // Game loop
   useEffect(() => {
     if (!gameState?.isStarted) return;
-
-    const gameLoop = setInterval(() => {
-      updateGameState();
-    }, 100);
-
+    const gameLoop = setInterval(updateGameState, 100);
     return () => clearInterval(gameLoop);
   }, [gameState?.isStarted, updateGameState]);
 
-  // Render loop
+  // Render loop - FIXED: use cancelled flag to prevent RAF leak
   useEffect(() => {
     if (!canvasRef.current || !gameState) return;
 
@@ -68,16 +79,19 @@ export const GameCanvas = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    let cancelled = false;
+
     const render = () => {
+      if (cancelled) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const scaledTileSize = TILE_SIZE * zoomLevel;
       const offsetX = -cameraPosition.x * scaledTileSize + canvas.width / 2;
       const offsetY = -cameraPosition.y * scaledTileSize + canvas.height / 2;
 
-      // Calculate visible tiles
-      const startX = Math.max(0, Math.floor((cameraPosition.x - canvas.width / scaledTileSize / 2)));
-      const startY = Math.max(0, Math.floor((cameraPosition.y - canvas.height / scaledTileSize / 2)));
+      const startX = Math.max(0, Math.floor(cameraPosition.x - canvas.width / scaledTileSize / 2));
+      const startY = Math.max(0, Math.floor(cameraPosition.y - canvas.height / scaledTileSize / 2));
       const endX = Math.min(gameState.map.width, Math.ceil(startX + canvas.width / scaledTileSize + 2));
       const endY = Math.min(gameState.map.height, Math.ceil(startY + canvas.height / scaledTileSize + 2));
 
@@ -90,20 +104,17 @@ export const GameCanvas = () => {
           const screenX = x * scaledTileSize + offsetX;
           const screenY = y * scaledTileSize + offsetY;
 
-          // Draw terrain
           if (tile.isExplored) {
             ctx.fillStyle = tile.isVisible
               ? terrainColors[tile.terrain]
-              : `${terrainColors[tile.terrain]}80`;
+              : `${terrainColors[tile.terrain]}60`;
             ctx.fillRect(screenX, screenY, scaledTileSize, scaledTileSize);
 
-            // Draw grid
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
             ctx.strokeRect(screenX, screenY, scaledTileSize, scaledTileSize);
 
-            // Draw resources
             if (tile.resource && tile.isVisible) {
-              ctx.font = `${scaledTileSize * 0.5}px sans-serif`;
+              ctx.font = `${scaledTileSize * 0.45}px sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(
@@ -111,9 +122,16 @@ export const GameCanvas = () => {
                 screenX + scaledTileSize / 2,
                 screenY + scaledTileSize / 2
               );
+              // Show resource amount
+              ctx.font = `${scaledTileSize * 0.2}px sans-serif`;
+              ctx.fillStyle = '#fff';
+              ctx.fillText(
+                `${tile.resource.amount}`,
+                screenX + scaledTileSize / 2,
+                screenY + scaledTileSize * 0.85
+              );
             }
           } else {
-            // Fog of war
             ctx.fillStyle = '#1a1a2e';
             ctx.fillRect(screenX, screenY, scaledTileSize, scaledTileSize);
           }
@@ -128,20 +146,41 @@ export const GameCanvas = () => {
 
         const player = gameState.players.find(p => p.id === building.playerId);
         ctx.fillStyle = player?.color || '#666';
+        ctx.globalAlpha = building.isConstructing ? 0.5 : 1;
         ctx.fillRect(screenX, screenY, size, size);
+        ctx.globalAlpha = 1;
 
-        // Building icon
         ctx.font = `${size * 0.4}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('🏛️', screenX + size / 2, screenY + size / 2);
+        ctx.fillText(buildingIcons[building.type] || '🏗️', screenX + size / 2, screenY + size / 2);
+
+        // Construction progress
+        if (building.isConstructing) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(screenX, screenY - 12, size, 8);
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(screenX, screenY - 12, size * (building.constructionProgress / 100), 8);
+          ctx.font = `${size * 0.15}px sans-serif`;
+          ctx.fillStyle = '#fff';
+          ctx.fillText(`${Math.floor(building.constructionProgress)}%`, screenX + size / 2, screenY - 8);
+        }
 
         // Health bar
         const healthPercent = building.stats.health / building.stats.maxHealth;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(screenX, screenY - 8, size, 6);
-        ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#eab308' : '#ef4444';
-        ctx.fillRect(screenX, screenY - 8, size * healthPercent, 6);
+        if (healthPercent < 1) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(screenX, screenY - 8, size, 5);
+          ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#eab308' : '#ef4444';
+          ctx.fillRect(screenX, screenY - 8, size * healthPercent, 5);
+        }
+
+        // Training queue indicator
+        if (building.trainingQueue.length > 0) {
+          const item = building.trainingQueue[0];
+          ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+          ctx.fillRect(screenX, screenY + size + 2, size * (item.progress / 100), 4);
+        }
       });
 
       // Draw units
@@ -151,41 +190,46 @@ export const GameCanvas = () => {
         const size = scaledTileSize * 0.8;
 
         const player = gameState.players.find(p => p.id === unit.playerId);
-        
-        // Unit circle
+
         ctx.beginPath();
         ctx.arc(screenX + size / 2, screenY + size / 2, size / 2, 0, Math.PI * 2);
         ctx.fillStyle = player?.color || '#666';
         ctx.fill();
 
-        // Selection ring
         if (selectedUnits.includes(unit.id)) {
           ctx.strokeStyle = '#fbbf24';
           ctx.lineWidth = 3;
           ctx.stroke();
         }
 
-        // Unit icon
-        const icons = {
-          villager: '👷',
-          infantry: '⚔️',
-          archer: '🏹',
-          cavalry: '🐎',
-        };
         ctx.font = `${size * 0.5}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(icons[unit.type], screenX + size / 2, screenY + size / 2);
+        ctx.fillText(unitIcons[unit.type] || '?', screenX + size / 2, screenY + size / 2);
+
+        // Action indicator
+        if (unit.currentAction === 'gathering') {
+          ctx.font = `${size * 0.3}px sans-serif`;
+          ctx.fillText('⛏️', screenX + size, screenY);
+        } else if (unit.currentAction === 'building') {
+          ctx.font = `${size * 0.3}px sans-serif`;
+          ctx.fillText('🔨', screenX + size, screenY);
+        } else if (unit.currentAction === 'attacking') {
+          ctx.font = `${size * 0.3}px sans-serif`;
+          ctx.fillText('💥', screenX + size, screenY);
+        }
 
         // Health bar
         const healthPercent = unit.stats.health / unit.stats.maxHealth;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(screenX, screenY - 6, size, 4);
-        ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#eab308' : '#ef4444';
-        ctx.fillRect(screenX, screenY - 6, size * healthPercent, 4);
+        if (healthPercent < 1) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+          ctx.fillRect(screenX, screenY - 6, size, 4);
+          ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#eab308' : '#ef4444';
+          ctx.fillRect(screenX, screenY - 6, size * healthPercent, 4);
+        }
       });
 
-      // Draw selection box
+      // Selection box
       if (selectionBox) {
         ctx.strokeStyle = '#fbbf24';
         ctx.lineWidth = 2;
@@ -199,12 +243,22 @@ export const GameCanvas = () => {
         ctx.setLineDash([]);
       }
 
+      // Placement mode indicator
+      if (placementMode) {
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#fbbf24';
+        ctx.textAlign = 'center';
+        ctx.fillText('Clique para posicionar • ESC para cancelar', canvas.width / 2, 30);
+      }
+
       requestAnimationFrame(render);
     };
 
-    const animationFrame = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [gameState, cameraPosition, zoomLevel, selectedUnits, selectionBox]);
+    requestAnimationFrame(render);
+    return () => { cancelled = true; };
+  }, [gameState, cameraPosition, zoomLevel, selectedUnits, selectionBox, placementMode]);
 
   // Resize canvas
   useEffect(() => {
@@ -213,17 +267,27 @@ export const GameCanvas = () => {
       canvasRef.current.width = containerRef.current.clientWidth;
       canvasRef.current.height = containerRef.current.clientHeight;
     };
-
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle mouse events
+  const getWorldPos = useCallback((clientX: number, clientY: number): Position => {
+    if (!canvasRef.current) return { x: 0, y: 0 };
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaledTileSize = TILE_SIZE * zoomLevel;
+    const offsetX = -cameraPosition.x * scaledTileSize + canvas.width / 2;
+    const offsetY = -cameraPosition.y * scaledTileSize + canvas.height / 2;
+    return {
+      x: (clientX - rect.left - offsetX) / scaledTileSize,
+      y: (clientY - rect.top - offsetY) / scaledTileSize,
+    };
+  }, [cameraPosition, zoomLevel]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button === 0) {
       setIsDragging(true);
-      setDragStart({ x: e.clientX, y: e.clientY });
       setSelectionBox({ start: { x: e.clientX, y: e.clientY }, end: { x: e.clientX, y: e.clientY } });
     }
   }, []);
@@ -238,9 +302,7 @@ export const GameCanvas = () => {
     const rect = containerRef.current.getBoundingClientRect();
     const edgeSize = 50;
     const scrollSpeed = 0.5;
-
-    let dx = 0;
-    let dy = 0;
+    let dx = 0, dy = 0;
 
     if (e.clientX - rect.left < edgeSize) dx = -scrollSpeed;
     else if (rect.right - e.clientX < edgeSize) dx = scrollSpeed;
@@ -248,74 +310,104 @@ export const GameCanvas = () => {
     else if (rect.bottom - e.clientY < edgeSize) dy = scrollSpeed;
 
     if (dx !== 0 || dy !== 0) {
-      setCameraPosition({
-        x: cameraPosition.x + dx,
-        y: cameraPosition.y + dy,
-      });
+      setCameraPosition({ x: cameraPosition.x + dx, y: cameraPosition.y + dy });
     }
   }, [isDragging, selectionBox, cameraPosition, setCameraPosition]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     if (!gameState || !canvasRef.current) return;
 
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const scaledTileSize = TILE_SIZE * zoomLevel;
-    const offsetX = -cameraPosition.x * scaledTileSize + canvas.width / 2;
-    const offsetY = -cameraPosition.y * scaledTileSize + canvas.height / 2;
+    const worldPos = getWorldPos(e.clientX, e.clientY);
 
-    if (e.button === 0 && selectionBox) {
-      // Check if it was a click or drag selection
-      const boxWidth = Math.abs(selectionBox.end.x - selectionBox.start.x);
-      const boxHeight = Math.abs(selectionBox.end.y - selectionBox.start.y);
+    // Left click
+    if (e.button === 0) {
+      // Placement mode
+      if (placementMode) {
+        constructBuilding(worldPos);
+        setIsDragging(false);
+        setSelectionBox(null);
+        return;
+      }
 
-      if (boxWidth < 5 && boxHeight < 5) {
-        // Single click - select unit at position
-        const clickX = (e.clientX - rect.left - offsetX) / scaledTileSize;
-        const clickY = (e.clientY - rect.top - offsetY) / scaledTileSize;
+      if (selectionBox) {
+        const boxWidth = Math.abs(selectionBox.end.x - selectionBox.start.x);
+        const boxHeight = Math.abs(selectionBox.end.y - selectionBox.start.y);
 
-        const clickedUnit = gameState.units.find(unit => {
-          const dx = unit.position.x - clickX;
-          const dy = unit.position.y - clickY;
-          return Math.sqrt(dx * dx + dy * dy) < 0.5 && unit.playerId === 'player-1';
-        });
+        if (boxWidth < 5 && boxHeight < 5) {
+          // Single click
+          const clickedUnit = gameState.units.find(unit =>
+            unit.playerId === 'player-1' && dist(unit.position, worldPos) < 0.6
+          );
 
-        if (clickedUnit) {
-          selectUnits([clickedUnit.id]);
+          if (clickedUnit) {
+            selectUnits([clickedUnit.id]);
+          } else {
+            // Check for building click
+            const clickedBuilding = gameState.buildings.find(b =>
+              b.playerId === 'player-1' && dist(b.position, worldPos) < 1.5
+            );
+            if (clickedBuilding) {
+              selectBuilding(clickedBuilding.id);
+            } else {
+              selectUnits([]);
+            }
+          }
         } else {
-          selectUnits([]);
-        }
-      } else {
-        // Box selection
-        const minX = (Math.min(selectionBox.start.x, selectionBox.end.x) - rect.left - offsetX) / scaledTileSize;
-        const maxX = (Math.max(selectionBox.start.x, selectionBox.end.x) - rect.left - offsetX) / scaledTileSize;
-        const minY = (Math.min(selectionBox.start.y, selectionBox.end.y) - rect.top - offsetY) / scaledTileSize;
-        const maxY = (Math.max(selectionBox.start.y, selectionBox.end.y) - rect.top - offsetY) / scaledTileSize;
+          // Box selection
+          const rect = canvasRef.current.getBoundingClientRect();
+          const scaledTileSize = TILE_SIZE * zoomLevel;
+          const offsetX = -cameraPosition.x * scaledTileSize + canvasRef.current.width / 2;
+          const offsetY = -cameraPosition.y * scaledTileSize + canvasRef.current.height / 2;
 
-        const selectedIds = gameState.units
-          .filter(unit => 
-            unit.playerId === 'player-1' &&
-            unit.position.x >= minX && unit.position.x <= maxX &&
-            unit.position.y >= minY && unit.position.y <= maxY
-          )
-          .map(unit => unit.id);
+          const minX = (Math.min(selectionBox.start.x, selectionBox.end.x) - rect.left - offsetX) / scaledTileSize;
+          const maxX = (Math.max(selectionBox.start.x, selectionBox.end.x) - rect.left - offsetX) / scaledTileSize;
+          const minY = (Math.min(selectionBox.start.y, selectionBox.end.y) - rect.top - offsetY) / scaledTileSize;
+          const maxY = (Math.max(selectionBox.start.y, selectionBox.end.y) - rect.top - offsetY) / scaledTileSize;
 
-        if (selectedIds.length > 0) {
-          selectUnits(selectedIds);
+          const selectedIds = gameState.units
+            .filter(unit =>
+              unit.playerId === 'player-1' &&
+              unit.position.x >= minX && unit.position.x <= maxX &&
+              unit.position.y >= minY && unit.position.y <= maxY
+            )
+            .map(unit => unit.id);
+
+          if (selectedIds.length > 0) selectUnits(selectedIds);
         }
       }
     }
 
+    // Right click - context action
     if (e.button === 2 && selectedUnits.length > 0) {
-      // Right click - move units
-      const clickX = (e.clientX - rect.left - offsetX) / scaledTileSize;
-      const clickY = (e.clientY - rect.top - offsetY) / scaledTileSize;
-      moveUnits(selectedUnits, { x: clickX, y: clickY });
+      const tileX = Math.round(worldPos.x);
+      const tileY = Math.round(worldPos.y);
+      const tile = gameState.map.tiles[tileY]?.[tileX];
+
+      const selectedUnitObjects = gameState.units.filter(u => selectedUnits.includes(u.id));
+      const hasVillagers = selectedUnitObjects.some(u => u.type === 'villager');
+      const hasMilitary = selectedUnitObjects.some(u => u.type !== 'villager');
+
+      // Check enemy nearby
+      const enemyUnit = gameState.units.find(u =>
+        u.playerId !== 'player-1' && dist(u.position, worldPos) < 1.5
+      );
+      const enemyBuilding = gameState.buildings.find(b =>
+        b.playerId !== 'player-1' && dist(b.position, worldPos) < 2
+      );
+
+      if (enemyUnit || enemyBuilding) {
+        attackMove(selectedUnits, worldPos);
+      } else if (tile?.resource && hasVillagers) {
+        gatherResource(selectedUnits, { x: tileX, y: tileY });
+      } else {
+        moveUnits(selectedUnits, worldPos);
+      }
     }
 
     setIsDragging(false);
     setSelectionBox(null);
-  }, [gameState, cameraPosition, zoomLevel, selectionBox, selectedUnits, selectUnits, moveUnits]);
+  }, [gameState, cameraPosition, zoomLevel, selectionBox, selectedUnits, placementMode,
+    selectUnits, selectBuilding, moveUnits, gatherResource, attackMove, constructBuilding, getWorldPos]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -332,25 +424,23 @@ export const GameCanvas = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const scrollSpeed = 2;
       switch (e.key) {
-        case 'w':
-        case 'ArrowUp':
+        case 'w': case 'ArrowUp':
           setCameraPosition({ x: cameraPosition.x, y: cameraPosition.y - scrollSpeed });
           break;
-        case 's':
-        case 'ArrowDown':
+        case 's': case 'ArrowDown':
           setCameraPosition({ x: cameraPosition.x, y: cameraPosition.y + scrollSpeed });
           break;
-        case 'a':
-        case 'ArrowLeft':
+        case 'a': case 'ArrowLeft':
           setCameraPosition({ x: cameraPosition.x - scrollSpeed, y: cameraPosition.y });
           break;
-        case 'd':
-        case 'ArrowRight':
+        case 'd': case 'ArrowRight':
           setCameraPosition({ x: cameraPosition.x + scrollSpeed, y: cameraPosition.y });
+          break;
+        case 'Escape':
+          useGameStore.getState().setPlacementMode(null);
           break;
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [cameraPosition, setCameraPosition]);
@@ -358,16 +448,13 @@ export const GameCanvas = () => {
   if (!gameState) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading game...</p>
+        <p className="text-muted-foreground">Carregando jogo...</p>
       </div>
     );
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-full overflow-hidden bg-background"
-    >
+    <div ref={containerRef} className="w-full h-full overflow-hidden bg-background">
       <canvas
         ref={canvasRef}
         onMouseDown={handleMouseDown}
@@ -375,7 +462,7 @@ export const GameCanvas = () => {
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
         onContextMenu={handleContextMenu}
-        className="cursor-crosshair"
+        className={placementMode ? 'cursor-cell' : 'cursor-crosshair'}
       />
     </div>
   );

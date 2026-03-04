@@ -44,41 +44,62 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error fetching profile:', error);
       return null;
     }
-
     return data as Profile | null;
   };
 
+  const ensureProfile = async (user: User) => {
+    let existingProfile = await fetchProfile(user.id);
+    
+    if (!existingProfile) {
+      // Create profile from user metadata (set during signup)
+      const meta = user.user_metadata || {};
+      const { error } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          username: meta.username || meta.email?.split('@')[0] || 'Player',
+          country_id: meta.country_id || 'usa',
+        });
+
+      if (error) {
+        console.error('Error creating profile:', error);
+        return null;
+      }
+      existingProfile = await fetchProfile(user.id);
+    }
+
+    return existingProfile;
+  };
+
   useEffect(() => {
-    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Fetch profile after auth state change
         if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id).then(setProfile);
+          // Use setTimeout to avoid potential deadlock with auth state
+          setTimeout(async () => {
+            const p = await ensureProfile(session.user);
+            setProfile(p);
+            setIsLoading(false);
           }, 0);
         } else {
           setProfile(null);
+          setIsLoading(false);
         }
       }
     );
 
-    // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
-        fetchProfile(session.user.id).then((p) => {
-          setProfile(p);
-          setIsLoading(false);
-        });
-      } else {
-        setIsLoading(false);
+        const p = await ensureProfile(session.user);
+        setProfile(p);
       }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -87,33 +108,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, username: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
+
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: redirectUrl,
+          data: { username, country_id: 'usa' },
         },
       });
 
       if (error) throw error;
-
-      // Create profile after signup
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            username,
-            country_id: 'usa',
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          return { error: profileError };
-        }
-      }
-
+      // Profile will be created automatically on first login via ensureProfile
       return { error: null };
     } catch (error) {
       console.error('Sign up error:', error);
@@ -123,11 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       return { error: null };
     } catch (error) {
@@ -145,19 +147,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) return { error: new Error('Not authenticated') };
-
     try {
       const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('id', user.id);
-
       if (error) throw error;
-
-      // Refresh profile
       const newProfile = await fetchProfile(user.id);
       setProfile(newProfile);
-
       return { error: null };
     } catch (error) {
       console.error('Update profile error:', error);
@@ -166,16 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      session,
-      profile,
-      isLoading,
-      signUp,
-      signIn,
-      signOut,
-      updateProfile,
-    }}>
+    <AuthContext.Provider value={{ user, session, profile, isLoading, signUp, signIn, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

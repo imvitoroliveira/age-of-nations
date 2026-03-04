@@ -7,6 +7,7 @@ import { AuthScreen } from '@/components/screens/AuthScreen';
 import { LeaderboardScreen } from '@/components/screens/LeaderboardScreen';
 import { MultiplayerLobby } from '@/components/screens/MultiplayerLobby';
 import { useGameStore } from '@/store/gameStore';
+
 import { useAuth } from '@/hooks/useAuth';
 import { Country } from '@/types/game';
 import { toast } from 'sonner';
@@ -15,7 +16,7 @@ type Screen = 'menu' | 'countrySelection' | 'gameSetup' | 'game' | 'settings' | 
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu');
-  const { selectedCountry, setSelectedCountry, setGameSettings } = useGameStore();
+  const { selectedCountry, setSelectedCountry, setGameSettings, resetGame } = useGameStore();
   const { user, isLoading } = useAuth();
 
   // Redirect to menu after login
@@ -79,6 +80,7 @@ const Index = () => {
   };
 
   const handleBackToMenu = () => {
+    resetGame();
     setCurrentScreen('menu');
   };
 
@@ -148,7 +150,7 @@ const Index = () => {
       );
 
     case 'game':
-      return <GameScreen />;
+      return <GameScreen onBack={handleBackToMenu} />;
 
     case 'menu':
     default:

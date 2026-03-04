@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -37,19 +37,18 @@ export const useGameRooms = () => {
   const [roomPlayers, setRoomPlayers] = useState<RoomPlayer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch all available rooms
+  // Use ref to avoid subscription recreation
+  const currentRoomIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    currentRoomIdRef.current = currentRoom?.id || null;
+  }, [currentRoom]);
+
   const fetchRooms = useCallback(async () => {
     setIsLoading(true);
-    
     const { data, error } = await supabase
       .from('game_rooms')
-      .select(`
-        *,
-        players:game_room_players(
-          *,
-          profile:profiles(username, rank_points)
-        )
-      `)
+      .select(`*, players:game_room_players(*, profile:profiles(username, rank_points))`)
       .eq('status', 'waiting')
       .order('created_at', { ascending: false });
 
@@ -58,11 +57,9 @@ export const useGameRooms = () => {
     } else {
       setRooms((data || []) as unknown as GameRoom[]);
     }
-    
     setIsLoading(false);
   }, []);
 
-  // Fetch current room details
   const fetchCurrentRoom = useCallback(async (roomId: string) => {
     const { data: roomData, error: roomError } = await supabase
       .from('game_rooms')
@@ -74,15 +71,11 @@ export const useGameRooms = () => {
       console.error('Error fetching room:', roomError);
       return;
     }
-
     setCurrentRoom(roomData as unknown as GameRoom);
 
     const { data: playersData, error: playersError } = await supabase
       .from('game_room_players')
-      .select(`
-        *,
-        profile:profiles(username, rank_points)
-      `)
+      .select(`*, profile:profiles(username, rank_points)`)
       .eq('room_id', roomId);
 
     if (playersError) {
@@ -92,7 +85,6 @@ export const useGameRooms = () => {
     }
   }, []);
 
-  // Create a new room
   const createRoom = async (name: string, settings: {
     max_players?: number;
     map_size?: string;
@@ -123,16 +115,30 @@ export const useGameRooms = () => {
       return null;
     }
 
-    // Join the room as host
     await joinRoom(data.id, profile.country_id);
-
     return data;
   };
 
-  // Join an existing room
   const joinRoom = async (roomId: string, countryId: string) => {
     if (!user) {
       toast.error('Você precisa estar logado para entrar na sala');
+      return false;
+    }
+
+    // Check if room is full before joining
+    const { data: roomData } = await supabase
+      .from('game_rooms')
+      .select('max_players')
+      .eq('id', roomId)
+      .single();
+
+    const { count } = await supabase
+      .from('game_room_players')
+      .select('*', { count: 'exact', head: true })
+      .eq('room_id', roomId);
+
+    if (roomData && count !== null && count >= (roomData.max_players || 2)) {
+      toast.error('Sala cheia!');
       return false;
     }
 
@@ -158,7 +164,6 @@ export const useGameRooms = () => {
     return true;
   };
 
-  // Leave current room
   const leaveRoom = async () => {
     if (!user || !currentRoom) return;
 
@@ -174,22 +179,16 @@ export const useGameRooms = () => {
       return;
     }
 
-    // If host leaves, delete the room
     if (currentRoom.host_id === user.id) {
-      await supabase
-        .from('game_rooms')
-        .delete()
-        .eq('id', currentRoom.id);
+      await supabase.from('game_rooms').delete().eq('id', currentRoom.id);
     }
 
     setCurrentRoom(null);
     setRoomPlayers([]);
   };
 
-  // Toggle ready status
   const toggleReady = async () => {
     if (!user || !currentRoom) return;
-
     const currentPlayer = roomPlayers.find(p => p.player_id === user.id);
     if (!currentPlayer) return;
 
@@ -204,10 +203,8 @@ export const useGameRooms = () => {
     }
   };
 
-  // Update player country
   const updateCountry = async (countryId: string) => {
     if (!user || !currentRoom) return;
-
     const currentPlayer = roomPlayers.find(p => p.player_id === user.id);
     if (!currentPlayer) return;
 
@@ -222,11 +219,9 @@ export const useGameRooms = () => {
     }
   };
 
-  // Start the game (host only)
   const startGame = async () => {
     if (!user || !currentRoom || currentRoom.host_id !== user.id) return false;
 
-    // Check if all players are ready
     const allReady = roomPlayers.every(p => p.is_ready);
     if (!allReady) {
       toast.error('Todos os jogadores precisam estar prontos');
@@ -235,10 +230,7 @@ export const useGameRooms = () => {
 
     const { error } = await supabase
       .from('game_rooms')
-      .update({ 
-        status: 'starting',
-        started_at: new Date().toISOString(),
-      })
+      .update({ status: 'starting', started_at: new Date().toISOString() })
       .eq('id', currentRoom.id);
 
     if (error) {
@@ -246,13 +238,11 @@ export const useGameRooms = () => {
       toast.error('Erro ao iniciar partida');
       return false;
     }
-
     return true;
   };
 
-  // Subscribe to real-time updates
+  // Realtime subscriptions - FIXED: no currentRoom dependency
   useEffect(() => {
-    // Subscribe to room changes
     const roomsChannel = supabase
       .channel('rooms-channel')
       .on(
@@ -260,22 +250,21 @@ export const useGameRooms = () => {
         { event: '*', schema: 'public', table: 'game_rooms' },
         () => {
           fetchRooms();
-          if (currentRoom) {
-            fetchCurrentRoom(currentRoom.id);
+          if (currentRoomIdRef.current) {
+            fetchCurrentRoom(currentRoomIdRef.current);
           }
         }
       )
       .subscribe();
 
-    // Subscribe to player changes
     const playersChannel = supabase
       .channel('players-channel')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'game_room_players' },
         () => {
-          if (currentRoom) {
-            fetchCurrentRoom(currentRoom.id);
+          if (currentRoomIdRef.current) {
+            fetchCurrentRoom(currentRoomIdRef.current);
           }
         }
       )
@@ -285,25 +274,15 @@ export const useGameRooms = () => {
       supabase.removeChannel(roomsChannel);
       supabase.removeChannel(playersChannel);
     };
-  }, [currentRoom, fetchRooms, fetchCurrentRoom]);
+  }, [fetchRooms, fetchCurrentRoom]);
 
-  // Initial fetch
   useEffect(() => {
     fetchRooms();
   }, [fetchRooms]);
 
   return {
-    rooms,
-    currentRoom,
-    roomPlayers,
-    isLoading,
-    fetchRooms,
-    createRoom,
-    joinRoom,
-    leaveRoom,
-    toggleReady,
-    updateCountry,
-    startGame,
-    fetchCurrentRoom,
+    rooms, currentRoom, roomPlayers, isLoading,
+    fetchRooms, createRoom, joinRoom, leaveRoom,
+    toggleReady, updateCountry, startGame, fetchCurrentRoom,
   };
 };
