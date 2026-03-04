@@ -39,6 +39,12 @@ export interface Unit {
   carryingResource?: { type: ResourceType; amount: number };
 }
 
+export interface TrainingQueueItem {
+  unitType: UnitType;
+  progress: number;
+  totalTime: number;
+}
+
 export type BuildingType = 
   | 'townCenter' 
   | 'house' 
