@@ -16,7 +16,7 @@ type Screen = 'menu' | 'countrySelection' | 'gameSetup' | 'game' | 'settings' | 
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu');
-  const { selectedCountry, setSelectedCountry, setGameSettings } = useGameStore();
+  const { selectedCountry, setSelectedCountry, setGameSettings, resetGame } = useGameStore();
   const { user, isLoading } = useAuth();
 
   // Redirect to menu after login
