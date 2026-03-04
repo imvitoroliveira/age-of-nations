@@ -150,7 +150,7 @@ const Index = () => {
       );
 
     case 'game':
-      return <GameScreen />;
+      return <GameScreen onBack={handleBackToMenu} />;
 
     case 'menu':
     default:

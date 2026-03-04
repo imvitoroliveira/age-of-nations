@@ -72,6 +72,7 @@ export interface Building {
   isConstructing: boolean;
   constructionProgress: number;
   rallyPoint?: Position;
+  trainingQueue: TrainingQueueItem[];
 }
 
 export type TerrainType = 'grass' | 'forest' | 'water' | 'mountain' | 'sand' | 'snow';
