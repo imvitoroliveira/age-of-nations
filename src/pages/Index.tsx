@@ -80,6 +80,7 @@ const Index = () => {
   };
 
   const handleBackToMenu = () => {
+    resetGame();
     setCurrentScreen('menu');
   };
 
