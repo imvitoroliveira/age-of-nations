@@ -30,7 +30,7 @@ export const CategoryScreen = ({ onBack, onSelectCategory, onFarm, onAchievement
           <span className="text-3xl">{child.avatar_emoji}</span>
           <div>
             <p className="font-bold font-baloo text-lg leading-tight">{child.name}</p>
-            <p className="text-xs text-muted-foreground">{child.age_group === 'mini' ? 'Modo Mini' : 'Modo Kids'} • Nível {child.level}</p>
+            <p className="text-xs text-muted-foreground">{child.age_group === 'mini' ? "Enzo's" : "Valentina's"} • Nível {child.level}</p>
           </div>
         </div>
         <div className="flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full">

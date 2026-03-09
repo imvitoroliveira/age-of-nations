@@ -51,7 +51,7 @@ export const AddChildScreen = ({ onBack, onDone }: Props) => {
             ))}
           </div>
           <p className="text-center text-sm text-muted-foreground mt-2">
-            {age <= 3 ? '🧒 Modo Mini (cores, animais, letras, números)' : '📚 Modo Kids (matemática, português, sílabas)'}
+            {age <= 3 ? "🧒 Enzo's (cores, animais, letras, números)" : "📚 Valentina's (matemática, português, sílabas)"}
           </p>
         </div>
         <button onClick={handleSubmit} className="kid-btn bg-primary text-primary-foreground w-full text-2xl mt-4">Começar! 🚀</button>
