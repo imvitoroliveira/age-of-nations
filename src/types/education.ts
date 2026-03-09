@@ -1,62 +1,70 @@
 export type AgeGroup = 'mini' | 'kids';
-
 export type MiniCategory = 'colors' | 'animals' | 'letters' | 'numbers' | 'shapes';
-export type KidsCategory = 'math' | 'portuguese' | 'syllables' | 'words' | 'stories';
-
+export type KidsCategory = 'math' | 'portuguese' | 'syllables';
 export type Category = MiniCategory | KidsCategory;
 
 export interface ChildProfile {
   id: string;
+  parent_id: string;
   name: string;
   age: number;
-  ageGroup: AgeGroup;
-  avatarEmoji: string;
-  progress: Record<string, CategoryProgress>;
+  age_group: AgeGroup;
+  avatar_emoji: string;
+  avatar_accessories: string[];
+  farm_items: string[];
+  total_stars: number;
+  level: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface CategoryProgress {
+export interface ActivityProgress {
+  id: string;
+  child_id: string;
   category: Category;
-  completed: number;
-  total: number;
-  stars: number;
-  lastPlayed?: string;
+  correct_count: number;
+  total_count: number;
+  stars_earned: number;
+  streak: number;
+  best_streak: number;
+  last_played_at?: string;
 }
 
-export interface ActivityResult {
-  correct: boolean;
-  category: Category;
-  timestamp: number;
+export interface Achievement {
+  id: string;
+  child_id: string;
+  achievement_key: string;
+  unlocked_at: string;
 }
 
-export interface ColorItem {
-  name: string;
-  hex: string;
+export interface DailyUsage {
+  id: string;
+  child_id: string;
+  usage_date: string;
+  seconds_used: number;
+  activities_completed: number;
+}
+
+export interface ScreenTimeSettings {
+  id: string;
+  child_id: string;
+  daily_limit_minutes: number;
+  break_interval_minutes: number;
+  break_duration_minutes: number;
+}
+
+export interface AchievementDef {
+  key: string;
+  title: string;
+  description: string;
   emoji: string;
+  condition: (progress: Record<string, ActivityProgress>, totalStars: number) => boolean;
 }
 
-export interface AnimalItem {
+export interface FarmItem {
+  key: string;
   name: string;
   emoji: string;
-  sound: string;
-  soundText: string;
-}
-
-export interface ShapeItem {
-  name: string;
-  emoji: string;
-  sides: number;
-}
-
-export interface MathProblem {
-  a: number;
-  b: number;
-  operator: '+' | '-';
-  answer: number;
-  options: number[];
-}
-
-export interface SyllableWord {
-  word: string;
-  syllables: string[];
-  image: string;
+  cost: number;
+  category: 'animal' | 'plant' | 'building' | 'decoration';
 }

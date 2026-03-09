@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
-import { LETTERS, LETTER_WORDS } from '@/data/educationData';
+import { LETTERS, LETTER_WORDS, speak } from '@/data/educationData';
 import { ActivityHeader } from '@/components/shared/ActivityHeader';
 import { FeedbackOverlay } from '@/components/shared/FeedbackOverlay';
-import { useChildStore } from '@/store/childStore';
+import { useAppStore } from '@/store/appStore';
 
 interface Props { onBack: () => void; }
 
@@ -11,18 +11,13 @@ export const LettersActivity = ({ onBack }: Props) => {
   const [targetIdx, setTargetIdx] = useState(() => Math.floor(Math.random() * LETTERS.length));
   const [options, setOptions] = useState<number[]>(() => genOpts(Math.floor(Math.random() * LETTERS.length)));
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
-  const { recordActivity } = useChildStore();
+  const { recordActivity } = useAppStore();
 
   function genOpts(t: number) {
     const s = new Set([t]);
     while (s.size < 4) s.add(Math.floor(Math.random() * LETTERS.length));
     return [...s].sort(() => Math.random() - 0.5);
   }
-
-  const speak = (text: string) => {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'pt-BR'; u.rate = 0.8; speechSynthesis.speak(u);
-  };
 
   const handleQuizAnswer = (idx: number) => {
     const correct = idx === targetIdx;
@@ -43,19 +38,13 @@ export const LettersActivity = ({ onBack }: Props) => {
         <ActivityHeader title="🔤 Letras" category="letters" onBack={onBack} />
         <div className="flex-1 p-4">
           <div className="flex justify-center mb-4">
-            <button onClick={() => setMode('quiz')} className="kid-btn bg-primary text-primary-foreground">
-              Jogar Quiz! 🎮
-            </button>
+            <button onClick={() => setMode('quiz')} className="kid-btn bg-primary text-primary-foreground">Jogar Quiz! 🎮</button>
           </div>
           <div className="grid grid-cols-4 md:grid-cols-6 gap-3 max-w-xl mx-auto">
             {LETTERS.map(letter => {
               const w = LETTER_WORDS[letter];
               return (
-                <button
-                  key={letter}
-                  onClick={() => speak(`${letter}. ${w.word}`)}
-                  className="kid-card bg-card p-3 flex flex-col items-center gap-1 border-primary/20"
-                >
+                <button key={letter} onClick={() => speak(`${letter}. ${w.word}`)} className="kid-card bg-card p-3 flex flex-col items-center gap-1 border-primary/20">
                   <span className="text-3xl font-extrabold font-baloo text-primary">{letter}</span>
                   <span className="text-2xl">{w.emoji}</span>
                   <span className="text-xs font-semibold text-muted-foreground">{w.word}</span>
@@ -81,11 +70,7 @@ export const LettersActivity = ({ onBack }: Props) => {
         </div>
         <div className="grid grid-cols-2 gap-4 max-w-sm w-full">
           {options.map(idx => (
-            <button
-              key={idx}
-              onClick={() => handleQuizAnswer(idx)}
-              className="kid-card bg-card p-6 border-primary/20"
-            >
+            <button key={idx} onClick={() => handleQuizAnswer(idx)} className="kid-card bg-card p-6 border-primary/20">
               <span className="text-5xl font-extrabold font-baloo text-primary">{LETTERS[idx]}</span>
             </button>
           ))}
