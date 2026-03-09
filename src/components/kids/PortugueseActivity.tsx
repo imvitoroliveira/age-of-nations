@@ -1,18 +1,16 @@
 import { useState, useCallback } from 'react';
-import { LETTER_WORDS, LETTERS } from '@/data/educationData';
+import { LETTER_WORDS, LETTERS, speak } from '@/data/educationData';
 import { ActivityHeader } from '@/components/shared/ActivityHeader';
 import { FeedbackOverlay } from '@/components/shared/FeedbackOverlay';
-import { useChildStore } from '@/store/childStore';
+import { useAppStore } from '@/store/appStore';
 
 interface Props { onBack: () => void; }
 
 const VOWELS = ['A', 'E', 'I', 'O', 'U'];
 
-type SubMode = 'vowels' | 'complete';
-
 export const PortugueseActivity = ({ onBack }: Props) => {
-  const [subMode, setSubMode] = useState<SubMode | null>(null);
-  const { recordActivity } = useChildStore();
+  const [subMode, setSubMode] = useState<'vowels' | 'complete' | null>(null);
+  const { recordActivity } = useAppStore();
 
   if (!subMode) {
     return (
@@ -24,12 +22,10 @@ export const PortugueseActivity = ({ onBack }: Props) => {
             <button onClick={() => setSubMode('vowels')} className="kid-card bg-card p-8 border-kid-pink/30 flex flex-col items-center gap-2">
               <span className="text-5xl">🅰️</span>
               <span className="text-2xl font-bold">Vogais</span>
-              <span className="text-muted-foreground">A E I O U</span>
             </button>
             <button onClick={() => setSubMode('complete')} className="kid-card bg-card p-8 border-kid-blue/30 flex flex-col items-center gap-2">
               <span className="text-5xl">✏️</span>
               <span className="text-2xl font-bold">Complete a Palavra</span>
-              <span className="text-muted-foreground">Qual letra está faltando?</span>
             </button>
           </div>
         </div>
@@ -37,10 +33,7 @@ export const PortugueseActivity = ({ onBack }: Props) => {
     );
   }
 
-  if (subMode === 'vowels') {
-    return <VowelsGame onBack={() => setSubMode(null)} recordActivity={recordActivity} />;
-  }
-
+  if (subMode === 'vowels') return <VowelsGame onBack={() => setSubMode(null)} recordActivity={recordActivity} />;
   return <CompleteWordGame onBack={() => setSubMode(null)} recordActivity={recordActivity} />;
 };
 
@@ -50,16 +43,7 @@ function VowelsGame({ onBack, recordActivity }: { onBack: () => void; recordActi
   const target = VOWELS[targetIdx];
   const w = LETTER_WORDS[target];
 
-  const handleAnswer = (v: string) => {
-    const correct = v === target;
-    setFeedback(correct ? 'correct' : 'wrong');
-    recordActivity('portuguese', correct);
-  };
-
-  const next = useCallback(() => {
-    setFeedback(null);
-    setTargetIdx(Math.floor(Math.random() * VOWELS.length));
-  }, []);
+  const next = useCallback(() => { setFeedback(null); setTargetIdx(Math.floor(Math.random() * VOWELS.length)); }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -70,9 +54,8 @@ function VowelsGame({ onBack, recordActivity }: { onBack: () => void; recordActi
         <p className="text-xl text-muted-foreground">Começa com qual vogal?</p>
         <div className="flex gap-3">
           {VOWELS.map(v => (
-            <button key={v} onClick={() => handleAnswer(v)} className="kid-card bg-card w-16 h-16 border-kid-pink/30 text-3xl font-extrabold font-baloo text-kid-pink">
-              {v}
-            </button>
+            <button key={v} onClick={() => { const c = v === target; setFeedback(c ? 'correct' : 'wrong'); recordActivity('portuguese', c); }}
+              className="kid-card bg-card w-16 h-16 border-kid-pink/30 text-3xl font-extrabold font-baloo text-kid-pink">{v}</button>
           ))}
         </div>
       </div>
@@ -83,14 +66,9 @@ function VowelsGame({ onBack, recordActivity }: { onBack: () => void; recordActi
 
 function CompleteWordGame({ onBack, recordActivity }: { onBack: () => void; recordActivity: (c: any, b: boolean) => void }) {
   const words = [
-    { word: 'GATO', missing: 1, emoji: '🐱' },
-    { word: 'BOLA', missing: 2, emoji: '⚽' },
-    { word: 'CASA', missing: 0, emoji: '🏠' },
-    { word: 'PATO', missing: 1, emoji: '🦆' },
-    { word: 'SAPO', missing: 3, emoji: '🐸' },
-    { word: 'RATO', missing: 0, emoji: '🐭' },
-    { word: 'VACA', missing: 2, emoji: '🐮' },
-    { word: 'FOCA', missing: 1, emoji: '🦭' },
+    { word: 'GATO', missing: 1, emoji: '🐱' }, { word: 'BOLA', missing: 2, emoji: '⚽' },
+    { word: 'CASA', missing: 0, emoji: '🏠' }, { word: 'PATO', missing: 1, emoji: '🦆' },
+    { word: 'SAPO', missing: 3, emoji: '🐸' }, { word: 'VACA', missing: 2, emoji: '🐮' },
   ];
 
   const [idx, setIdx] = useState(() => Math.floor(Math.random() * words.length));
@@ -99,23 +77,11 @@ function CompleteWordGame({ onBack, recordActivity }: { onBack: () => void; reco
   const missingLetter = current.word[current.missing];
   const display = current.word.split('').map((c, i) => i === current.missing ? '_' : c).join(' ');
 
-  const options = [missingLetter];
-  while (options.length < 4) {
-    const r = LETTERS[Math.floor(Math.random() * LETTERS.length)];
-    if (!options.includes(r)) options.push(r);
-  }
-  const shuffledOptions = options.sort(() => Math.random() - 0.5);
+  const optionsSet = new Set([missingLetter]);
+  while (optionsSet.size < 4) { const r = LETTERS[Math.floor(Math.random() * LETTERS.length)]; optionsSet.add(r); }
+  const shuffledOptions = [...optionsSet].sort(() => Math.random() - 0.5);
 
-  const handleAnswer = (letter: string) => {
-    const correct = letter === missingLetter;
-    setFeedback(correct ? 'correct' : 'wrong');
-    recordActivity('portuguese', correct);
-  };
-
-  const next = useCallback(() => {
-    setFeedback(null);
-    setIdx(Math.floor(Math.random() * words.length));
-  }, []);
+  const next = useCallback(() => { setFeedback(null); setIdx(Math.floor(Math.random() * words.length)); }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -125,9 +91,8 @@ function CompleteWordGame({ onBack, recordActivity }: { onBack: () => void; reco
         <p className="text-5xl font-extrabold font-baloo tracking-widest">{display}</p>
         <div className="flex gap-3">
           {shuffledOptions.map((l, i) => (
-            <button key={i} onClick={() => handleAnswer(l)} className="kid-card bg-card w-16 h-16 border-kid-blue/30 text-3xl font-extrabold font-baloo text-kid-blue">
-              {l}
-            </button>
+            <button key={i} onClick={() => { const c = l === missingLetter; setFeedback(c ? 'correct' : 'wrong'); recordActivity('portuguese', c); }}
+              className="kid-card bg-card w-16 h-16 border-kid-blue/30 text-3xl font-extrabold font-baloo text-kid-blue">{l}</button>
           ))}
         </div>
       </div>

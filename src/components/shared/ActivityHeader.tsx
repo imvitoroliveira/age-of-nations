@@ -1,6 +1,6 @@
 import { ArrowLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useChildStore } from '@/store/childStore';
+import { useAppStore } from '@/store/appStore';
 import { Category } from '@/types/education';
 
 interface ActivityHeaderProps {
@@ -10,8 +10,8 @@ interface ActivityHeaderProps {
 }
 
 export const ActivityHeader = ({ title, category, onBack }: ActivityHeaderProps) => {
-  const { getProgress } = useChildStore();
-  const progress = getProgress(category);
+  const { activeChildId, getProgress } = useAppStore();
+  const progress = activeChildId ? getProgress(activeChildId, category) : null;
 
   return (
     <div className="flex items-center justify-between p-4 bg-card rounded-b-3xl shadow-md">
@@ -21,7 +21,7 @@ export const ActivityHeader = ({ title, category, onBack }: ActivityHeaderProps)
       <h2 className="text-2xl md:text-3xl font-bold font-baloo text-foreground">{title}</h2>
       <div className="flex items-center gap-1 bg-muted px-3 py-1.5 rounded-full">
         <Star size={20} className="fill-kid-yellow text-kid-yellow" />
-        <span className="font-bold text-lg">{progress.stars}</span>
+        <span className="font-bold text-lg">{progress?.stars_earned || 0}</span>
       </div>
     </div>
   );
