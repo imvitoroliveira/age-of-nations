@@ -6,14 +6,14 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 20%;
+    --background: 40 60% 97%;
+    --foreground: 240 20% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 20%;
+    --card-foreground: 240 20% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 20%;
+    --popover-foreground: 240 20% 20%;
 
     --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
@@ -21,7 +21,7 @@
     --secondary: 174 72% 46%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 93%;
+    --muted: 210 30% 93%;
     --muted-foreground: 215 16% 47%;
 
     --accent: 38 92% 50%;
@@ -36,7 +36,6 @@
 
     --radius: 1rem;
 
-    /* App-specific */
     --kid-pink: 340 82% 62%;
     --kid-blue: 210 90% 56%;
     --kid-green: 142 72% 50%;
@@ -45,6 +44,11 @@
     --kid-red: 0 84% 60%;
     --kid-purple: 262 83% 58%;
     --kid-teal: 174 72% 46%;
+
+    --farm-grass: 120 45% 72%;
+    --farm-sky: 200 80% 80%;
+    --farm-wood: 30 50% 40%;
+    --farm-barn: 0 70% 50%;
 
     --sidebar-background: 262 83% 58%;
     --sidebar-foreground: 0 0% 100%;
@@ -67,6 +71,7 @@
     font-family: 'Nunito', sans-serif;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -96,16 +101,6 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  .wiggle {
-    animation: wiggle 0.5s ease-in-out;
-  }
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
-  }
-
   .float-slow {
     animation: floatSlow 3s ease-in-out infinite;
   }
@@ -125,13 +120,16 @@
     100% { transform: scale(1); }
   }
 
-  .confetti-burst {
-    animation: confetti 0.8s ease-out forwards;
+  .wiggle {
+    animation: wiggle 0.6s ease-in-out;
   }
 
-  @keyframes confetti {
-    0% { transform: scale(0) rotate(0deg); opacity: 1; }
-    100% { transform: scale(1.5) rotate(360deg); opacity: 0; }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-8deg); }
+    40% { transform: rotate(8deg); }
+    60% { transform: rotate(-4deg); }
+    80% { transform: rotate(4deg); }
   }
 
   .progress-fill {
@@ -141,5 +139,19 @@
 
   .star-glow {
     filter: drop-shadow(0 0 6px hsl(var(--kid-yellow) / 0.6));
+  }
+
+  .farm-bg {
+    background: linear-gradient(180deg, hsl(var(--farm-sky)) 0%, hsl(var(--farm-sky)) 60%, hsl(var(--farm-grass)) 60%, hsl(var(--farm-grass)) 100%);
+  }
+
+  .screen-time-bar {
+    @apply h-2 rounded-full overflow-hidden;
+    background: hsl(var(--muted));
+  }
+
+  .screen-time-fill {
+    @apply h-full rounded-full transition-all duration-1000 ease-linear;
+    background: linear-gradient(90deg, hsl(var(--kid-green)), hsl(var(--kid-yellow)), hsl(var(--kid-red)));
   }
 }
