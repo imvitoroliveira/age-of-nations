@@ -1,167 +1,85 @@
 import { useState, useEffect } from 'react';
-import { MainMenu } from '@/components/screens/MainMenu';
-import { CountrySelection } from '@/components/screens/CountrySelection';
-import { GameSetup } from '@/components/screens/GameSetup';
-import { GameScreen } from '@/components/game/GameScreen';
+import { HomeScreen } from '@/components/screens/HomeScreen';
+import { AddChildScreen } from '@/components/screens/AddChildScreen';
+import { CategoryScreen } from '@/components/screens/CategoryScreen';
 import { AuthScreen } from '@/components/screens/AuthScreen';
-import { LeaderboardScreen } from '@/components/screens/LeaderboardScreen';
-import { MultiplayerLobby } from '@/components/screens/MultiplayerLobby';
-import { useGameStore } from '@/store/gameStore';
-
+import { ColorsActivity } from '@/components/mini/ColorsActivity';
+import { AnimalsActivity } from '@/components/mini/AnimalsActivity';
+import { LettersActivity } from '@/components/mini/LettersActivity';
+import { NumbersActivity } from '@/components/mini/NumbersActivity';
+import { ShapesActivity } from '@/components/mini/ShapesActivity';
+import { MathActivity } from '@/components/kids/MathActivity';
+import { SyllablesActivity } from '@/components/kids/SyllablesActivity';
+import { PortugueseActivity } from '@/components/kids/PortugueseActivity';
+import { useChildStore } from '@/store/childStore';
 import { useAuth } from '@/hooks/useAuth';
-import { Country } from '@/types/game';
+import { Category } from '@/types/education';
 import { toast } from 'sonner';
 
-type Screen = 'menu' | 'countrySelection' | 'gameSetup' | 'game' | 'settings' | 'auth' | 'leaderboard' | 'multiplayer';
+type Screen = 'home' | 'addChild' | 'categories' | 'activity' | 'auth' | 'parentDashboard';
 
 const Index = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('menu');
-  const { selectedCountry, setSelectedCountry, setGameSettings, resetGame } = useGameStore();
-  const { user, isLoading } = useAuth();
+  const [screen, setScreen] = useState<Screen>('home');
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  const { setActiveChild } = useChildStore();
+  const { user } = useAuth();
 
-  // Redirect to menu after login
   useEffect(() => {
-    if (user && currentScreen === 'auth') {
-      setCurrentScreen('menu');
-    }
-  }, [user, currentScreen]);
+    if (user && screen === 'auth') setScreen('home');
+  }, [user, screen]);
 
-  const handlePlayOnline = () => {
-    setCurrentScreen('multiplayer');
+  const handleSelectChild = (id: string) => {
+    setActiveChild(id);
+    setScreen('categories');
   };
 
-  const handleTraining = () => {
-    if (!selectedCountry) {
-      setCurrentScreen('countrySelection');
-    } else {
-      setGameSettings({ mode: 'singlePlayer' });
-      setCurrentScreen('gameSetup');
-    }
+  const handleSelectCategory = (cat: Category) => {
+    setActiveCategory(cat);
+    setScreen('activity');
   };
 
-  const handleSelectCountry = () => {
-    setCurrentScreen('countrySelection');
+  const handleBackToCategories = () => {
+    setActiveCategory(null);
+    setScreen('categories');
   };
 
-  const handleSettings = () => {
-    toast.info('Configurações', {
-      description: 'Painel de configurações será implementado em breve!',
-    });
+  const handleBackToHome = () => {
+    setActiveChild(null);
+    setScreen('home');
   };
 
-  const handleLeaderboard = () => {
-    setCurrentScreen('leaderboard');
-  };
-
-  const handleProfile = () => {
-    if (user) {
-      toast.info('Perfil', {
-        description: 'Painel de perfil será implementado em breve!',
-      });
-    } else {
-      setCurrentScreen('auth');
-    }
-  };
-
-  const handleCountrySelected = (country: Country) => {
-    setSelectedCountry(country);
-    setGameSettings({ mode: 'singlePlayer' });
-    setCurrentScreen('gameSetup');
-  };
-
-  const handleStartGame = () => {
-    setCurrentScreen('game');
-  };
-
-  const handleMultiplayerStartGame = (roomId: string) => {
-    // For now, start single player game with selected settings
-    // In full implementation, this would sync with the room
-    setCurrentScreen('game');
-  };
-
-  const handleBackToMenu = () => {
-    resetGame();
-    setCurrentScreen('menu');
-  };
-
-  const handleBackToCountrySelection = () => {
-    setCurrentScreen('countrySelection');
-  };
-
-  const handleAuthSuccess = () => {
-    setCurrentScreen('menu');
-  };
-
-  const handleLoginFromLobby = () => {
-    setCurrentScreen('auth');
-  };
-
-  // Show loading while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-12 h-12 border-4 border-gold border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  switch (currentScreen) {
+  switch (screen) {
     case 'auth':
-      return (
-        <AuthScreen
-          onBack={handleBackToMenu}
-          onSuccess={handleAuthSuccess}
-        />
-      );
+      return <AuthScreen onBack={() => setScreen('home')} onSuccess={() => setScreen('home')} />;
 
-    case 'leaderboard':
-      return (
-        <LeaderboardScreen
-          onBack={handleBackToMenu}
-        />
-      );
+    case 'addChild':
+      return <AddChildScreen onBack={() => setScreen('home')} onDone={() => setScreen('categories')} />;
 
-    case 'multiplayer':
-      return (
-        <MultiplayerLobby
-          onBack={handleBackToMenu}
-          onStartGame={handleMultiplayerStartGame}
-          onLogin={handleLoginFromLobby}
-        />
-      );
+    case 'categories':
+      return <CategoryScreen onBack={handleBackToHome} onSelectCategory={handleSelectCategory} />;
 
-    case 'countrySelection':
-      return (
-        <CountrySelection
-          onBack={handleBackToMenu}
-          onSelect={handleCountrySelected}
-        />
-      );
+    case 'activity':
+      switch (activeCategory) {
+        case 'colors': return <ColorsActivity onBack={handleBackToCategories} />;
+        case 'animals': return <AnimalsActivity onBack={handleBackToCategories} />;
+        case 'letters': return <LettersActivity onBack={handleBackToCategories} />;
+        case 'numbers': return <NumbersActivity onBack={handleBackToCategories} />;
+        case 'shapes': return <ShapesActivity onBack={handleBackToCategories} />;
+        case 'math': return <MathActivity onBack={handleBackToCategories} />;
+        case 'syllables': return <SyllablesActivity onBack={handleBackToCategories} />;
+        case 'portuguese': return <PortugueseActivity onBack={handleBackToCategories} />;
+        default: return <CategoryScreen onBack={handleBackToHome} onSelectCategory={handleSelectCategory} />;
+      }
 
-    case 'gameSetup':
-      return (
-        <GameSetup
-          onBack={handleBackToCountrySelection}
-          onStart={handleStartGame}
-        />
-      );
-
-    case 'game':
-      return <GameScreen onBack={handleBackToMenu} />;
-
-    case 'menu':
+    case 'home':
     default:
       return (
-        <MainMenu
-          onPlayOnline={handlePlayOnline}
-          onTraining={handleTraining}
-          onSelectCountry={handleSelectCountry}
-          onSettings={handleSettings}
-          onLeaderboard={handleLeaderboard}
-          onProfile={handleProfile}
+        <HomeScreen
+          onSelectChild={handleSelectChild}
+          onAddChild={() => setScreen('addChild')}
+          onSettings={() => toast.info('Em breve!')}
+          onLogin={() => setScreen('auth')}
+          onParentDashboard={() => toast.info('Dashboard dos pais em breve!')}
         />
       );
   }
