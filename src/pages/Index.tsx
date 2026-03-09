@@ -1,70 +1,167 @@
-import { useState } from 'react';
-import { LandingPage } from '@/components/screens/LandingPage';
-import { MiniHome } from '@/components/screens/MiniHome';
-import { KidsHome } from '@/components/screens/KidsHome';
-import { ColorsActivity } from '@/components/mini/ColorsActivity';
-import { AnimalsActivity } from '@/components/mini/AnimalsActivity';
-import { LettersActivity } from '@/components/mini/LettersActivity';
-import { NumbersActivity } from '@/components/mini/NumbersActivity';
-import { MathActivity } from '@/components/kids/MathActivity';
-import { PortugueseActivity } from '@/components/kids/PortugueseActivity';
-import { SyllablesActivity } from '@/components/kids/SyllablesActivity';
+import { useState, useEffect } from 'react';
+import { MainMenu } from '@/components/screens/MainMenu';
+import { CountrySelection } from '@/components/screens/CountrySelection';
+import { GameSetup } from '@/components/screens/GameSetup';
+import { GameScreen } from '@/components/game/GameScreen';
+import { AuthScreen } from '@/components/screens/AuthScreen';
+import { LeaderboardScreen } from '@/components/screens/LeaderboardScreen';
+import { MultiplayerLobby } from '@/components/screens/MultiplayerLobby';
+import { useGameStore } from '@/store/gameStore';
 
-type Screen =
-  | 'landing'
-  | 'mini-home'
-  | 'kids-home'
-  | 'mini-colors'
-  | 'mini-animals'
-  | 'mini-letters'
-  | 'mini-numbers'
-  | 'kids-math'
-  | 'kids-portuguese'
-  | 'kids-syllables';
+import { useAuth } from '@/hooks/useAuth';
+import { Country } from '@/types/game';
+import { toast } from 'sonner';
+
+type Screen = 'menu' | 'countrySelection' | 'gameSetup' | 'game' | 'settings' | 'auth' | 'leaderboard' | 'multiplayer';
 
 const Index = () => {
-  const [screen, setScreen] = useState<Screen>('landing');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('menu');
+  const { selectedCountry, setSelectedCountry, setGameSettings, resetGame } = useGameStore();
+  const { user, isLoading } = useAuth();
 
-  const goBack = () => {
-    if (screen.startsWith('mini-') && screen !== 'mini-home') setScreen('mini-home');
-    else if (screen.startsWith('kids-') && screen !== 'kids-home') setScreen('kids-home');
-    else setScreen('landing');
+  // Redirect to menu after login
+  useEffect(() => {
+    if (user && currentScreen === 'auth') {
+      setCurrentScreen('menu');
+    }
+  }, [user, currentScreen]);
+
+  const handlePlayOnline = () => {
+    setCurrentScreen('multiplayer');
   };
 
-  switch (screen) {
-    case 'mini-home':
+  const handleTraining = () => {
+    if (!selectedCountry) {
+      setCurrentScreen('countrySelection');
+    } else {
+      setGameSettings({ mode: 'singlePlayer' });
+      setCurrentScreen('gameSetup');
+    }
+  };
+
+  const handleSelectCountry = () => {
+    setCurrentScreen('countrySelection');
+  };
+
+  const handleSettings = () => {
+    toast.info('Configurações', {
+      description: 'Painel de configurações será implementado em breve!',
+    });
+  };
+
+  const handleLeaderboard = () => {
+    setCurrentScreen('leaderboard');
+  };
+
+  const handleProfile = () => {
+    if (user) {
+      toast.info('Perfil', {
+        description: 'Painel de perfil será implementado em breve!',
+      });
+    } else {
+      setCurrentScreen('auth');
+    }
+  };
+
+  const handleCountrySelected = (country: Country) => {
+    setSelectedCountry(country);
+    setGameSettings({ mode: 'singlePlayer' });
+    setCurrentScreen('gameSetup');
+  };
+
+  const handleStartGame = () => {
+    setCurrentScreen('game');
+  };
+
+  const handleMultiplayerStartGame = (roomId: string) => {
+    // For now, start single player game with selected settings
+    // In full implementation, this would sync with the room
+    setCurrentScreen('game');
+  };
+
+  const handleBackToMenu = () => {
+    resetGame();
+    setCurrentScreen('menu');
+  };
+
+  const handleBackToCountrySelection = () => {
+    setCurrentScreen('countrySelection');
+  };
+
+  const handleAuthSuccess = () => {
+    setCurrentScreen('menu');
+  };
+
+  const handleLoginFromLobby = () => {
+    setCurrentScreen('auth');
+  };
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-gold border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  switch (currentScreen) {
+    case 'auth':
       return (
-        <MiniHome
-          onBack={() => setScreen('landing')}
-          onActivity={(a) => setScreen(`mini-${a}` as Screen)}
+        <AuthScreen
+          onBack={handleBackToMenu}
+          onSuccess={handleAuthSuccess}
         />
       );
-    case 'kids-home':
+
+    case 'leaderboard':
       return (
-        <KidsHome
-          onBack={() => setScreen('landing')}
-          onActivity={(a) => setScreen(`kids-${a}` as Screen)}
+        <LeaderboardScreen
+          onBack={handleBackToMenu}
         />
       );
-    case 'mini-colors':
-      return <ColorsActivity onBack={goBack} />;
-    case 'mini-animals':
-      return <AnimalsActivity onBack={goBack} />;
-    case 'mini-letters':
-      return <LettersActivity onBack={goBack} />;
-    case 'mini-numbers':
-      return <NumbersActivity onBack={goBack} />;
-    case 'kids-math':
-      return <MathActivity onBack={goBack} />;
-    case 'kids-portuguese':
-      return <PortugueseActivity onBack={goBack} />;
-    case 'kids-syllables':
-      return <SyllablesActivity onBack={goBack} />;
+
+    case 'multiplayer':
+      return (
+        <MultiplayerLobby
+          onBack={handleBackToMenu}
+          onStartGame={handleMultiplayerStartGame}
+          onLogin={handleLoginFromLobby}
+        />
+      );
+
+    case 'countrySelection':
+      return (
+        <CountrySelection
+          onBack={handleBackToMenu}
+          onSelect={handleCountrySelected}
+        />
+      );
+
+    case 'gameSetup':
+      return (
+        <GameSetup
+          onBack={handleBackToCountrySelection}
+          onStart={handleStartGame}
+        />
+      );
+
+    case 'game':
+      return <GameScreen onBack={handleBackToMenu} />;
+
+    case 'menu':
     default:
       return (
-        <LandingPage
-          onSelectMini={() => setScreen('mini-home')}
-          onSelectKids={() => setScreen('kids-home')}
+        <MainMenu
+          onPlayOnline={handlePlayOnline}
+          onTraining={handleTraining}
+          onSelectCountry={handleSelectCountry}
+          onSettings={handleSettings}
+          onLeaderboard={handleLeaderboard}
+          onProfile={handleProfile}
         />
       );
   }

@@ -2,58 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Bubblegum+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 20%;
+    /* Game Theme Colors */
+    --background: 222 47% 8%;
+    --foreground: 43 87% 94%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 20%;
+    --card: 222 40% 12%;
+    --card-foreground: 43 87% 94%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 20%;
+    --popover: 222 40% 10%;
+    --popover-foreground: 43 87% 94%;
 
-    --primary: 262 83% 58%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 43 74% 49%;
+    --primary-foreground: 222 47% 8%;
 
-    --secondary: 43 96% 56%;
-    --secondary-foreground: 222 47% 15%;
+    --secondary: 160 25% 25%;
+    --secondary-foreground: 43 87% 94%;
 
-    --muted: 210 40% 93%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 222 30% 18%;
+    --muted-foreground: 43 30% 60%;
 
-    --accent: 340 82% 52%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 25 70% 45%;
+    --accent-foreground: 43 87% 94%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 43 87% 94%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 262 83% 58%;
+    --border: 43 30% 25%;
+    --input: 222 30% 18%;
+    --ring: 43 74% 49%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;
 
-    /* Kids Colors */
-    --kids-red: 0 85% 60%;
-    --kids-orange: 25 95% 55%;
-    --kids-yellow: 43 96% 56%;
-    --kids-green: 142 71% 45%;
-    --kids-blue: 217 91% 60%;
-    --kids-purple: 262 83% 58%;
-    --kids-pink: 340 82% 62%;
-    --kids-cyan: 186 76% 50%;
+    /* Game Specific Colors */
+    --gold: 43 74% 49%;
+    --gold-light: 43 80% 65%;
+    --gold-dark: 43 70% 35%;
+    
+    --parchment: 39 40% 85%;
+    --parchment-dark: 35 30% 70%;
+    
+    --wood: 25 50% 30%;
+    --wood-light: 25 45% 45%;
+    
+    --stone: 220 10% 50%;
+    --stone-dark: 220 10% 35%;
+    
+    --forest: 140 35% 30%;
+    --forest-light: 140 40% 45%;
+    
+    --water: 200 60% 40%;
+    --water-light: 200 70% 55%;
+    
+    --terrain-grass: 100 40% 35%;
+    --terrain-sand: 40 50% 65%;
+    --terrain-snow: 210 20% 90%;
 
-    --sidebar-background: 262 83% 58%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 43 96% 56%;
-    --sidebar-primary-foreground: 222 47% 15%;
-    --sidebar-accent: 262 70% 50%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 262 60% 50%;
-    --sidebar-ring: 43 96% 56%;
+    /* Resource Colors */
+    --resource-wood: 25 60% 40%;
+    --resource-food: 120 50% 40%;
+    --resource-gold: 45 90% 50%;
+    --resource-stone: 220 15% 55%;
+
+    --sidebar-background: 222 40% 10%;
+    --sidebar-foreground: 43 87% 94%;
+    --sidebar-primary: 43 74% 49%;
+    --sidebar-primary-foreground: 222 47% 8%;
+    --sidebar-accent: 222 30% 18%;
+    --sidebar-accent-foreground: 43 87% 94%;
+    --sidebar-border: 43 30% 20%;
+    --sidebar-ring: 43 74% 49%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 43 87% 94%;
+    --card: 222 40% 12%;
+    --card-foreground: 43 87% 94%;
+    --popover: 222 40% 10%;
+    --popover-foreground: 43 87% 94%;
+    --primary: 43 74% 49%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 160 25% 25%;
+    --secondary-foreground: 43 87% 94%;
+    --muted: 222 30% 18%;
+    --muted-foreground: 43 30% 60%;
+    --accent: 25 70% 45%;
+    --accent-foreground: 43 87% 94%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 43 87% 94%;
+    --border: 43 30% 25%;
+    --input: 222 30% 18%;
+    --ring: 43 74% 49%;
   }
 }
 
@@ -64,78 +107,151 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Crimson Text', serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Bubblegum One', cursive;
+    font-family: 'Cinzel', serif;
   }
 }
 
 @layer components {
-  .kids-card {
-    @apply rounded-3xl border-4 p-6 transition-all duration-300 cursor-pointer;
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+  .game-title {
+    font-family: 'Cinzel', serif;
+    @apply text-primary tracking-wider;
+    text-shadow: 0 0 20px hsl(var(--gold) / 0.5),
+                 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 
-  .kids-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.15);
+  .game-button {
+    @apply relative overflow-hidden;
+    background: linear-gradient(180deg, 
+      hsl(var(--gold-light)) 0%, 
+      hsl(var(--gold)) 50%, 
+      hsl(var(--gold-dark)) 100%);
+    box-shadow: 
+      inset 0 1px 0 hsl(var(--gold-light) / 0.5),
+      inset 0 -2px 0 hsl(var(--gold-dark) / 0.5),
+      0 4px 12px rgba(0, 0, 0, 0.4);
+    @apply border-2 border-gold-dark/50 rounded-sm;
   }
 
-  .kids-card:active {
-    transform: scale(0.98);
+  .game-button:hover {
+    background: linear-gradient(180deg, 
+      hsl(var(--gold)) 0%, 
+      hsl(var(--gold-light)) 50%, 
+      hsl(var(--gold)) 100%);
   }
 
-  .activity-btn {
-    @apply rounded-2xl px-8 py-4 text-xl font-bold transition-all duration-200;
-    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  .game-panel {
+    background: linear-gradient(180deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--background)) 100%);
+    @apply border-2 rounded-lg;
+    border-color: hsl(var(--gold-dark) / 0.5);
+    box-shadow: 
+      inset 0 0 30px hsl(var(--gold) / 0.05),
+      0 8px 32px rgba(0, 0, 0, 0.5);
   }
 
-  .activity-btn:active {
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
-    transform: translateY(3px);
+  .resource-icon {
+    @apply w-6 h-6 rounded-sm flex items-center justify-center text-xs font-bold;
+  }
+
+  .resource-wood {
+    background: linear-gradient(135deg, hsl(var(--resource-wood)), hsl(var(--wood-light)));
+  }
+
+  .resource-food {
+    background: linear-gradient(135deg, hsl(var(--resource-food)), hsl(var(--forest-light)));
+  }
+
+  .resource-gold {
+    background: linear-gradient(135deg, hsl(var(--resource-gold)), hsl(var(--gold-light)));
+  }
+
+  .resource-stone {
+    background: linear-gradient(135deg, hsl(var(--resource-stone)), hsl(var(--stone)));
+  }
+
+  .minimap {
+    @apply rounded border-2;
+    border-color: hsl(var(--gold-dark));
+    background: linear-gradient(135deg, 
+      hsl(var(--terrain-grass) / 0.8),
+      hsl(var(--forest) / 0.6));
+  }
+
+  .flag-wave {
+    animation: wave 3s ease-in-out infinite;
+    transform-origin: left center;
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: skewY(0deg) rotateY(0deg); }
+    25% { transform: skewY(1deg) rotateY(2deg); }
+    75% { transform: skewY(-1deg) rotateY(-2deg); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--gold)) 0%,
+      hsl(var(--gold-light)) 50%,
+      hsl(var(--gold)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .float-animation {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px hsl(var(--gold) / 0.3); }
+    50% { box-shadow: 0 0 40px hsl(var(--gold) / 0.6); }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 }
 
 @layer utilities {
-  .text-kids-title {
-    font-family: 'Bubblegum One', cursive;
-    letter-spacing: 0.02em;
+  .text-shadow-game {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
-}
 
-@keyframes bounce-in {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
-}
+  .border-gold {
+    border-color: hsl(var(--gold));
+  }
 
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-8deg); }
-  75% { transform: rotate(8deg); }
-}
+  .border-gold-dark {
+    border-color: hsl(var(--gold-dark));
+  }
 
-@keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
+  .bg-gold {
+    background-color: hsl(var(--gold));
+  }
 
-@keyframes confetti-fall {
-  0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
+  .text-gold {
+    color: hsl(var(--gold));
+  }
 
-.animate-bounce-in {
-  animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-}
-
-.animate-wiggle {
-  animation: wiggle 0.5s ease-in-out;
-}
-
-.animate-pop {
-  animation: pop 0.3s ease-in-out;
+  .text-gold-light {
+    color: hsl(var(--gold-light));
+  }
 }

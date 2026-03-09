@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        nunito: ['Nunito', 'sans-serif'],
-        bubble: ['Bubblegum One', 'cursive'],
+        cinzel: ['Cinzel', 'serif'],
+        crimson: ['Crimson Text', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,15 +51,41 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        kids: {
-          red: "hsl(var(--kids-red))",
-          orange: "hsl(var(--kids-orange))",
-          yellow: "hsl(var(--kids-yellow))",
-          green: "hsl(var(--kids-green))",
-          blue: "hsl(var(--kids-blue))",
-          purple: "hsl(var(--kids-purple))",
-          pink: "hsl(var(--kids-pink))",
-          cyan: "hsl(var(--kids-cyan))",
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          light: "hsl(var(--gold-light))",
+          dark: "hsl(var(--gold-dark))",
+        },
+        parchment: {
+          DEFAULT: "hsl(var(--parchment))",
+          dark: "hsl(var(--parchment-dark))",
+        },
+        wood: {
+          DEFAULT: "hsl(var(--wood))",
+          light: "hsl(var(--wood-light))",
+        },
+        stone: {
+          DEFAULT: "hsl(var(--stone))",
+          dark: "hsl(var(--stone-dark))",
+        },
+        forest: {
+          DEFAULT: "hsl(var(--forest))",
+          light: "hsl(var(--forest-light))",
+        },
+        water: {
+          DEFAULT: "hsl(var(--water))",
+          light: "hsl(var(--water-light))",
+        },
+        resource: {
+          wood: "hsl(var(--resource-wood))",
+          food: "hsl(var(--resource-food))",
+          gold: "hsl(var(--resource-gold))",
+          stone: "hsl(var(--resource-stone))",
+        },
+        terrain: {
+          grass: "hsl(var(--terrain-grass))",
+          sand: "hsl(var(--terrain-sand))",
+          snow: "hsl(var(--terrain-snow))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -90,6 +116,10 @@ export default {
           from: { opacity: "0", transform: "translateY(10px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "slide-in-left": {
+          from: { opacity: "0", transform: "translateX(-20px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
         "scale-in": {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
@@ -99,6 +129,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
+        "slide-in-left": "slide-in-left 0.4s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
       },
     },
