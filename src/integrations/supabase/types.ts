@@ -14,47 +14,232 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achievement_key: string
+          child_id: string
+          id: string
+          unlocked_at: string | null
+        }
+        Insert: {
+          achievement_key: string
+          child_id: string
+          id?: string
+          unlocked_at?: string | null
+        }
+        Update: {
+          achievement_key?: string
+          child_id?: string
+          id?: string
+          unlocked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_progress: {
+        Row: {
+          best_streak: number | null
+          category: string
+          child_id: string
+          correct_count: number | null
+          created_at: string | null
+          id: string
+          last_played_at: string | null
+          stars_earned: number | null
+          streak: number | null
+          total_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          best_streak?: number | null
+          category: string
+          child_id: string
+          correct_count?: number | null
+          created_at?: string | null
+          id?: string
+          last_played_at?: string | null
+          stars_earned?: number | null
+          streak?: number | null
+          total_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          best_streak?: number | null
+          category?: string
+          child_id?: string
+          correct_count?: number | null
+          created_at?: string | null
+          id?: string
+          last_played_at?: string | null
+          stars_earned?: number | null
+          streak?: number | null
+          total_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      children: {
+        Row: {
+          age: number
+          age_group: string
+          avatar_accessories: Json | null
+          avatar_emoji: string
+          created_at: string | null
+          farm_items: Json | null
+          id: string
+          level: number | null
+          name: string
+          parent_id: string
+          total_stars: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: number
+          age_group?: string
+          avatar_accessories?: Json | null
+          avatar_emoji?: string
+          created_at?: string | null
+          farm_items?: Json | null
+          id?: string
+          level?: number | null
+          name: string
+          parent_id: string
+          total_stars?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number
+          age_group?: string
+          avatar_accessories?: Json | null
+          avatar_emoji?: string
+          created_at?: string | null
+          farm_items?: Json | null
+          id?: string
+          level?: number | null
+          name?: string
+          parent_id?: string
+          total_stars?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      daily_usage: {
+        Row: {
+          activities_completed: number | null
+          child_id: string
+          id: string
+          seconds_used: number | null
+          updated_at: string | null
+          usage_date: string
+        }
+        Insert: {
+          activities_completed?: number | null
+          child_id: string
+          id?: string
+          seconds_used?: number | null
+          updated_at?: string | null
+          usage_date?: string
+        }
+        Update: {
+          activities_completed?: number | null
+          child_id?: string
+          id?: string
+          seconds_used?: number | null
+          updated_at?: string | null
+          usage_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_usage_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
-          country_id: string | null
           created_at: string | null
-          games_played: number | null
           id: string
-          losses: number | null
-          rank_points: number | null
-          total_score: number | null
+          is_premium: boolean | null
+          parent_pin: string | null
+          premium_until: string | null
           updated_at: string | null
           username: string
-          wins: number | null
         }
         Insert: {
           avatar_url?: string | null
-          country_id?: string | null
           created_at?: string | null
-          games_played?: number | null
           id: string
-          losses?: number | null
-          rank_points?: number | null
-          total_score?: number | null
+          is_premium?: boolean | null
+          parent_pin?: string | null
+          premium_until?: string | null
           updated_at?: string | null
           username: string
-          wins?: number | null
         }
         Update: {
           avatar_url?: string | null
-          country_id?: string | null
           created_at?: string | null
-          games_played?: number | null
           id?: string
-          losses?: number | null
-          rank_points?: number | null
-          total_score?: number | null
+          is_premium?: boolean | null
+          parent_pin?: string | null
+          premium_until?: string | null
           updated_at?: string | null
           username?: string
-          wins?: number | null
         }
         Relationships: []
+      }
+      screen_time_settings: {
+        Row: {
+          break_duration_minutes: number | null
+          break_interval_minutes: number | null
+          child_id: string
+          created_at: string | null
+          daily_limit_minutes: number | null
+          id: string
+        }
+        Insert: {
+          break_duration_minutes?: number | null
+          break_interval_minutes?: number | null
+          child_id: string
+          created_at?: string | null
+          daily_limit_minutes?: number | null
+          id?: string
+        }
+        Update: {
+          break_duration_minutes?: number | null
+          break_interval_minutes?: number | null
+          child_id?: string
+          created_at?: string | null
+          daily_limit_minutes?: number | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screen_time_settings_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
