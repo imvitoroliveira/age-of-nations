@@ -158,6 +158,7 @@ export const CATEGORY_META: Record<Category, { title: string; emoji: string; col
   math: { title: 'Matemática', emoji: '🧮', color: 'border-kid-blue bg-kid-blue/10', description: 'Somar e subtrair!' },
   portuguese: { title: 'Português', emoji: '📝', color: 'border-kid-pink bg-kid-pink/10', description: 'Vogais e palavras!' },
   syllables: { title: 'Sílabas', emoji: '📖', color: 'border-kid-purple bg-kid-purple/10', description: 'Monte palavras!' },
+  drawing: { title: 'Desenhar', emoji: '✏️', color: 'border-kid-orange bg-kid-orange/10', description: 'Desenhe letras!' },
 };
 
 export function speak(text: string) {

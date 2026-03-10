@@ -14,6 +14,7 @@ const ShapesActivity = lazy(() => import('@/components/mini/ShapesActivity').the
 const MathActivity = lazy(() => import('@/components/kids/MathActivity').then(m => ({ default: m.MathActivity })));
 const SyllablesActivity = lazy(() => import('@/components/kids/SyllablesActivity').then(m => ({ default: m.SyllablesActivity })));
 const PortugueseActivity = lazy(() => import('@/components/kids/PortugueseActivity').then(m => ({ default: m.PortugueseActivity })));
+const DrawingActivity = lazy(() => import('@/components/kids/DrawingActivity').then(m => ({ default: m.DrawingActivity })));
 
 const activityMap: Record<string, React.LazyExoticComponent<React.ComponentType<{ onBack: () => void }>>> = {
   colors: ColorsActivity,
@@ -24,6 +25,7 @@ const activityMap: Record<string, React.LazyExoticComponent<React.ComponentType<
   math: MathActivity,
   syllables: SyllablesActivity,
   portuguese: PortugueseActivity,
+  drawing: DrawingActivity,
 };
 
 const LoadingFallback = () => (

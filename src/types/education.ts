@@ -1,6 +1,6 @@
 export type AgeGroup = 'mini' | 'kids';
 export type MiniCategory = 'colors' | 'animals' | 'letters' | 'numbers' | 'shapes';
-export type KidsCategory = 'math' | 'portuguese' | 'syllables';
+export type KidsCategory = 'math' | 'portuguese' | 'syllables' | 'drawing';
 export type Category = MiniCategory | KidsCategory;
 
 export interface ChildProfile {
