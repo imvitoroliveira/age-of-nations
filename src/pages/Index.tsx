@@ -7,6 +7,7 @@ import { FarmScreen } from '@/components/screens/FarmScreen';
 import { AchievementsScreen } from '@/components/screens/AchievementsScreen';
 import { ParentDashboard } from '@/components/screens/ParentDashboard';
 import { TimeUpScreen } from '@/components/screens/TimeUpScreen';
+import { PremiumScreen } from '@/components/screens/PremiumScreen';
 import { ColorsActivity } from '@/components/mini/ColorsActivity';
 import { AnimalsActivity } from '@/components/mini/AnimalsActivity';
 import { LettersActivity } from '@/components/mini/LettersActivity';
@@ -20,7 +21,7 @@ import { useScreenTimeStore } from '@/store/screenTimeStore';
 import { useAuth } from '@/hooks/useAuth';
 import { Category } from '@/types/education';
 
-type Screen = 'home' | 'addChild' | 'categories' | 'activity' | 'auth' | 'farm' | 'achievements' | 'parentDashboard' | 'timeUp';
+type Screen = 'home' | 'addChild' | 'categories' | 'activity' | 'auth' | 'farm' | 'achievements' | 'parentDashboard' | 'timeUp' | 'premium';
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>('home');
@@ -76,9 +77,11 @@ const Index = () => {
     case 'achievements':
       return <AchievementsScreen onBack={handleBackToCategories} />;
     case 'parentDashboard':
-      return <ParentDashboard onBack={() => setScreen('home')} />;
+      return <ParentDashboard onBack={() => setScreen('home')} onPremium={() => setScreen('premium')} />;
     case 'timeUp':
-      return <TimeUpScreen onGoHome={handleBackToHome} />;
+      return <TimeUpScreen onGoHome={handleBackToHome} onPremium={() => setScreen('premium')} />;
+    case 'premium':
+      return <PremiumScreen onBack={() => setScreen('home')} />;
     case 'activity':
       switch (activeCategory) {
         case 'colors': return <ColorsActivity onBack={handleBackToCategories} />;
@@ -100,6 +103,7 @@ const Index = () => {
           onSettings={() => setScreen('parentDashboard')}
           onLogin={() => setScreen('auth')}
           onParentDashboard={() => setScreen('parentDashboard')}
+          onPremium={() => setScreen('premium')}
         />
       );
   }
