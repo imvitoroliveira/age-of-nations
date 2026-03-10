@@ -18,6 +18,7 @@ import { SyllablesActivity } from '@/components/kids/SyllablesActivity';
 import { PortugueseActivity } from '@/components/kids/PortugueseActivity';
 import { useAppStore } from '@/store/appStore';
 import { useScreenTimeStore } from '@/store/screenTimeStore';
+import { useAnalyticsStore } from '@/store/analyticsStore';
 import { useAuth } from '@/hooks/useAuth';
 import { Category } from '@/types/education';
 
