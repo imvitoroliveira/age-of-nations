@@ -20,6 +20,7 @@ const categoryColors: Record<string, string> = {
   math: 'from-kid-blue/20 to-kid-teal/5 border-kid-blue/30',
   portuguese: 'from-kid-pink/20 to-kid-purple/5 border-kid-pink/30',
   syllables: 'from-kid-purple/20 to-kid-pink/5 border-kid-purple/30',
+  drawing: 'from-kid-orange/20 to-kid-yellow/5 border-kid-orange/30',
 };
 
 export const CategoryScreen = ({ onBack, onSelectCategory, onFarm, onAchievements }: Props) => {
@@ -29,7 +30,7 @@ export const CategoryScreen = ({ onBack, onSelectCategory, onFarm, onAchievement
 
   const categories: Category[] = child.age_group === 'mini'
     ? ['colors', 'animals', 'letters', 'numbers', 'shapes']
-    : ['math', 'portuguese', 'syllables'];
+    : ['math', 'portuguese', 'syllables', 'drawing'];
 
   const totalStars = getTotalStars();
 
