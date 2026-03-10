@@ -114,7 +114,22 @@ export const HomeScreen = ({ onSelectChild, onAddChild, onSettings, onLogin, onP
         )}
       </div>
 
-      <div className="text-center p-6 text-sm text-muted-foreground/60 font-semibold">
+      {/* Premium CTA */}
+      <div className="px-4 pb-2">
+        <button onClick={onPremium}
+          className="w-full bg-gradient-to-r from-kid-yellow/15 to-kid-orange/10 border-2 border-kid-yellow/30 rounded-2xl p-4 flex items-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-transform">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-kid-yellow to-kid-orange flex items-center justify-center flex-shrink-0">
+            <Crown size={20} className="text-primary-foreground" />
+          </div>
+          <div className="text-left flex-1">
+            <p className="font-bold text-sm text-foreground">Kidari Premium</p>
+            <p className="text-xs text-muted-foreground">Tempo ilimitado e mais atividades</p>
+          </div>
+          <span className="text-xs font-bold text-kid-yellow">Ver planos →</span>
+        </button>
+      </div>
+
+      <div className="text-center p-4 text-sm text-muted-foreground/60 font-semibold">
         Feito com ❤️ para pequenos aprendizes
       </div>
     </div>
