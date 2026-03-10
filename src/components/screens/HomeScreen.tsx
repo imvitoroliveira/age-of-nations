@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store/appStore';
 import { useScreenTimeStore } from '@/store/screenTimeStore';
-import { Star, Settings, Plus, LogIn, User, Clock, Sparkles } from 'lucide-react';
+import { Star, Settings, Plus, LogIn, User, Clock, Sparkles, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -10,9 +10,10 @@ interface Props {
   onSettings: () => void;
   onLogin: () => void;
   onParentDashboard: () => void;
+  onPremium: () => void;
 }
 
-export const HomeScreen = ({ onSelectChild, onAddChild, onSettings, onLogin, onParentDashboard }: Props) => {
+export const HomeScreen = ({ onSelectChild, onAddChild, onSettings, onLogin, onParentDashboard, onPremium }: Props) => {
   const { children } = useAppStore();
   const { user } = useAuth();
   const { getUsedPercent, getRemainingSeconds, dailyLimitMinutes } = useScreenTimeStore();

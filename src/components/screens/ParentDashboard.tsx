@@ -7,9 +7,9 @@ import { useScreenTimeStore } from '@/store/screenTimeStore';
 import { CATEGORY_META } from '@/data/educationData';
 import { toast } from 'sonner';
 
-interface Props { onBack: () => void; }
+interface Props { onBack: () => void; onPremium?: () => void; }
 
-export const ParentDashboard = ({ onBack }: Props) => {
+export const ParentDashboard = ({ onBack, onPremium }: Props) => {
   const { parentPin, setParentPin, verifyPin, children, removeChild, progress } = useAppStore();
   const { dailyLimitMinutes, setDailyLimit, totalSecondsToday } = useScreenTimeStore();
   const [pinInput, setPinInput] = useState('');
