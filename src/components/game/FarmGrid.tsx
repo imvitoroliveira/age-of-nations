@@ -64,11 +64,11 @@ export const FarmGrid = () => {
 
   return (
     <div className="relative">
-      {/* Path borders between tiles */}
+      {/* Grid with path borders */}
       <div className="grid"
         style={{
-          gridTemplateColumns: `repeat(${GRID_COLS}, clamp(40px, 5vw, 64px))`,
-          gridTemplateRows: `repeat(${GRID_ROWS}, clamp(40px, 5vw, 64px))`,
+          gridTemplateColumns: `repeat(${GRID_COLS}, 72px)`,
+          gridTemplateRows: `repeat(${GRID_ROWS}, 72px)`,
           gap: '3px',
           background: '#8D6E63',
           padding: '3px',
@@ -77,11 +77,6 @@ export const FarmGrid = () => {
           <Tile key={i} tile={tile} index={i} onTileClick={handleTileClick} tick={tick} />
         ))}
       </div>
-
-      {/* Path intersection dots */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" style={{ opacity: 0.3 }}>
-        {/* Render dots at grid intersections would be here, but CSS gap handles the paths */}
-      </svg>
 
       {/* Unlock confirm modal */}
       {confirmUnlock && (

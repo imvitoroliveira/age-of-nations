@@ -9,8 +9,8 @@ interface Props {
 }
 
 export const Animal = ({ animal, onClick, containerWidth, containerHeight }: Props) => {
-  const xPercent = (animal.x / 700) * 100;
-  const yPercent = (animal.y / 120) * 100;
+  const xPercent = (animal.x / containerWidth) * 100;
+  const yPercent = (animal.y / containerHeight) * 100;
 
   return (
     <button
@@ -23,7 +23,7 @@ export const Animal = ({ animal, onClick, containerWidth, containerHeight }: Pro
     >
       <AnimalSVG
         animalId={animal.defId}
-        size={Math.min(48, 40)}
+        size={animal.defId === 'cow' ? 56 : animal.defId === 'chicken' ? 34 : 44}
         facingLeft={animal.facingLeft}
         isWalking={animal.state === 'walking'}
       />

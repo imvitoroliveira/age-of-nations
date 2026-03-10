@@ -33,7 +33,6 @@ export const HUD = ({ onBack }: Props) => {
   const inventory = useGameStore(s => s.inventory);
   const { day, getTimeLabel, isNight } = useDayCycle();
 
-  const totalTiles = GRID_COLS * GRID_ROWS;
   const totalInvItems = Object.values(inventory).reduce((a, b) => a + b, 0);
 
   return (

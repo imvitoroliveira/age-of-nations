@@ -24,40 +24,45 @@ export const Pasture = () => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden rounded-b-2xl"
+    <div className="relative w-full overflow-hidden"
       style={{
-        height: '120px',
-        background: 'linear-gradient(180deg, #66BB6A, #4CAF50, #388E3C)',
+        height: '130px',
+        background: 'linear-gradient(180deg, #5BBD2E, #4CAF50)',
       }}>
-      {/* Grass texture */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" opacity={0.08}>
-        <defs>
-          <pattern id="pastureGrass" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M5 18 Q4 12 6 8" stroke="#2E7D32" strokeWidth="1" fill="none" />
-            <path d="M15 18 Q14 14 16 10" stroke="#388E3C" strokeWidth="1" fill="none" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#pastureGrass)" />
+
+      {/* Wavy grass tuft border at top */}
+      <svg className="absolute top-[-8px] left-0 right-0 w-full pointer-events-none z-[1]" viewBox="0 0 680 16" preserveAspectRatio="none" style={{ height: '16px' }}>
+        <path d="M0,16 Q10,4 20,12 Q30,2 40,12 Q50,4 60,12 Q70,2 80,12 Q90,4 100,12 Q110,2 120,12 Q130,4 140,12 Q150,2 160,12 Q170,4 180,12 Q190,2 200,12 Q210,4 220,12 Q230,2 240,12 Q250,4 260,12 Q270,2 280,12 Q290,4 300,12 Q310,2 320,12 Q330,4 340,12 Q350,2 360,12 Q370,4 380,12 Q390,2 400,12 Q410,4 420,12 Q430,2 440,12 Q450,4 460,12 Q470,2 480,12 Q490,4 500,12 Q510,2 520,12 Q530,4 540,12 Q550,2 560,12 Q570,4 580,12 Q590,2 600,12 Q610,4 620,12 Q630,2 640,12 Q650,4 660,12 Q670,2 680,12 V16 H0 Z" fill="#5BBD2E" />
       </svg>
 
-      {/* Fence at top */}
-      <div className="absolute top-0 left-0 right-0 flex pointer-events-none z-10" style={{ height: '16px' }}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} style={{ flex: 1, maxWidth: '64px' }}>
-            <FenceSegment width={64} />
-          </div>
-        ))}
-      </div>
+      {/* Grass texture */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" opacity={0.1}>
+        <defs>
+          <pattern id="pastureGrass2" width="24" height="24" patternUnits="userSpaceOnUse">
+            <path d="M6 20 Q5 14 7 10" stroke="#2E7D32" strokeWidth="1" fill="none" />
+            <path d="M18 20 Q17 16 19 12" stroke="#388E3C" strokeWidth="1" fill="none" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pastureGrass2)" />
+      </svg>
 
-      {/* Subtle horizontal lines */}
-      {[0, 1, 2].map(i => (
-        <div key={i} className="absolute w-full"
-          style={{ top: `${35 + i * 25}%`, height: '1px', background: 'rgba(0,0,0,0.06)' }} />
-      ))}
+      {/* Fence at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-[2]" style={{ height: '20px' }}>
+        {/* Horizontal brown planks */}
+        <div className="absolute bottom-8 left-0 right-0 h-[3px] bg-[#8D6E63]" />
+        <div className="absolute bottom-4 left-0 right-0 h-[3px] bg-[#795548]" />
+        {/* Vertical posts */}
+        <div className="flex justify-between px-2">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <div key={i} className="w-[6px] h-[20px] rounded-t-sm"
+              style={{ background: 'linear-gradient(180deg, #A1887F, #8D6E63)', boxShadow: '1px 1px 2px rgba(0,0,0,0.2)' }} />
+          ))}
+        </div>
+      </div>
 
       {/* Animals */}
       {animals.map(animal => (
-        <Animal key={animal.id} animal={animal} onClick={() => handleAnimalClick(animal.id)} containerWidth={700} containerHeight={120} />
+        <Animal key={animal.id} animal={animal} onClick={() => handleAnimalClick(animal.id)} containerWidth={680} containerHeight={130} />
       ))}
 
       {/* Floating produce collectibles */}
@@ -66,7 +71,7 @@ export const Pasture = () => {
           <motion.button
             key={fp.id}
             className="absolute z-30 cursor-pointer"
-            style={{ left: `${(fp.x / 700) * 100}%`, top: '20px' }}
+            style={{ left: `${(fp.x / 680) * 100}%`, top: '25px' }}
             initial={{ scale: 0, opacity: 0, y: 20 }}
             animate={{ scale: [0, 1.3, 1], opacity: 1, y: [20, -10, 0] }}
             exit={{ scale: 0, opacity: 0 }}
