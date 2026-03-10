@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { FarmScreen } from '@/components/screens/FarmScreen';
+import { FarmGame } from '@/components/game/FarmGame';
 
 const FarmPage = () => {
   const navigate = useNavigate();
-  return <FarmScreen onBack={() => navigate('/categories')} />;
+  return <FarmGame onBack={() => navigate('/categories')} />;
 };
 
 export default FarmPage;
