@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChildProfile, ActivityProgress, Category, AgeGroup } from '@/types/education';
 import { AVATAR_EMOJIS } from '@/data/educationData';
+import { useAnalyticsStore } from '@/store/analyticsStore';
 
 interface AppState {
   // Local children (works without auth)
@@ -113,6 +114,9 @@ export const useAppStore = create<AppState>()(
         );
 
         set({ progress: newProgress, children });
+
+        // Track in analytics
+        useAnalyticsStore.getState().trackEvent(childId, category, correct);
       },
 
       getProgress: (childId, category) => {

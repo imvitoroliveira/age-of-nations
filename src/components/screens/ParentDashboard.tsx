@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp, Crown } from 'lucide-react';
+import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp, Crown, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/store/appStore';
 import { useScreenTimeStore } from '@/store/screenTimeStore';
 import { CATEGORY_META } from '@/data/educationData';
+import { AnalyticsDashboard } from '@/components/screens/AnalyticsDashboard';
 import { toast } from 'sonner';
 
 interface Props { onBack: () => void; onPremium?: () => void; }
@@ -17,6 +18,7 @@ export const ParentDashboard = ({ onBack, onPremium }: Props) => {
   const [settingPin, setSettingPin] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [newLimit, setNewLimit] = useState(dailyLimitMinutes);
+  const [expandedChild, setExpandedChild] = useState<string | null>(null);
 
   if (!authenticated && parentPin) {
     return (
@@ -103,13 +105,13 @@ export const ParentDashboard = ({ onBack, onPremium }: Props) => {
           )}
         </div>
 
-        {/* Children Progress */}
+        {/* Children Progress + Analytics */}
         <div className="bg-card rounded-[1.5rem] p-5 shadow-md border border-border/50 slide-up stagger-3" style={{ animationFillMode: 'both' }}>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-9 h-9 rounded-full bg-kid-green/15 flex items-center justify-center">
               <TrendingUp size={18} className="text-kid-green" />
             </div>
-            <h3 className="text-lg font-bold font-baloo text-foreground">Progresso dos Filhos</h3>
+            <h3 className="text-lg font-bold font-baloo text-foreground">Progresso e Analytics</h3>
           </div>
           {children.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">Nenhuma criança cadastrada</p>
@@ -120,48 +122,71 @@ export const ParentDashboard = ({ onBack, onPremium }: Props) => {
                 const totalCorrect = Object.values(cp).reduce((sum, p) => sum + (p.correct_count || 0), 0);
                 const totalAttempts = Object.values(cp).reduce((sum, p) => sum + (p.total_count || 0), 0);
                 const accuracy = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+                const isExpanded = expandedChild === child.id;
 
                 return (
-                  <div key={child.id} className="p-4 bg-muted/20 rounded-2xl border border-border/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-3xl">{child.avatar_emoji}</span>
-                        <div>
-                          <p className="font-bold text-foreground">{child.name}</p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
-                            <span>Nível {child.level}</span>
-                            <span>•</span>
-                            <span>{child.total_stars} ⭐</span>
-                            <span>•</span>
-                            <span className={accuracy >= 70 ? 'text-kid-green' : 'text-kid-orange'}>{accuracy}% acerto</span>
+                  <div key={child.id} className="bg-muted/20 rounded-2xl border border-border/30 overflow-hidden">
+                    {/* Child header */}
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-3xl">{child.avatar_emoji}</span>
+                          <div>
+                            <p className="font-bold text-foreground">{child.name}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
+                              <span>Nível {child.level}</span>
+                              <span>•</span>
+                              <span>{child.total_stars} ⭐</span>
+                              <span>•</span>
+                              <span className={accuracy >= 70 ? 'text-kid-green' : 'text-kid-orange'}>{accuracy}% acerto</span>
+                            </div>
                           </div>
                         </div>
+                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-destructive/10" onClick={() => {
+                          if (confirm(`Remover ${child.name}?`)) { removeChild(child.id); toast.info('Removido'); }
+                        }}><Trash2 size={16} className="text-destructive/60" /></Button>
                       </div>
-                      <Button variant="ghost" size="icon" className="rounded-full hover:bg-destructive/10" onClick={() => {
-                        if (confirm(`Remover ${child.name}?`)) { removeChild(child.id); toast.info('Removido'); }
-                      }}><Trash2 size={16} className="text-destructive/60" /></Button>
-                    </div>
-                    <div className="space-y-1.5">
-                      {Object.entries(cp).map(([cat, p]) => {
-                        const meta = CATEGORY_META[cat as keyof typeof CATEGORY_META];
-                        if (!meta) return null;
-                        const catAccuracy = p.total_count > 0 ? Math.round((p.correct_count / p.total_count) * 100) : 0;
-                        return (
-                          <div key={cat} className="flex items-center gap-2 text-sm">
-                            <span className="text-base">{meta.emoji}</span>
-                            <span className="flex-1 font-semibold text-foreground">{meta.title}</span>
-                            <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full rounded-full progress-fill" style={{ width: `${catAccuracy}%` }} />
+
+                      {/* Category progress bars */}
+                      <div className="space-y-1.5">
+                        {Object.entries(cp).map(([cat, p]) => {
+                          const meta = CATEGORY_META[cat as keyof typeof CATEGORY_META];
+                          if (!meta) return null;
+                          const catAccuracy = p.total_count > 0 ? Math.round((p.correct_count / p.total_count) * 100) : 0;
+                          return (
+                            <div key={cat} className="flex items-center gap-2 text-sm">
+                              <span className="text-base">{meta.emoji}</span>
+                              <span className="flex-1 font-semibold text-foreground">{meta.title}</span>
+                              <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full rounded-full progress-fill" style={{ width: `${catAccuracy}%` }} />
+                              </div>
+                              <span className="font-bold text-xs w-8 text-right text-muted-foreground">{catAccuracy}%</span>
+                              <span className="text-kid-yellow text-xs font-bold">⭐{p.stars_earned}</span>
                             </div>
-                            <span className="font-bold text-xs w-8 text-right text-muted-foreground">{catAccuracy}%</span>
-                            <span className="text-kid-yellow text-xs font-bold">⭐{p.stars_earned}</span>
-                          </div>
-                        );
-                      })}
-                      {Object.keys(cp).length === 0 && (
-                        <p className="text-xs text-muted-foreground text-center py-2">Ainda não jogou nenhuma atividade</p>
-                      )}
+                          );
+                        })}
+                        {Object.keys(cp).length === 0 && (
+                          <p className="text-xs text-muted-foreground text-center py-2">Ainda não jogou nenhuma atividade</p>
+                        )}
+                      </div>
+
+                      {/* Toggle analytics */}
+                      <button
+                        onClick={() => setExpandedChild(isExpanded ? null : child.id)}
+                        className="w-full mt-3 flex items-center justify-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors py-1.5"
+                      >
+                        <BarChart3 size={14} />
+                        {isExpanded ? 'Ocultar gráficos' : 'Ver gráficos detalhados'}
+                        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
                     </div>
+
+                    {/* Expanded analytics */}
+                    {isExpanded && (
+                      <div className="border-t border-border/30 p-4 bg-card/50">
+                        <AnalyticsDashboard childId={child.id} childName={child.name} />
+                      </div>
+                    )}
                   </div>
                 );
               })}

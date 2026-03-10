@@ -18,6 +18,7 @@ import { SyllablesActivity } from '@/components/kids/SyllablesActivity';
 import { PortugueseActivity } from '@/components/kids/PortugueseActivity';
 import { useAppStore } from '@/store/appStore';
 import { useScreenTimeStore } from '@/store/screenTimeStore';
+import { useAnalyticsStore } from '@/store/analyticsStore';
 import { useAuth } from '@/hooks/useAuth';
 import { Category } from '@/types/education';
 
@@ -26,9 +27,10 @@ type Screen = 'home' | 'addChild' | 'categories' | 'activity' | 'auth' | 'farm' 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>('home');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const { setActiveChild } = useAppStore();
+  const { setActiveChild, activeChildId } = useAppStore();
   const { user } = useAuth();
-  const { startSession, tick, isTimeUp, resetIfNewDay } = useScreenTimeStore();
+  const { startSession, tick, isTimeUp, resetIfNewDay, totalSecondsToday } = useScreenTimeStore();
+  const { trackScreenTime } = useAnalyticsStore();
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Screen time ticker
@@ -38,6 +40,10 @@ const Index = () => {
       startSession();
       timerRef.current = setInterval(() => {
         tick();
+        // Track screen time in analytics
+        if (activeChildId) {
+          trackScreenTime(activeChildId, useScreenTimeStore.getState().totalSecondsToday);
+        }
         if (isTimeUp()) {
           setScreen('timeUp');
         }
