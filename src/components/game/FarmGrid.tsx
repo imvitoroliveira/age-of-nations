@@ -2,10 +2,9 @@ import { useGameStore } from '@/store/gameStore';
 import { Tile } from './Tile';
 import { Animal } from './Animal';
 import { useCrops } from '@/hooks/useCrops';
-import { CROPS } from '@/data/crops';
 import { ANIMAL_DEFS } from '@/data/animals';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const GRID_COLS = 8;
 const GRID_ROWS = 6;
@@ -14,12 +13,18 @@ export const FarmGrid = () => {
   const { grid, animals, activeTool, selectedCrop, setTile, addNotification } = useGameStore();
   const { plantCrop, harvestCrop, waterAll } = useCrops();
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
+  
+  // Tick counter to force Tile re-renders for real-time progress bars
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 200);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleTileClick = (index: number) => {
     const tile = grid[index];
 
     if (tile.type === 'deco') {
-      // Well interaction
       if (tile.decoEmoji === '💧') {
         waterAll();
       }
@@ -70,7 +75,7 @@ export const FarmGrid = () => {
       <div className="absolute inset-0 grid gap-px"
         style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`, gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)` }}>
         {grid.map((tile, i) => (
-          <Tile key={i} tile={tile} index={i} onTileClick={handleTileClick} />
+          <Tile key={i} tile={tile} index={i} onTileClick={handleTileClick} tick={tick} />
         ))}
       </div>
 

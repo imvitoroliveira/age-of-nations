@@ -15,17 +15,16 @@ export const FarmGame = ({ onBack }: Props) => {
   const { isNight, getSkyGradient, timeOfDay } = useDayCycle();
   const { updateAnimalPositions } = useAnimals();
   const weather = useGameStore(s => s.weather);
+  const selectedCrop = useGameStore(s => s.selectedCrop);
   const tickRef = useRef(0);
 
   const onTick = useCallback((delta: number) => {
     tickRef.current += delta;
-    // Update animals every frame
     updateAnimalPositions(delta);
   }, [updateAnimalPositions]);
 
   useGameLoop(onTick);
 
-  // Sun/moon position along arc
   const celestialX = timeOfDay * 100;
   const celestialY = Math.sin(timeOfDay * Math.PI) * -40 + 20;
 
@@ -63,7 +62,6 @@ export const FarmGame = ({ onBack }: Props) => {
       {/* Night overlay */}
       {isNight && (
         <div className="absolute inset-0 bg-[rgba(0,0,20,0.45)] pointer-events-none z-[3] transition-opacity duration-[3000ms]">
-          {/* Stars */}
           {Array.from({ length: 10 }).map((_, i) => (
             <motion.div
               key={i}
@@ -76,7 +74,7 @@ export const FarmGame = ({ onBack }: Props) => {
         </div>
       )}
 
-      {/* Rain overlay */}
+      {/* Rain */}
       {weather === 'rainy' && !isNight && (
         <div className="absolute inset-0 pointer-events-none z-[3] overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
@@ -85,13 +83,13 @@ export const FarmGame = ({ onBack }: Props) => {
               className="absolute w-px bg-blue-300/40"
               style={{ left: `${i * 5}%`, height: '20px' }}
               animate={{ y: ['-10%', '110%'] }}
-              transition={{ repeat: Infinity, duration: 0.6 + Math.random() * 0.4, delay: Math.random() * 0.5 }}
+              transition={{ repeat: Infinity, duration: 0.6 + i * 0.02, delay: i * 0.03 }}
             />
           ))}
         </div>
       )}
 
-      {/* Hills silhouette */}
+      {/* Hills */}
       <div className="absolute z-[1] pointer-events-none" style={{ bottom: '55%', left: 0, right: 0 }}>
         <svg viewBox="0 0 1200 120" className="w-full" preserveAspectRatio="none" style={{ height: '60px' }}>
           <path d="M0,60 Q150,10 300,50 T600,30 T900,55 T1200,40 V120 H0 Z" fill="#4a8a2e" opacity="0.6" />
@@ -100,7 +98,6 @@ export const FarmGame = ({ onBack }: Props) => {
 
       {/* Ground */}
       <div className="absolute bottom-0 left-0 right-0 h-[55%] z-[1]" style={{ background: '#5a9e3a' }}>
-        {/* Grass edge */}
         <svg viewBox="0 0 1200 30" className="absolute -top-4 w-full" preserveAspectRatio="none" style={{ height: '20px' }}>
           <path d="M0,20 Q100,5 200,18 T400,10 T600,20 T800,8 T1000,18 T1200,15 V30 H0 Z" fill="#4ea832" />
         </svg>
@@ -109,8 +106,6 @@ export const FarmGame = ({ onBack }: Props) => {
       {/* Content */}
       <div className="relative z-10 flex flex-col flex-1">
         <HUD onBack={onBack} />
-
-        {/* Farm grid area */}
         <div className="flex-1 flex items-center justify-center p-2 md:p-4">
           <div className="w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl"
             style={{ border: '4px solid #7a5c2e' }}>
@@ -119,7 +114,7 @@ export const FarmGame = ({ onBack }: Props) => {
         </div>
 
         {/* Selected crop indicator */}
-        {useGameStore.getState().selectedCrop && (
+        {selectedCrop && (
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
