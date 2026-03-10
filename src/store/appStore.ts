@@ -114,6 +114,9 @@ export const useAppStore = create<AppState>()(
         );
 
         set({ progress: newProgress, children });
+
+        // Track in analytics
+        useAnalyticsStore.getState().trackEvent(childId, category, correct);
       },
 
       getProgress: (childId, category) => {
