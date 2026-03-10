@@ -1,4 +1,4 @@
-import { useGameStore, GRID_COLS, GRID_ROWS } from '@/store/gameStore';
+import { useGameStore } from '@/store/gameStore';
 import { useDayCycle } from '@/hooks/useDayCycle';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -33,7 +33,6 @@ export const HUD = ({ onBack }: Props) => {
   const inventory = useGameStore(s => s.inventory);
   const { day, getTimeLabel, isNight } = useDayCycle();
 
-  const totalTiles = GRID_COLS * GRID_ROWS;
   const totalInvItems = Object.values(inventory).reduce((a, b) => a + b, 0);
 
   return (
@@ -70,7 +69,7 @@ export const HUD = ({ onBack }: Props) => {
 
         <span className="relative text-white/60 text-[10px] z-10"
           style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}>
-          🏡 {ownedTiles.length}/{totalTiles}
+          🏡 {ownedTiles.length} tiles
         </span>
 
         <div className="relative flex items-center z-10">

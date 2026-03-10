@@ -3,8 +3,8 @@ import { useGameStore } from '@/store/gameStore';
 import { ANIMAL_DEFS } from '@/data/animals';
 import { AnimalState } from '@/types/game';
 
-const PASTURE_W = 700;
-const PASTURE_H = 120;
+const PASTURE_W = 680;
+const PASTURE_H = 130;
 const MAX_ANIMALS = 8;
 
 export function useAnimals() {
@@ -23,9 +23,9 @@ export function useAnimals() {
       id: crypto.randomUUID(),
       defId,
       x: 50 + Math.random() * (PASTURE_W - 100),
-      y: 20 + Math.random() * (PASTURE_H - 40),
+      y: 20 + Math.random() * (PASTURE_H - 50),
       targetX: 100 + Math.random() * (PASTURE_W - 200),
-      targetY: 20 + Math.random() * 60,
+      targetY: 20 + Math.random() * 70,
       state: 'idle',
       lastProduce: Date.now(),
       nextMoveAt: Date.now() + 2000,
@@ -51,7 +51,7 @@ export function useAnimals() {
 
       let { x, y, targetX, targetY, state, nextMoveAt, facingLeft, lastProduce } = animal;
 
-      // Check produce → floating produce
+      // Check produce
       if (now - lastProduce >= def.produceEvery) {
         store.addFloatingProduce({
           id: crypto.randomUUID(),
@@ -65,10 +65,10 @@ export function useAnimals() {
         lastProduce = now;
       }
 
-      // Movement within pasture
+      // Movement
       if (now >= nextMoveAt && state === 'idle') {
-        targetX = Math.max(20, Math.min(PASTURE_W - 40, 50 + Math.random() * (PASTURE_W - 100)));
-        targetY = Math.max(10, Math.min(PASTURE_H - 30, 10 + Math.random() * 80));
+        targetX = Math.max(20, Math.min(PASTURE_W - 60, 50 + Math.random() * (PASTURE_W - 100)));
+        targetY = Math.max(15, Math.min(PASTURE_H - 40, 15 + Math.random() * 80));
         state = 'walking';
       }
 
@@ -100,18 +100,14 @@ export function useAnimals() {
         }
       }
 
-      x = Math.max(10, Math.min(PASTURE_W - 20, x));
-      y = Math.max(10, Math.min(PASTURE_H - 20, y));
+      x = Math.max(10, Math.min(PASTURE_W - 30, x));
+      y = Math.max(15, Math.min(PASTURE_H - 30, y));
 
       return { ...animal, x, y, targetX, targetY, state, nextMoveAt, facingLeft, lastProduce };
     });
 
     // Clean expired floating produce (30s)
-    const fp = store.floatingProduce.filter(f => now - f.createdAt < 30000);
-    if (fp.length !== store.floatingProduce.length) {
-      // remove expired silently
-      store.floatingProduce.filter(f => now - f.createdAt >= 30000).forEach(f => store.removeFloatingProduce(f.id));
-    }
+    store.floatingProduce.filter(f => now - f.createdAt >= 30000).forEach(f => store.removeFloatingProduce(f.id));
 
     store.setAnimals(updated);
   }, []);
