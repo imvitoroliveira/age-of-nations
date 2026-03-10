@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,63 +37,67 @@ export const AuthScreen = ({ onBack, onSuccess }: Props) => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="flex items-center p-4 gap-2">
-        <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
-          <ArrowLeft size={28} />
+    <div className="min-h-screen bg-background flex flex-col pattern-circles">
+      <div className="flex items-center p-4">
+        <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-primary/10">
+          <ArrowLeft size={24} />
         </Button>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-6 max-w-md mx-auto w-full">
-        <h1 className="text-4xl font-extrabold font-baloo text-primary mb-2">
-          {isLogin ? '👋 Olá!' : '✨ Criar Conta'}
-        </h1>
-        <p className="text-muted-foreground mb-8">
+        <div className="relative mb-2">
+          <h1 className="text-4xl font-extrabold font-baloo hero-gradient-text bounce-in">
+            {isLogin ? 'Olá!' : 'Criar Conta'}
+          </h1>
+          <Sparkles size={20} className="absolute -top-1 -right-5 text-kid-yellow pulse-glow" />
+        </div>
+        <p className="text-muted-foreground mb-8 font-semibold">
           {isLogin ? 'Entre na sua conta' : 'Área dos pais e responsáveis'}
         </p>
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           {!isLogin && (
-            <div className="relative">
-              <User size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative slide-up">
+              <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 placeholder="Seu nome"
-                className="pl-10 h-14 rounded-2xl text-lg"
+                className="pl-11 h-14 rounded-2xl text-lg border-2 border-border/50 focus:border-primary"
                 required
               />
             </div>
           )}
-          <div className="relative">
-            <Mail size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative slide-up stagger-1" style={{ animationFillMode: 'both' }}>
+            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="E-mail"
-              className="pl-10 h-14 rounded-2xl text-lg"
+              className="pl-11 h-14 rounded-2xl text-lg border-2 border-border/50 focus:border-primary"
               required
             />
           </div>
-          <div className="relative">
-            <Lock size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <div className="relative slide-up stagger-2" style={{ animationFillMode: 'both' }}>
+            <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Senha"
-              className="pl-10 h-14 rounded-2xl text-lg"
+              className="pl-11 h-14 rounded-2xl text-lg border-2 border-border/50 focus:border-primary"
               minLength={6}
               required
             />
           </div>
-          <button type="submit" disabled={loading} className="kid-btn bg-primary text-primary-foreground w-full text-xl">
+          <button type="submit" disabled={loading}
+            className="kid-btn-gradient w-full text-xl slide-up stagger-3" style={{ animationFillMode: 'both' }}>
             {loading ? 'Aguarde...' : isLogin ? 'Entrar' : 'Criar Conta'}
           </button>
         </form>
 
-        <button onClick={() => setIsLogin(!isLogin)} className="mt-6 text-primary font-bold">
+        <button onClick={() => setIsLogin(!isLogin)} className="mt-6 text-primary font-bold hover:underline transition-all">
           {isLogin ? 'Não tem conta? Criar uma' : 'Já tem conta? Entrar'}
         </button>
       </div>
