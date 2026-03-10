@@ -77,6 +77,7 @@ export const FarmScreen = ({ onBack }: Props) => {
       return;
     }
     if (buyFarmItem(itemKey, cost)) {
+      playBuy();
       toast.success(`${name} comprado(a)! Agora coloque no mapa! 🎉`);
       setSelectedItem(itemKey);
       setMode('map');
