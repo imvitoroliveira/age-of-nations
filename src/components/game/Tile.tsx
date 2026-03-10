@@ -1,50 +1,78 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TileState } from '@/types/game';
 import { CROPS } from '@/data/crops';
+import { useGameStore, getExpansionCost, GRID_COLS } from '@/store/gameStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
   tile: TileState;
   index: number;
   onTileClick: (index: number) => void;
-  tick: number; // external tick to force progress re-calc
+  tick: number;
 }
 
 export const Tile = ({ tile, index, onTileClick, tick }: Props) => {
   const [harvesting, setHarvesting] = useState(false);
+  const [ripple, setRipple] = useState(false);
+  const weather = useGameStore(s => s.weather);
+  const timeOfDay = useGameStore(s => s.timeOfDay);
   const crop = tile.cropKey ? CROPS[tile.cropKey] : null;
 
-  // Compute progress live
+  const isNight = timeOfDay >= 0.75;
   let progress = 0;
   let stage = 0;
   if (tile.type === 'planted' && crop && tile.plantedAt) {
-    progress = Math.min(1, (Date.now() - tile.plantedAt) / crop.growTime);
+    let effectiveGrowTime = crop.growTime;
+    if (weather === 'rainy' && !isNight) effectiveGrowTime /= 2;
+    // Pause at night: don't count night time
+    progress = Math.min(1, (Date.now() - tile.plantedAt) / effectiveGrowTime);
     stage = progress < 0.4 ? 0 : progress < 0.9 ? 1 : 2;
   }
   const isReady = tile.type === 'planted' && progress >= 1;
 
   const handleClick = () => {
+    setRipple(true);
+    setTimeout(() => setRipple(false), 400);
     if (isReady) {
       setHarvesting(true);
-      setTimeout(() => {
-        setHarvesting(false);
-        onTileClick(index);
-      }, 400);
+      setTimeout(() => { setHarvesting(false); onTileClick(index); }, 400);
     } else {
       onTileClick(index);
     }
   };
 
+  // Locked tile
+  if (tile.type === 'locked') {
+    const col = index % GRID_COLS;
+    const row = Math.floor(index / GRID_COLS);
+    const cost = getExpansionCost(col, row);
+    return (
+      <button
+        onClick={handleClick}
+        className="relative flex items-center justify-center cursor-pointer group"
+        style={{ background: 'rgba(90, 120, 60, 0.4)' }}
+        title={`🪙 ${cost} para desbloquear`}
+      >
+        <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors" />
+        <span className="relative text-sm opacity-70 group-hover:opacity-100 transition-opacity">🔒</span>
+        <span className="absolute bottom-0 text-[6px] text-yellow-300/0 group-hover:text-yellow-300/90 transition-colors"
+          style={{ fontFamily: "'Press Start 2P', monospace" }}>
+          {cost}🪙
+        </span>
+        <div className="absolute inset-0 border-2 border-transparent group-hover:border-yellow-400/50 transition-colors pointer-events-none" />
+      </button>
+    );
+  }
+
   if (tile.type === 'deco') {
+    const isBarn = tile.decoEmoji === '🏠';
     return (
       <div className="relative flex items-center justify-center select-none cursor-default"
         onClick={() => onTileClick(index)}
-        style={{
-          background: 'radial-gradient(circle, hsl(120 40% 50% / 0.3), hsl(120 40% 40% / 0.2))',
-        }}>
-        <span className="text-2xl md:text-3xl drop-shadow-md">{tile.decoEmoji}</span>
+        style={{ background: 'radial-gradient(circle, hsl(120 40% 50% / 0.3), hsl(120 40% 40% / 0.2))', fontSize: isBarn ? 'clamp(20px, 2.5vw, 36px)' : 'clamp(18px, 2vw, 28px)' }}>
+        <span className="drop-shadow-md">{tile.decoEmoji}</span>
         {tile.decoLabel && (
-          <span className="absolute bottom-0 text-[7px] font-bold text-white/80 drop-shadow"
+          <span className="absolute bottom-0 text-[6px] font-bold text-white/80 drop-shadow"
             style={{ fontFamily: "'Press Start 2P', monospace" }}>
             {tile.decoLabel}
           </span>
@@ -63,91 +91,68 @@ export const Tile = ({ tile, index, onTileClick, tick }: Props) => {
         background: tile.type === 'grass'
           ? 'radial-gradient(circle, hsl(120 50% 55%), hsl(120 45% 45%))'
           : 'radial-gradient(circle, hsl(30 40% 45%), hsl(30 35% 35%))',
-        boxShadow: isReady ? '0 0 14px #FFD700, inset 0 0 10px rgba(255,215,0,0.4)' : 'none',
+        boxShadow: isReady ? '0 0 10px #FFD700, inset 0 0 8px rgba(255,215,0,0.4)' : 'none',
       }}
     >
-      {/* Grass hover */}
       {tile.type === 'grass' && (
-        <span className="text-white/0 group-hover:text-white/60 text-xl transition-colors font-bold">+</span>
+        <span className="text-white/0 group-hover:text-white/60 transition-colors font-bold" style={{ fontSize: 'clamp(12px, 1.5vw, 18px)' }}>+</span>
       )}
-
-      {/* Soil dots */}
       {tile.type === 'soil' && (
-        <span className="text-white/30 text-xs select-none">···</span>
+        <span className="text-white/30 text-[8px] select-none">···</span>
       )}
-
-      {/* Planted crop */}
       {tile.type === 'planted' && crop && (
         <>
           <motion.span
-            className="text-xl md:text-2xl drop-shadow"
-            animate={isReady ? { scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] } : {}}
+            style={{ fontSize: 'clamp(14px, 1.8vw, 22px)' }}
+            className="drop-shadow"
+            animate={isReady ? { scale: [1, 1.15, 1], rotate: [0, 4, -4, 0] } : {}}
             transition={isReady ? { repeat: Infinity, duration: 0.8 } : {}}
           >
             {crop.stages[stage]}
           </motion.span>
-          {/* Progress bar */}
-          <div className="absolute bottom-0.5 left-1 right-1 h-1.5 rounded-full bg-black/30 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-[width] duration-300"
+          <div className="absolute bottom-0.5 left-[10%] right-[10%] h-[3px] rounded-sm bg-black/30 overflow-hidden">
+            <div className="h-full rounded-sm transition-[width] duration-300"
               style={{
                 width: `${Math.min(100, progress * 100)}%`,
-                background: progress < 0.4
-                  ? 'linear-gradient(90deg, #f97316, #fb923c)'
-                  : progress < 0.9
-                    ? 'linear-gradient(90deg, #eab308, #facc15)'
-                    : 'linear-gradient(90deg, #22c55e, #4ade80)',
+                background: progress < 0.4 ? 'linear-gradient(90deg, #f97316, #fb923c)'
+                  : progress < 0.9 ? 'linear-gradient(90deg, #eab308, #facc15)'
+                  : 'linear-gradient(90deg, #22c55e, #4ade80)',
               }}
             />
           </div>
         </>
       )}
-
-      {/* Ready glow pulse */}
       {isReady && !harvesting && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          animate={{ opacity: [0.2, 0.6, 0.2] }}
+        <motion.div className="absolute inset-0 pointer-events-none"
+          animate={{ opacity: [0.2, 0.5, 0.2] }}
           transition={{ repeat: Infinity, duration: 1.2 }}
-          style={{ boxShadow: 'inset 0 0 24px rgba(255,215,0,0.6)' }}
+          style={{ boxShadow: 'inset 0 0 16px rgba(255,215,0,0.5)' }}
         />
       )}
-
-      {/* Harvest sparkle burst */}
       <AnimatePresence>
         {harvesting && (
           <>
             {[0, 1, 2, 3, 4, 5, 6, 7].map(i => {
               const angle = (i / 8) * Math.PI * 2;
               return (
-                <motion.div
-                  key={`spark-${i}`}
-                  className="absolute w-2 h-2 rounded-full"
-                  style={{
-                    background: i % 2 === 0 ? '#FFD700' : '#FFA500',
-                    left: '50%',
-                    top: '50%',
-                  }}
+                <motion.div key={`s-${i}`} className="absolute w-1.5 h-1.5 rounded-full"
+                  style={{ background: i % 2 === 0 ? '#FFD700' : '#FFA500', left: '50%', top: '50%' }}
                   initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
-                  animate={{
-                    x: Math.cos(angle) * 35,
-                    y: Math.sin(angle) * 35,
-                    scale: 0,
-                    opacity: 0,
-                  }}
+                  animate={{ x: Math.cos(angle) * 25, y: Math.sin(angle) * 25, scale: 0, opacity: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 />
               );
             })}
-            <motion.div
-              className="absolute inset-0 rounded pointer-events-none"
-              initial={{ opacity: 1, scale: 0.5 }}
-              animate={{ opacity: 0, scale: 2 }}
-              transition={{ duration: 0.4 }}
-              style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.8), transparent 70%)' }}
-            />
           </>
+        )}
+        {ripple && (
+          <motion.div className="absolute inset-0 rounded pointer-events-none"
+            initial={{ opacity: 0.6, scale: 0.5 }}
+            animate={{ opacity: 0, scale: 1.5 }}
+            transition={{ duration: 0.4 }}
+            style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.4), transparent 70%)' }}
+          />
         )}
       </AnimatePresence>
     </motion.button>

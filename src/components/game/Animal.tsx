@@ -5,19 +5,16 @@ import { motion } from 'framer-motion';
 interface Props {
   animal: AnimalState;
   onClick: () => void;
-  farmWidth: number;
-  farmHeight: number;
+  containerWidth: number;
+  containerHeight: number;
 }
 
-export const Animal = ({ animal, onClick, farmWidth, farmHeight }: Props) => {
+export const Animal = ({ animal, onClick, containerWidth, containerHeight }: Props) => {
   const def = ANIMAL_DEFS.find(a => a.id === animal.defId);
   if (!def) return null;
 
-  const xPercent = (animal.x / 640) * 100;
-  const yPercent = (animal.y / 480) * 100;
-  const now = Date.now();
-  const produceProgress = (now - animal.lastProduce) / def.produceEvery;
-  const aboutToProduce = produceProgress > 0.9;
+  const xPercent = (animal.x / 700) * 100;
+  const yPercent = (animal.y / 120) * 100;
 
   return (
     <motion.button
@@ -26,30 +23,14 @@ export const Animal = ({ animal, onClick, farmWidth, farmHeight }: Props) => {
       style={{
         left: `${xPercent}%`,
         top: `${yPercent}%`,
-        fontSize: `clamp(20px, ${def.size * 0.6}px, ${def.size}px)`,
+        fontSize: 'clamp(18px, 2.5vw, 32px)',
         transform: `scaleX(${animal.facingLeft ? -1 : 1})`,
       }}
-      animate={{
-        y: [0, -3, 0, 3, 0],
-      }}
-      transition={{
-        repeat: Infinity,
-        duration: 2 / def.speed,
-        ease: 'easeInOut',
-      }}
+      animate={{ y: [0, -3, 0, 3, 0] }}
+      transition={{ repeat: Infinity, duration: 2 / def.speed, ease: 'easeInOut' }}
       whileHover={{ scale: 1.2 }}
     >
       <span className="drop-shadow-lg">{def.emoji}</span>
-      {aboutToProduce && (
-        <motion.span
-          className="absolute -top-5 left-1/2 -translate-x-1/2 text-sm"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: [0, 1.2, 1], opacity: [0, 1, 0.8] }}
-          transition={{ duration: 0.5 }}
-        >
-          💫
-        </motion.span>
-      )}
     </motion.button>
   );
 };

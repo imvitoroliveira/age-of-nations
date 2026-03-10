@@ -3,7 +3,7 @@ import { useGameStore } from '@/store/gameStore';
 import { CROPS } from '@/data/crops';
 
 export function useCrops() {
-  const { grid, setTile, addCoins, addNotification, selectedCrop, setSelectedCrop, coins } = useGameStore();
+  const { grid, setTile, addCoins, addNotification, addToInventory, selectedCrop, setSelectedCrop, coins } = useGameStore();
 
   const plantCrop = useCallback((index: number) => {
     if (!selectedCrop) return false;
@@ -23,12 +23,20 @@ export function useCrops() {
     const crop = CROPS[tile.cropKey];
     if (!crop) return false;
 
-    const progress = tile.plantedAt ? (Date.now() - tile.plantedAt) / crop.growTime : 0;
+    const timeOfDay = useGameStore.getState().timeOfDay;
+    const weather = useGameStore.getState().weather;
+    const isNight = timeOfDay >= 0.75;
+    
+    let effectiveGrowTime = crop.growTime;
+    if (weather === 'rainy' && !isNight) effectiveGrowTime /= 2;
+    
+    const progress = tile.plantedAt ? (Date.now() - tile.plantedAt) / effectiveGrowTime : 0;
     if (progress < 1) return false;
 
-    addCoins(crop.reward);
+    // Add to inventory instead of coins directly
+    addToInventory(crop.inventoryKey, 1);
     setTile(index, { type: 'soil', cropKey: undefined, plantedAt: undefined, watered: false });
-    addNotification(`+${crop.reward} 🪙`, 'harvest');
+    addNotification(`${crop.inventoryEmoji} ${crop.name} colhido!`, 'harvest');
     return true;
   }, [grid]);
 
@@ -36,7 +44,6 @@ export function useCrops() {
     const store = useGameStore.getState();
     const newGrid = store.grid.map(tile => {
       if (tile.type === 'planted' && !tile.watered) {
-        // Speed up by 20%: reduce plantedAt
         const cropDef = tile.cropKey ? CROPS[tile.cropKey] : null;
         if (cropDef && tile.plantedAt) {
           const boost = cropDef.growTime * 0.2;
@@ -49,20 +56,5 @@ export function useCrops() {
     addNotification('💧 Plantações regadas!', 'info');
   }, []);
 
-  const getCropProgress = (tile: typeof grid[0]) => {
-    if (tile.type !== 'planted' || !tile.cropKey || !tile.plantedAt) return 0;
-    const crop = CROPS[tile.cropKey];
-    if (!crop) return 0;
-    const isNight = useGameStore.getState().timeOfDay >= 0.85 || useGameStore.getState().timeOfDay < 0.05;
-    if (isNight) return Math.min(1, (Date.now() - tile.plantedAt) / crop.growTime); // frozen display
-    return Math.min(1, (Date.now() - tile.plantedAt) / crop.growTime);
-  };
-
-  const getCropStage = (progress: number) => {
-    if (progress < 0.4) return 0;
-    if (progress < 0.9) return 1;
-    return 2;
-  };
-
-  return { plantCrop, harvestCrop, waterAll, getCropProgress, getCropStage, selectedCrop, setSelectedCrop };
+  return { plantCrop, harvestCrop, waterAll, selectedCrop, setSelectedCrop };
 }

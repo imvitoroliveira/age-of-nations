@@ -3,31 +3,38 @@ import { useGameStore } from '@/store/gameStore';
 import { ANIMAL_DEFS } from '@/data/animals';
 import { AnimalState } from '@/types/game';
 
-const FARM_W = 640;
-const FARM_H = 480;
+const PASTURE_W = 700;
+const PASTURE_H = 120;
+const MAX_ANIMALS = 8;
 
 export function useAnimals() {
-  const { animals, addAnimal, addCoins, addNotification, coins, setAnimals } = useGameStore();
+  const { animals, addAnimal, addNotification, coins } = useGameStore();
 
   const buyAnimal = useCallback((defId: string) => {
+    const store = useGameStore.getState();
     const def = ANIMAL_DEFS.find(a => a.id === defId);
-    if (!def || coins < def.cost) return false;
+    if (!def || store.coins < def.cost) return false;
+    if (store.animals.length >= MAX_ANIMALS) {
+      addNotification('Máximo de 8 animais!', 'info');
+      return false;
+    }
 
     const animal: AnimalState = {
       id: crypto.randomUUID(),
       defId,
-      x: 60 + Math.random() * 80,
-      y: 60 + Math.random() * 80,
-      targetX: 100 + Math.random() * 200,
-      targetY: 100 + Math.random() * 200,
+      x: 50 + Math.random() * (PASTURE_W - 100),
+      y: 20 + Math.random() * (PASTURE_H - 40),
+      targetX: 100 + Math.random() * (PASTURE_W - 200),
+      targetY: 20 + Math.random() * 60,
       state: 'idle',
       lastProduce: Date.now(),
       nextMoveAt: Date.now() + 2000,
       facingLeft: false,
+      boughtAt: Date.now(),
     };
 
     addAnimal(animal);
-    useGameStore.getState().addCoins(-def.cost);
+    store.addCoins(-def.cost);
     addNotification(`${def.emoji} ${def.name} comprado(a)!`, 'info');
     return true;
   }, [coins]);
@@ -35,9 +42,8 @@ export function useAnimals() {
   const updateAnimalPositions = useCallback((deltaTime: number) => {
     const store = useGameStore.getState();
     const now = Date.now();
-    const isNight = store.timeOfDay >= 0.85 || store.timeOfDay < 0.05;
+    const isNight = store.timeOfDay >= 0.75;
     const speedMult = isNight ? 0.5 : 1;
-    const isRainy = store.weather === 'rainy';
 
     const updated = store.animals.map(animal => {
       const def = ANIMAL_DEFS.find(a => a.id === animal.defId);
@@ -45,20 +51,24 @@ export function useAnimals() {
 
       let { x, y, targetX, targetY, state, nextMoveAt, facingLeft, lastProduce } = animal;
 
-      // Check produce
+      // Check produce → floating produce
       if (now - lastProduce >= def.produceEvery) {
-        store.addCoins(def.reward);
-        store.addNotification(`${def.produce} +${def.reward} 🪙`, 'produce');
+        store.addFloatingProduce({
+          id: crypto.randomUUID(),
+          animalId: animal.id,
+          emoji: def.inventoryEmoji,
+          inventoryKey: def.inventoryKey,
+          x: x,
+          createdAt: now,
+        });
+        addNotification(`${def.produce} pronto!`, 'produce');
         lastProduce = now;
       }
 
-      // Movement
+      // Movement within pasture
       if (now >= nextMoveAt && state === 'idle') {
-        const centerX = isNight ? FARM_W * 0.15 : FARM_W * 0.5;
-        const centerY = isNight ? FARM_H * 0.15 : FARM_H * 0.5;
-        const range = isNight ? 80 : FARM_W * 0.4;
-        targetX = Math.max(20, Math.min(FARM_W - 40, centerX + (Math.random() - 0.5) * range * 2));
-        targetY = Math.max(20, Math.min(FARM_H - 40, centerY + (Math.random() - 0.5) * range * 2));
+        targetX = Math.max(20, Math.min(PASTURE_W - 40, 50 + Math.random() * (PASTURE_W - 100)));
+        targetY = Math.max(10, Math.min(PASTURE_H - 30, 10 + Math.random() * 80));
         state = 'walking';
       }
 
@@ -66,7 +76,7 @@ export function useAnimals() {
         const dx = targetX - x;
         const dy = targetY - y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        
+
         if (dist < 5) {
           state = 'idle';
           nextMoveAt = now + 2000 + Math.random() * 4000;
@@ -78,7 +88,7 @@ export function useAnimals() {
         }
       }
 
-      // Simple repulsion
+      // Repulsion
       for (const other of store.animals) {
         if (other.id === animal.id) continue;
         const rdx = x - other.x;
@@ -90,14 +100,21 @@ export function useAnimals() {
         }
       }
 
-      x = Math.max(10, Math.min(FARM_W - 20, x));
-      y = Math.max(10, Math.min(FARM_H - 20, y));
+      x = Math.max(10, Math.min(PASTURE_W - 20, x));
+      y = Math.max(10, Math.min(PASTURE_H - 20, y));
 
       return { ...animal, x, y, targetX, targetY, state, nextMoveAt, facingLeft, lastProduce };
     });
 
+    // Clean expired floating produce (30s)
+    const fp = store.floatingProduce.filter(f => now - f.createdAt < 30000);
+    if (fp.length !== store.floatingProduce.length) {
+      // remove expired silently
+      store.floatingProduce.filter(f => now - f.createdAt >= 30000).forEach(f => store.removeFloatingProduce(f.id));
+    }
+
     store.setAnimals(updated);
   }, []);
 
-  return { buyAnimal, updateAnimalPositions, animals };
+  return { buyAnimal, updateAnimalPositions, animals, maxAnimals: MAX_ANIMALS };
 }
