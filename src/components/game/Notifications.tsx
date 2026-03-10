@@ -2,11 +2,11 @@ import { useGameStore } from '@/store/gameStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 
-const TYPE_COLORS = {
+const TYPE_COLORS: Record<string, string> = {
   harvest: '#FFD700',
-  produce: '#22c55e',
-  day: '#ffffff',
-  info: '#93c5fd',
+  produce: '#66BB6A',
+  day: '#FFF9C4',
+  info: '#B3E5FC',
 };
 
 export const Notifications = () => {
@@ -36,11 +36,12 @@ export const Notifications = () => {
             transition={{ duration: 0.4 }}
             className="px-4 py-2 rounded-xl shadow-xl"
             style={{
-              background: 'rgba(20, 10, 5, 0.9)',
-              border: '2px solid #7a5c2e',
+              background: 'linear-gradient(135deg, #5D4037, #795548)',
+              border: '2px solid #8D6E63',
               color: TYPE_COLORS[n.type] || '#ffffff',
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: '10px',
+              fontFamily: "'Fredoka One', cursive",
+              fontSize: '11px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
             {n.message}
