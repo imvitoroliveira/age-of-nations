@@ -185,7 +185,7 @@ export const Shop = () => {
                   const def = ANIMAL_DEFS.find(d => d.id === animal.defId);
                   if (!def) return null;
                   const sellPrice = Math.floor(def.cost * 0.5);
-                  const ownedFor = Math.floor((Date.now() - animal.boughtAt) / 60000);
+                  const ownedFor = Math.floor((Date.now() - (animal.boughtAt || Date.now())) / 60000);
                   return (
                     <div key={animal.id} className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/10">
                       <div className="flex items-center gap-2">
