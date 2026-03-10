@@ -69,7 +69,7 @@ export const HUD = ({ onBack }: Props) => {
 
         <span className="relative text-white/60 text-[10px] z-10"
           style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}>
-          🏡 {ownedTiles.length}/{totalTiles}
+          🏡 {ownedTiles.length} tiles
         </span>
 
         <div className="relative flex items-center z-10">
