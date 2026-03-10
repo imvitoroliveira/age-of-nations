@@ -64,39 +64,58 @@ export const FarmGrid = () => {
 
   return (
     <div className="relative">
-      <div className="grid gap-px"
+      {/* Path borders between tiles */}
+      <div className="grid"
         style={{
-          gridTemplateColumns: `repeat(${GRID_COLS}, clamp(32px, 5vw, 64px))`,
-          gridTemplateRows: `repeat(${GRID_ROWS}, clamp(32px, 5vw, 64px))`,
+          gridTemplateColumns: `repeat(${GRID_COLS}, clamp(40px, 5vw, 64px))`,
+          gridTemplateRows: `repeat(${GRID_ROWS}, clamp(40px, 5vw, 64px))`,
+          gap: '3px',
+          background: '#8D6E63',
+          padding: '3px',
         }}>
         {grid.map((tile, i) => (
           <Tile key={i} tile={tile} index={i} onTileClick={handleTileClick} tick={tick} />
         ))}
       </div>
 
+      {/* Path intersection dots */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none z-[1]" style={{ opacity: 0.3 }}>
+        {/* Render dots at grid intersections would be here, but CSS gap handles the paths */}
+      </svg>
+
       {/* Unlock confirm modal */}
       {confirmUnlock && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmUnlock(null)} />
-          <div className="relative rounded-2xl p-5 max-w-xs text-center"
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setConfirmUnlock(null)} />
+          <div className="relative rounded-2xl p-6 max-w-xs text-center"
             style={{
-              background: 'rgba(20, 10, 5, 0.95)',
-              border: '3px solid #7a5c2e',
-              fontFamily: "'Press Start 2P', monospace",
+              background: 'linear-gradient(180deg, #795548, #5D4037)',
+              border: '3px solid #FFD700',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
             }}>
-            <p className="text-white text-[9px] mb-4">
+            <p className="text-white text-sm mb-4" style={{ fontFamily: "'Fredoka One', cursive" }}>
               Comprar este terreno por {confirmUnlock.cost} 🪙?
             </p>
             <div className="flex gap-3 justify-center">
               <button onClick={() => setConfirmUnlock(null)}
-                className="px-4 py-2 rounded-xl bg-white/10 text-white/60 text-[8px] hover:bg-white/20">
+                className="px-4 py-2 rounded-xl bg-white/10 text-white/60 text-xs hover:bg-white/20 transition-colors"
+                style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700 }}>
                 Cancelar
               </button>
               <button onClick={handleConfirmUnlock}
                 disabled={coins < confirmUnlock.cost}
-                className={`px-4 py-2 rounded-xl text-[8px] font-bold ${
-                  coins >= confirmUnlock.cost ? 'bg-amber-600 text-white hover:bg-amber-500' : 'bg-white/10 text-white/30'
-                }`}>
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  coins >= confirmUnlock.cost
+                    ? 'text-white hover:brightness-110'
+                    : 'bg-white/10 text-white/30'
+                }`}
+                style={{
+                  ...(coins >= confirmUnlock.cost ? {
+                    background: 'linear-gradient(135deg, #FFD700, #FFA000)',
+                    boxShadow: '0 2px 8px rgba(255,215,0,0.3)',
+                  } : {}),
+                  fontFamily: "'Fredoka One', cursive",
+                }}>
                 ✅ Comprar
               </button>
             </div>
