@@ -56,6 +56,7 @@ export const FarmScreen = ({ onBack }: Props) => {
       if (!isOccupied(activeChildId, row, col)) {
         placeItem(activeChildId, selectedItem, row, col);
         setSelectedItem(null);
+        playTap();
         toast.success('Item colocado! 🎉');
       } else {
         toast.error('Essa posição já está ocupada!');

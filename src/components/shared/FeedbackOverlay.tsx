@@ -32,6 +32,11 @@ export const FeedbackOverlay = ({ type, onDone }: FeedbackOverlayProps) => {
     }));
   }, [type]);
 
+  useEffect(() => {
+    if (type === 'correct') playCorrect();
+    else if (type === 'wrong') playWrong();
+  }, [type]);
+
   if (!type) return null;
 
   return (
