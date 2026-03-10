@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { playCorrect, playWrong } from '@/lib/sounds';
 
 interface FeedbackOverlayProps {
   type: 'correct' | 'wrong' | null;

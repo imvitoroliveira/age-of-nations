@@ -5,6 +5,7 @@ import { FARM_ITEMS } from '@/data/educationData';
 import { ArrowLeft, Star, ShoppingBag, MapPin, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { playBuy, playTap } from '@/lib/sounds';
 
 interface Props { onBack: () => void; }
 
