@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { playCorrect, playWrong } from '@/lib/sounds';
 
 interface FeedbackOverlayProps {
   type: 'correct' | 'wrong' | null;
@@ -29,6 +30,11 @@ export const FeedbackOverlay = ({ type, onDone }: FeedbackOverlayProps) => {
       size: Math.random() > 0.5 ? 'w-2 h-2' : 'w-3 h-3',
       rotation: Math.random() * 360,
     }));
+  }, [type]);
+
+  useEffect(() => {
+    if (type === 'correct') playCorrect();
+    else if (type === 'wrong') playWrong();
   }, [type]);
 
   if (!type) return null;

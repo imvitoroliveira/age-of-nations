@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { ChildProfile, ActivityProgress, Category, AgeGroup } from '@/types/education';
 import { AVATAR_EMOJIS } from '@/data/educationData';
 import { useAnalyticsStore } from '@/store/analyticsStore';
+import { playAchievement } from '@/lib/sounds';
 
 interface AppState {
   // Local children (works without auth)
@@ -161,6 +162,7 @@ export const useAppStore = create<AppState>()(
         if (!childId) return;
         const current = s.unlockedAchievements[childId] || [];
         if (current.includes(key)) return;
+        playAchievement();
         set(state => ({
           unlockedAchievements: {
             ...state.unlockedAchievements,

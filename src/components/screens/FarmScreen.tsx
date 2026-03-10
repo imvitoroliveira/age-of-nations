@@ -5,6 +5,7 @@ import { FARM_ITEMS } from '@/data/educationData';
 import { ArrowLeft, Star, ShoppingBag, MapPin, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { playBuy, playTap } from '@/lib/sounds';
 
 interface Props { onBack: () => void; }
 
@@ -55,6 +56,7 @@ export const FarmScreen = ({ onBack }: Props) => {
       if (!isOccupied(activeChildId, row, col)) {
         placeItem(activeChildId, selectedItem, row, col);
         setSelectedItem(null);
+        playTap();
         toast.success('Item colocado! 🎉');
       } else {
         toast.error('Essa posição já está ocupada!');
@@ -76,6 +78,7 @@ export const FarmScreen = ({ onBack }: Props) => {
       return;
     }
     if (buyFarmItem(itemKey, cost)) {
+      playBuy();
       toast.success(`${name} comprado(a)! Agora coloque no mapa! 🎉`);
       setSelectedItem(itemKey);
       setMode('map');
