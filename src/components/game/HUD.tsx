@@ -1,4 +1,4 @@
-import { useGameStore, GRID_COLS, GRID_ROWS } from '@/store/gameStore';
+import { useGameStore } from '@/store/gameStore';
 import { useDayCycle } from '@/hooks/useDayCycle';
 import { motion, AnimatePresence } from 'framer-motion';
 
