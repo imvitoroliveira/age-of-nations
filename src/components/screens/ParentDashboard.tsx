@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/store/appStore';
@@ -7,9 +7,9 @@ import { useScreenTimeStore } from '@/store/screenTimeStore';
 import { CATEGORY_META } from '@/data/educationData';
 import { toast } from 'sonner';
 
-interface Props { onBack: () => void; }
+interface Props { onBack: () => void; onPremium?: () => void; }
 
-export const ParentDashboard = ({ onBack }: Props) => {
+export const ParentDashboard = ({ onBack, onPremium }: Props) => {
   const { parentPin, setParentPin, verifyPin, children, removeChild, progress } = useAppStore();
   const { dailyLimitMinutes, setDailyLimit, totalSecondsToday } = useScreenTimeStore();
   const [pinInput, setPinInput] = useState('');
@@ -168,6 +168,22 @@ export const ParentDashboard = ({ onBack }: Props) => {
             </div>
           )}
         </div>
+
+        {/* Premium CTA */}
+        {onPremium && (
+          <button onClick={onPremium}
+            className="w-full bg-gradient-to-r from-kid-yellow/15 to-kid-orange/10 border-2 border-kid-yellow/30 rounded-[1.5rem] p-5 flex items-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-transform slide-up stagger-4 shadow-md"
+            style={{ animationFillMode: 'both' }}>
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-kid-yellow to-kid-orange flex items-center justify-center flex-shrink-0 shadow-lg">
+              <Crown size={24} className="text-primary-foreground" />
+            </div>
+            <div className="text-left flex-1">
+              <p className="font-bold text-foreground">Kidari Premium</p>
+              <p className="text-xs text-muted-foreground">Tempo ilimitado, relatórios completos e mais</p>
+            </div>
+            <span className="text-sm font-bold text-kid-yellow">→</span>
+          </button>
+        )}
       </div>
     </div>
   );
