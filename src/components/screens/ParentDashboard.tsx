@@ -143,9 +143,25 @@ export const ParentDashboard = ({ onBack, onPremium }: Props) => {
                             </div>
                           </div>
                         </div>
-                        <Button variant="ghost" size="icon" className="rounded-full hover:bg-destructive/10" onClick={() => {
-                          if (confirm(`Remover ${child.name}?`)) { removeChild(child.id); toast.info('Removido'); }
-                        }}><Trash2 size={16} className="text-destructive/60" /></Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="rounded-full hover:bg-destructive/10">
+                              <Trash2 size={16} className="text-destructive/60" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="rounded-2xl max-w-xs">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="font-baloo text-xl">Remover {child.name}?</AlertDialogTitle>
+                              <AlertDialogDescription>Todo o progresso será perdido. Essa ação não pode ser desfeita.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                              <AlertDialogAction className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { removeChild(child.id); toast.info('Removido'); }}>
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
 
                       {/* Category progress bars */}
