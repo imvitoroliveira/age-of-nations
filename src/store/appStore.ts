@@ -162,6 +162,7 @@ export const useAppStore = create<AppState>()(
         if (!childId) return;
         const current = s.unlockedAchievements[childId] || [];
         if (current.includes(key)) return;
+        playAchievement();
         set(state => ({
           unlockedAchievements: {
             ...state.unlockedAchievements,
