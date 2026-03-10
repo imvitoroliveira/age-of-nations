@@ -1,21 +1,14 @@
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, GRID_COLS, GRID_ROWS, getExpansionCost } from '@/store/gameStore';
 import { Tile } from './Tile';
-import { Animal } from './Animal';
 import { useCrops } from '@/hooks/useCrops';
-import { ANIMAL_DEFS } from '@/data/animals';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const GRID_COLS = 8;
-const GRID_ROWS = 6;
-
 export const FarmGrid = () => {
-  const { grid, animals, activeTool, selectedCrop, setTile, addNotification } = useGameStore();
+  const { grid, activeTool, selectedCrop, setTile, addNotification, unlockTile, coins } = useGameStore();
   const { plantCrop, harvestCrop, waterAll } = useCrops();
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
-  
-  // Tick counter to force Tile re-renders for real-time progress bars
   const [tick, setTick] = useState(0);
+  const [confirmUnlock, setConfirmUnlock] = useState<{ index: number; cost: number } | null>(null);
+
   useEffect(() => {
     const interval = setInterval(() => setTick(t => t + 1), 200);
     return () => clearInterval(interval);
@@ -24,10 +17,16 @@ export const FarmGrid = () => {
   const handleTileClick = (index: number) => {
     const tile = grid[index];
 
+    if (tile.type === 'locked') {
+      const col = index % GRID_COLS;
+      const row = Math.floor(index / GRID_COLS);
+      const cost = getExpansionCost(col, row);
+      setConfirmUnlock({ index, cost });
+      return;
+    }
+
     if (tile.type === 'deco') {
-      if (tile.decoEmoji === '💧') {
-        waterAll();
-      }
+      if (tile.decoEmoji === '💧') waterAll();
       return;
     }
 
@@ -43,80 +42,67 @@ export const FarmGrid = () => {
 
     if (tile.type === 'planted') {
       const success = harvestCrop(index);
-      if (!success) {
-        addNotification('Ainda crescendo... ⏳', 'info');
-      }
+      if (!success) addNotification('Ainda crescendo... ⏳', 'info');
       return;
     }
 
     if (tile.type === 'soil' && !selectedCrop) {
-      addNotification('Selecione uma semente na loja primeiro! 🌱', 'info');
+      addNotification('Selecione uma semente na loja! 🌱', 'info');
     }
   };
 
-  const handleAnimalClick = (animalId: string) => {
-    const animal = animals.find(a => a.id === animalId);
-    if (!animal) return;
-    const def = ANIMAL_DEFS.find(a => a.id === animal.defId);
-    if (!def) return;
-    const timeLeft = Math.max(0, def.produceEvery - (Date.now() - animal.lastProduce));
-    const secs = Math.ceil(timeLeft / 1000);
-    setTooltip({
-      x: (animal.x / 640) * 100,
-      y: (animal.y / 480) * 100 - 10,
-      text: `${def.emoji} ${def.name}\n${def.produce}\nPróximo: ${secs}s`,
-    });
-    setTimeout(() => setTooltip(null), 3000);
+  const handleConfirmUnlock = () => {
+    if (!confirmUnlock) return;
+    if (coins < confirmUnlock.cost) {
+      addNotification('Moedas insuficientes! 💰', 'info');
+    } else {
+      unlockTile(confirmUnlock.index);
+      addNotification('🎉 Novo terreno!', 'info');
+    }
+    setConfirmUnlock(null);
   };
 
   return (
-    <div className="relative w-full" style={{ aspectRatio: '8/6' }}>
-      {/* Grid */}
-      <div className="absolute inset-0 grid gap-px"
-        style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`, gridTemplateRows: `repeat(${GRID_ROWS}, 1fr)` }}>
+    <div className="relative">
+      <div className="grid gap-px"
+        style={{
+          gridTemplateColumns: `repeat(${GRID_COLS}, clamp(32px, 5vw, 64px))`,
+          gridTemplateRows: `repeat(${GRID_ROWS}, clamp(32px, 5vw, 64px))`,
+        }}>
         {grid.map((tile, i) => (
           <Tile key={i} tile={tile} index={i} onTileClick={handleTileClick} tick={tick} />
         ))}
       </div>
 
-      {/* Animals overlay */}
-      <div className="absolute inset-0 pointer-events-none">
-        {animals.map(animal => (
-          <div key={animal.id} className="pointer-events-auto">
-            <Animal
-              animal={animal}
-              onClick={() => handleAnimalClick(animal.id)}
-              farmWidth={640}
-              farmHeight={480}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Tooltip */}
-      <AnimatePresence>
-        {tooltip && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute z-50 px-3 py-2 rounded-xl text-xs font-bold text-white pointer-events-none"
+      {/* Unlock confirm modal */}
+      {confirmUnlock && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmUnlock(null)} />
+          <div className="relative rounded-2xl p-5 max-w-xs text-center"
             style={{
-              left: `${tooltip.x}%`,
-              top: `${tooltip.y}%`,
-              background: 'rgba(20, 10, 5, 0.9)',
-              border: '2px solid #7a5c2e',
+              background: 'rgba(20, 10, 5, 0.95)',
+              border: '3px solid #7a5c2e',
               fontFamily: "'Press Start 2P', monospace",
-              fontSize: '8px',
-              lineHeight: '1.6',
-              whiteSpace: 'pre-line',
-              transform: 'translateX(-50%)',
-            }}
-          >
-            {tooltip.text}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            }}>
+            <p className="text-white text-[9px] mb-4">
+              Comprar este terreno por {confirmUnlock.cost} 🪙?
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button onClick={() => setConfirmUnlock(null)}
+                className="px-4 py-2 rounded-xl bg-white/10 text-white/60 text-[8px] hover:bg-white/20">
+                Cancelar
+              </button>
+              <button onClick={handleConfirmUnlock}
+                disabled={coins < confirmUnlock.cost}
+                className={`px-4 py-2 rounded-xl text-[8px] font-bold ${
+                  coins >= confirmUnlock.cost ? 'bg-amber-600 text-white hover:bg-amber-500' : 'bg-white/10 text-white/30'
+                }`}>
+                ✅ Comprar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
