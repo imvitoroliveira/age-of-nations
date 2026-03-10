@@ -29,7 +29,7 @@ export const CategoryScreen = ({ onBack, onSelectCategory, onFarm, onAchievement
 
   const categories: Category[] = child.age_group === 'mini'
     ? ['colors', 'animals', 'letters', 'numbers', 'shapes']
-    : ['math', 'portuguese', 'syllables'];
+    : ['math', 'portuguese', 'syllables', 'drawing'];
 
   const totalStars = getTotalStars();
 
