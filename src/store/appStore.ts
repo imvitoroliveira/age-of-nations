@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ChildProfile, ActivityProgress, Category, AgeGroup } from '@/types/education';
 import { AVATAR_EMOJIS } from '@/data/educationData';
+import { useAnalyticsStore } from '@/store/analyticsStore';
 
 interface AppState {
   // Local children (works without auth)
