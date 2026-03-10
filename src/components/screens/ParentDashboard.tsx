@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Clock, BarChart3, Trash2, Shield, TrendingUp, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/store/appStore';
