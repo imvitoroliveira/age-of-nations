@@ -8,7 +8,7 @@ const PASTURE_H = 130;
 const MAX_ANIMALS = 8;
 
 export function useAnimals() {
-  const { animals, addAnimal, addNotification, coins } = useGameStore();
+  const { animals, addAnimal, addNotification, coins, addXP } = useGameStore();
 
   const buyAnimal = useCallback((defId: string) => {
     const store = useGameStore.getState();
@@ -36,6 +36,7 @@ export function useAnimals() {
     addAnimal(animal);
     store.addCoins(-def.cost);
     addNotification(`${def.emoji} ${def.name} comprado(a)!`, 'info');
+    addXP(Math.ceil(def.cost / 10));
     return true;
   }, [coins]);
 
@@ -62,6 +63,7 @@ export function useAnimals() {
           createdAt: now,
         });
         addNotification(`${def.produce} pronto!`, 'produce');
+        addXP(5);
         lastProduce = now;
       }
 
@@ -109,7 +111,9 @@ export function useAnimals() {
     // Clean expired floating produce (30s)
     store.floatingProduce.filter(f => now - f.createdAt >= 30000).forEach(f => store.removeFloatingProduce(f.id));
 
-    store.setAnimals(updated);
+    // store.setAnimals(updated); 
+    // Optimization: only update if positions changed significantly or state changed
+    useGameStore.setState({ animals: updated });
   }, []);
 
   return { buyAnimal, updateAnimalPositions, animals, maxAnimals: MAX_ANIMALS };

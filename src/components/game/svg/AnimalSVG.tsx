@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
 interface AnimalSVGProps {
@@ -228,7 +229,7 @@ const RabbitSVG = ({ size, isWalking }: { size: number; isWalking: boolean }) =>
   </svg>
 );
 
-export const AnimalSVG = ({ animalId, size = 48, facingLeft = false, isWalking = false }: AnimalSVGProps) => {
+const AnimalSVGComponent = ({ animalId, size = 48, facingLeft = false, isWalking = false }: AnimalSVGProps) => {
   const style = { transform: facingLeft ? 'scaleX(-1)' : 'none' };
   const props = { size, isWalking };
 
@@ -243,3 +244,5 @@ export const AnimalSVG = ({ animalId, size = 48, facingLeft = false, isWalking =
     </div>
   );
 };
+
+export const AnimalSVG = React.memo(AnimalSVGComponent);

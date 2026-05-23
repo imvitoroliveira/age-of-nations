@@ -3,7 +3,7 @@ import { useGameStore } from '@/store/gameStore';
 import { CROPS } from '@/data/crops';
 
 export function useCrops() {
-  const { grid, setTile, addCoins, addNotification, addToInventory, selectedCrop, setSelectedCrop, coins } = useGameStore();
+  const { grid, setTile, addCoins, addXP, addNotification, addToInventory, selectedCrop, setSelectedCrop, coins } = useGameStore();
 
   const plantCrop = useCallback((index: number) => {
     if (!selectedCrop) return false;
@@ -35,8 +35,9 @@ export function useCrops() {
 
     // Add to inventory instead of coins directly
     addToInventory(crop.inventoryKey, 1);
+    addXP(Math.ceil(crop.reward / 2));
     setTile(index, { type: 'soil', cropKey: undefined, plantedAt: undefined, watered: false });
-    addNotification(`${crop.inventoryEmoji} ${crop.name} colhido!`, 'harvest');
+    addNotification(`${crop.inventoryEmoji} ${crop.name} colhido! (+XP)`, 'harvest');
     return true;
   }, [grid]);
 

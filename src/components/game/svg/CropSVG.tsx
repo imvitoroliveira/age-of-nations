@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
 interface CropSVGProps {
@@ -135,7 +136,7 @@ const PumpkinReady = ({ size }: { size: number }) => (
   </motion.svg>
 );
 
-export const CropSVG = ({ cropKey, stage, size = 32 }: CropSVGProps) => {
+const CropSVGComponent = ({ cropKey, stage, size = 32 }: CropSVGProps) => {
   if (stage === 0) return <Seedling size={size} />;
   if (stage === 1) return <Growing size={size} color={cropKey === 'wheat' ? '#A5D6A7' : '#66BB6A'} />;
 
@@ -149,3 +150,5 @@ export const CropSVG = ({ cropKey, stage, size = 32 }: CropSVGProps) => {
     default: return <WheatReady size={size} />;
   }
 };
+
+export const CropSVG = React.memo(CropSVGComponent);

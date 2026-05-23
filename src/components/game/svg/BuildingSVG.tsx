@@ -1,7 +1,8 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
 // BARN - 2x2 tile building, FarmVille 2 style
-export const BarnSVG = ({ size = 100 }: { size?: number }) => (
+export const BarnSVG = React.memo(({ size = 100 }: { size?: number }) => (
   <svg width={size} height={size * 0.85} viewBox="0 0 100 85" style={{ filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))' }}>
     {/* Foundation */}
     <rect x="5" y="70" width="90" height="10" rx="2" fill="#9E9E9E" />
@@ -44,7 +45,7 @@ export const BarnSVG = ({ size = 100 }: { size?: number }) => (
 );
 
 // WELL - 1 tile
-export const WellSVG = ({ size = 48 }: { size?: number }) => (
+export const WellSVG = React.memo(({ size = 48 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" style={{ filter: 'drop-shadow(1px 2px 3px rgba(0,0,0,0.25))' }}>
     {/* Stone base */}
     <ellipse cx="24" cy="36" rx="16" ry="6" fill="#9E9E9E" />
@@ -70,7 +71,7 @@ export const WellSVG = ({ size = 48 }: { size?: number }) => (
 );
 
 // OAK TREE
-export const TreeSVG = ({ size = 40, hasApples = false }: { size?: number; hasApples?: boolean }) => (
+export const TreeSVG = React.memo(({ size = 40, hasApples = false }: { size?: number; hasApples?: boolean }) => (
   <motion.svg width={size} height={size * 1.1} viewBox="0 0 44 48"
     animate={{ rotate: [-1, 1, -1] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
     style={{ transformOrigin: 'bottom center', filter: 'drop-shadow(1px 2px 2px rgba(0,0,0,0.2))' }}>
