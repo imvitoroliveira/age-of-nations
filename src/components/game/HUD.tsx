@@ -87,6 +87,26 @@ export const HUD = ({ onBack }: Props) => {
           </AnimatePresence>
         </div>
 
+        {/* XP Bar */}
+        <div className="relative flex flex-col gap-0.5 min-w-[80px] z-10">
+          <div className="flex justify-between items-center px-1">
+            <span className="text-[9px] text-white/90 font-bold" style={{ fontFamily: "'Fredoka One', cursive" }}>
+              NV {useGameStore(s => s.level)}
+            </span>
+            <span className="text-[8px] text-white/70" style={{ fontFamily: "'Nunito', sans-serif" }}>
+              {useGameStore(s => s.xp)} / {useGameStore(s => s.level) * 100}
+            </span>
+          </div>
+          <div className="h-1.5 w-full bg-black/30 rounded-full overflow-hidden border border-white/10">
+            <motion.div 
+              className="h-full bg-gradient-to-r from-blue-400 to-cyan-300"
+              initial={{ width: 0 }}
+              animate={{ width: `${(useGameStore(s => s.xp) / (useGameStore(s => s.level) * 100)) * 100}%` }}
+              transition={{ type: 'spring', bounce: 0, duration: 0.5 }}
+            />
+          </div>
+        </div>
+
         <button
           onClick={() => setShopOpen(true)}
           className="relative text-white px-3 py-1.5 rounded-full text-[11px] font-bold z-10 hover:brightness-110 transition-all"

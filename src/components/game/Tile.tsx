@@ -247,4 +247,6 @@ const TileComponent = ({ tile, index, onTileClick, tick }: Props) => {
       </AnimatePresence>
     </motion.button>
   );
+};
+
 export const Tile = React.memo(TileComponent);
