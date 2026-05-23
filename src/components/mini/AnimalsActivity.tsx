@@ -10,7 +10,11 @@ export const AnimalsActivity = ({ onBack }: Props) => {
   const [mode, setMode] = useState<'explore' | 'quiz'>('explore');
   const [selectedAnimal, setSelectedAnimal] = useState<number | null>(null);
   const [quizTarget, setQuizTarget] = useState(() => Math.floor(Math.random() * ANIMALS.length));
-  const [quizOptions, setQuizOptions] = useState<number[]>(() => genOptions(Math.floor(Math.random() * ANIMALS.length)));
+  const [quizOptions, setQuizOptions] = useState<number[]>(() => {
+    const t = Math.floor(Math.random() * ANIMALS.length);
+    // Use a temporary variable to ensure consistency if we don't refactor yet
+    return []; // Will fix properly below
+  });
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const { recordActivity } = useAppStore();
 
