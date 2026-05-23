@@ -1,36 +1,25 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { LETTERS, LETTER_WORDS, speak } from '@/data/educationData';
 import { ActivityHeader } from '@/components/shared/ActivityHeader';
 import { FeedbackOverlay } from '@/components/shared/FeedbackOverlay';
-import { useAppStore } from '@/store/appStore';
+import { useQuiz } from '@/hooks/useQuiz';
 
 interface Props { onBack: () => void; }
 
 export const LettersActivity = ({ onBack }: Props) => {
   const [mode, setMode] = useState<'explore' | 'quiz'>('explore');
-  const [targetIdx, setTargetIdx] = useState(() => Math.floor(Math.random() * LETTERS.length));
-  const [options, setOptions] = useState<number[]>(() => genOpts(Math.floor(Math.random() * LETTERS.length)));
-  const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
-  const { recordActivity } = useAppStore();
-
-  function genOpts(t: number) {
-    const s = new Set([t]);
-    while (s.size < 4) s.add(Math.floor(Math.random() * LETTERS.length));
-    return [...s].sort(() => Math.random() - 0.5);
-  }
-
-  const handleQuizAnswer = (idx: number) => {
-    const correct = idx === targetIdx;
-    setFeedback(correct ? 'correct' : 'wrong');
-    recordActivity('letters', correct);
-  };
-
-  const next = useCallback(() => {
-    setFeedback(null);
-    const t = Math.floor(Math.random() * LETTERS.length);
-    setTargetIdx(t);
-    setOptions(genOpts(t));
-  }, []);
+  
+  const {
+    target,
+    targetIdx,
+    options,
+    feedback,
+    handleAnswer,
+    next
+  } = useQuiz({
+    items: LETTERS,
+    category: 'letters',
+  });
 
   if (mode === 'explore') {
     return (
@@ -57,7 +46,6 @@ export const LettersActivity = ({ onBack }: Props) => {
     );
   }
 
-  const target = LETTERS[targetIdx];
   const w = LETTER_WORDS[target];
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -70,7 +58,7 @@ export const LettersActivity = ({ onBack }: Props) => {
         </div>
         <div className="grid grid-cols-2 gap-4 max-w-sm w-full">
           {options.map(idx => (
-            <button key={idx} onClick={() => handleQuizAnswer(idx)} className="kid-card bg-card p-6 border-primary/20">
+            <button key={idx} onClick={() => handleAnswer(idx)} className="kid-card bg-card p-6 border-primary/20">
               <span className="text-5xl font-extrabold font-baloo text-primary">{LETTERS[idx]}</span>
             </button>
           ))}

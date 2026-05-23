@@ -20,16 +20,16 @@ interface QuizState<T> {
 export function useQuiz<T>({ items, category, optionCount = 4 }: QuizConfig<T>): QuizState<T> {
   const { recordActivity } = useAppStore();
 
-  function genOptions(targetIdx: number) {
-    const opts = new Set([targetIdx]);
+  const genOptions = useCallback((t: number) => {
+    const opts = new Set([t]);
     while (opts.size < Math.min(optionCount, items.length)) {
       opts.add(Math.floor(Math.random() * items.length));
     }
     return [...opts].sort(() => Math.random() - 0.5);
-  }
+  }, [items.length, optionCount]);
 
   const [targetIdx, setTargetIdx] = useState(() => Math.floor(Math.random() * items.length));
-  const [options, setOptions] = useState<number[]>(() => genOptions(Math.floor(Math.random() * items.length)));
+  const [options, setOptions] = useState<number[]>(() => genOptions(targetIdx));
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
 
   const handleAnswer = useCallback((idx: number) => {
