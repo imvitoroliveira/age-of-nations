@@ -1,7 +1,8 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 
 // BARN - 2x2 tile building, FarmVille 2 style
-export const BarnSVG = ({ size = 100 }: { size?: number }) => (
+export const BarnSVG = React.memo(({ size = 100 }: { size?: number }) => (
   <svg width={size} height={size * 0.85} viewBox="0 0 100 85" style={{ filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))' }}>
     {/* Foundation */}
     <rect x="5" y="70" width="90" height="10" rx="2" fill="#9E9E9E" />
@@ -41,10 +42,10 @@ export const BarnSVG = ({ size = 100 }: { size?: number }) => (
     <polygon points="46,-6 54,-6 50,-2" fill="#5D4037" />
     <text x="50" y="-4" textAnchor="middle" fontSize="5" fill="#795548">🐓</text>
   </svg>
-);
+));
 
 // WELL - 1 tile
-export const WellSVG = ({ size = 48 }: { size?: number }) => (
+export const WellSVG = React.memo(({ size = 48 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" style={{ filter: 'drop-shadow(1px 2px 3px rgba(0,0,0,0.25))' }}>
     {/* Stone base */}
     <ellipse cx="24" cy="36" rx="16" ry="6" fill="#9E9E9E" />
@@ -67,10 +68,10 @@ export const WellSVG = ({ size = 48 }: { size?: number }) => (
     <polygon points="8,10 24,0 40,10" fill="#E53935" />
     <line x1="8" y1="10" x2="40" y2="10" stroke="#B71C1C" strokeWidth="0.5" />
   </svg>
-);
+));
 
 // OAK TREE
-export const TreeSVG = ({ size = 40, hasApples = false }: { size?: number; hasApples?: boolean }) => (
+export const TreeSVG = React.memo(({ size = 40, hasApples = false }: { size?: number; hasApples?: boolean }) => (
   <motion.svg width={size} height={size * 1.1} viewBox="0 0 44 48"
     animate={{ rotate: [-1, 1, -1] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
     style={{ transformOrigin: 'bottom center', filter: 'drop-shadow(1px 2px 2px rgba(0,0,0,0.2))' }}>
@@ -97,7 +98,7 @@ export const TreeSVG = ({ size = 40, hasApples = false }: { size?: number; hasAp
       </>
     )}
   </motion.svg>
-);
+));
 
 // Fence segment
 export const FenceSegment = ({ width = 64 }: { width?: number }) => (

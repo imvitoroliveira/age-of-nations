@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { TileState } from '@/types/game';
 import { CROPS } from '@/data/crops';
 import { useGameStore, getExpansionCost, GRID_COLS } from '@/store/gameStore';
@@ -14,7 +14,7 @@ interface Props {
 }
 
 // Detailed grass SVG with blades and daisy
-const GrassTileSVG = () => (
+const GrassTileSVG = React.memo(() => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 72 72" preserveAspectRatio="none">
     <rect width="72" height="72" fill="#5BBD2E" />
     <ellipse cx="20" cy="50" rx="12" ry="8" fill="#4CAF50" opacity={0.4} />
@@ -28,10 +28,10 @@ const GrassTileSVG = () => (
     <circle cx="38" cy="55" r="3" fill="#FFEE58" />
     <circle cx="38" cy="55" r="1.5" fill="#FFA000" />
   </svg>
-);
+));
 
 // Detailed soil SVG with diagonal furrow lines
-const SoilTileSVG = ({ watered }: { watered?: boolean }) => (
+const SoilTileSVG = React.memo(({ watered }: { watered?: boolean }) => (
   <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 72 72" preserveAspectRatio="none">
     <rect width="72" height="72" fill={watered ? '#4E342E' : '#6D4C41'} />
     {/* Diagonal furrow lines */}
@@ -55,9 +55,9 @@ const SoilTileSVG = ({ watered }: { watered?: boolean }) => (
       </>
     )}
   </svg>
-);
+));
 
-export const Tile = ({ tile, index, onTileClick, tick }: Props) => {
+const TileComponent = ({ tile, index, onTileClick, tick }: Props) => {
   const [harvesting, setHarvesting] = useState(false);
   const [ripple, setRipple] = useState(false);
   const weather = useGameStore(s => s.weather);
@@ -248,3 +248,5 @@ export const Tile = ({ tile, index, onTileClick, tick }: Props) => {
     </motion.button>
   );
 };
+
+export const Tile = React.memo(TileComponent);

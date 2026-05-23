@@ -97,6 +97,8 @@ function createStarterAnimals(): AnimalState[] {
 
 interface GameState {
   coins: number;
+  xp: number;
+  level: number;
   day: number;
   timeOfDay: number;
   weather: 'sunny' | 'rainy';
@@ -110,6 +112,7 @@ interface GameState {
   inventory: Record<string, number>;
   floatingProduce: FloatingProduce[];
 
+  addXP: (amount: number) => void;
   addCoins: (amount: number) => void;
   setTile: (index: number, tile: Partial<TileState>) => void;
   setGrid: (grid: TileState[]) => void;
@@ -141,6 +144,8 @@ export const useGameStore = create<GameState>()(
   persist(
     (set) => ({
       coins: 100,
+      xp: 0,
+      level: 1,
       day: 1,
       timeOfDay: 0.15,
       weather: 'sunny',
@@ -154,6 +159,14 @@ export const useGameStore = create<GameState>()(
       inventory: {},
       floatingProduce: [],
 
+      addXP: (amount) => set((s) => {
+        const newXP = s.xp + amount;
+        const nextLevelXP = s.level * 100;
+        if (newXP >= nextLevelXP) {
+          return { xp: newXP - nextLevelXP, level: s.level + 1 };
+        }
+        return { xp: newXP };
+      }),
       addCoins: (amount) => set((s) => ({ coins: Math.max(0, s.coins + amount) })),
       setTile: (index, tile) => set((s) => {
         const grid = [...s.grid];
@@ -213,7 +226,7 @@ export const useGameStore = create<GameState>()(
         floatingProduce: s.floatingProduce.filter(f => f.id !== id),
       })),
       resetGame: () => set({
-        coins: 100, day: 1, timeOfDay: 0.15, weather: 'sunny',
+        coins: 100, xp: 0, level: 1, day: 1, timeOfDay: 0.15, weather: 'sunny',
         grid: createInitialGrid(initialOwned), animals: createStarterAnimals(), notifications: [],
         activeTool: 'plant', selectedCrop: null, ownedTiles: initialOwned,
         inventory: {}, floatingProduce: [],
