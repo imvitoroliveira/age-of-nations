@@ -42,7 +42,7 @@ export const BarnSVG = React.memo(({ size = 100 }: { size?: number }) => (
     <polygon points="46,-6 54,-6 50,-2" fill="#5D4037" />
     <text x="50" y="-4" textAnchor="middle" fontSize="5" fill="#795548">🐓</text>
   </svg>
-);
+));
 
 // WELL - 1 tile
 export const WellSVG = React.memo(({ size = 48 }: { size?: number }) => (
@@ -68,7 +68,7 @@ export const WellSVG = React.memo(({ size = 48 }: { size?: number }) => (
     <polygon points="8,10 24,0 40,10" fill="#E53935" />
     <line x1="8" y1="10" x2="40" y2="10" stroke="#B71C1C" strokeWidth="0.5" />
   </svg>
-);
+));
 
 // OAK TREE
 export const TreeSVG = React.memo(({ size = 40, hasApples = false }: { size?: number; hasApples?: boolean }) => (
@@ -98,7 +98,7 @@ export const TreeSVG = React.memo(({ size = 40, hasApples = false }: { size?: nu
       </>
     )}
   </motion.svg>
-);
+));
 
 // Fence segment
 export const FenceSegment = ({ width = 64 }: { width?: number }) => (

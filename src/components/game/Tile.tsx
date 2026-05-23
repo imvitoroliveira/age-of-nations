@@ -28,7 +28,7 @@ const GrassTileSVG = React.memo(() => (
     <circle cx="38" cy="55" r="3" fill="#FFEE58" />
     <circle cx="38" cy="55" r="1.5" fill="#FFA000" />
   </svg>
-);
+));
 
 // Detailed soil SVG with diagonal furrow lines
 const SoilTileSVG = React.memo(({ watered }: { watered?: boolean }) => (
@@ -55,7 +55,7 @@ const SoilTileSVG = React.memo(({ watered }: { watered?: boolean }) => (
       </>
     )}
   </svg>
-);
+));
 
 const TileComponent = ({ tile, index, onTileClick, tick }: Props) => {
   const [harvesting, setHarvesting] = useState(false);
