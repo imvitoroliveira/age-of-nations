@@ -1,118 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
-import { HomeScreen } from '@/components/screens/HomeScreen';
-import { AddChildScreen } from '@/components/screens/AddChildScreen';
-import { CategoryScreen } from '@/components/screens/CategoryScreen';
-import { AuthScreen } from '@/components/screens/AuthScreen';
-import { FarmScreen } from '@/components/screens/FarmScreen';
-import { AchievementsScreen } from '@/components/screens/AchievementsScreen';
-import { ParentDashboard } from '@/components/screens/ParentDashboard';
-import { TimeUpScreen } from '@/components/screens/TimeUpScreen';
-import { PremiumScreen } from '@/components/screens/PremiumScreen';
-import { ColorsActivity } from '@/components/mini/ColorsActivity';
-import { AnimalsActivity } from '@/components/mini/AnimalsActivity';
-import { LettersActivity } from '@/components/mini/LettersActivity';
-import { NumbersActivity } from '@/components/mini/NumbersActivity';
-import { ShapesActivity } from '@/components/mini/ShapesActivity';
-import { MathActivity } from '@/components/kids/MathActivity';
-import { SyllablesActivity } from '@/components/kids/SyllablesActivity';
-import { PortugueseActivity } from '@/components/kids/PortugueseActivity';
-import { useAppStore } from '@/store/appStore';
-import { useScreenTimeStore } from '@/store/screenTimeStore';
-import { useAnalyticsStore } from '@/store/analyticsStore';
-import { useAuth } from '@/hooks/useAuth';
-import { Category } from '@/types/education';
-
-type Screen = 'home' | 'addChild' | 'categories' | 'activity' | 'auth' | 'farm' | 'achievements' | 'parentDashboard' | 'timeUp' | 'premium';
+import { Button } from "@/components/ui/button";
+import { ShoppingBag } from "lucide-react";
 
 const Index = () => {
-  const [screen, setScreen] = useState<Screen>('home');
-  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const { setActiveChild, activeChildId } = useAppStore();
-  const { user } = useAuth();
-  const { startSession, tick, isTimeUp, resetIfNewDay, totalSecondsToday } = useScreenTimeStore();
-  const { trackScreenTime } = useAnalyticsStore();
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Screen time ticker
-  useEffect(() => {
-    resetIfNewDay();
-    if (screen === 'activity' || screen === 'categories') {
-      startSession();
-      timerRef.current = setInterval(() => {
-        tick();
-        // Track screen time in analytics
-        if (activeChildId) {
-          trackScreenTime(activeChildId, useScreenTimeStore.getState().totalSecondsToday);
-        }
-        if (isTimeUp()) {
-          setScreen('timeUp');
-        }
-      }, 1000);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [screen]);
-
-  useEffect(() => {
-    if (user && screen === 'auth') setScreen('home');
-  }, [user, screen]);
-
-  const handleSelectChild = (id: string) => {
-    setActiveChild(id);
-    if (isTimeUp()) { setScreen('timeUp'); return; }
-    setScreen('categories');
-  };
-
-  const handleSelectCategory = (cat: Category) => {
-    if (isTimeUp()) { setScreen('timeUp'); return; }
-    setActiveCategory(cat);
-    setScreen('activity');
-  };
-
-  const handleBackToCategories = () => { setActiveCategory(null); setScreen('categories'); };
-  const handleBackToHome = () => { setActiveChild(null); setScreen('home'); };
-
-  switch (screen) {
-    case 'auth':
-      return <AuthScreen onBack={() => setScreen('home')} onSuccess={() => setScreen('home')} />;
-    case 'addChild':
-      return <AddChildScreen onBack={() => setScreen('home')} onDone={() => setScreen('categories')} />;
-    case 'categories':
-      return <CategoryScreen onBack={handleBackToHome} onSelectCategory={handleSelectCategory} onFarm={() => setScreen('farm')} onAchievements={() => setScreen('achievements')} />;
-    case 'farm':
-      return <FarmScreen onBack={handleBackToCategories} />;
-    case 'achievements':
-      return <AchievementsScreen onBack={handleBackToCategories} />;
-    case 'parentDashboard':
-      return <ParentDashboard onBack={() => setScreen('home')} onPremium={() => setScreen('premium')} />;
-    case 'timeUp':
-      return <TimeUpScreen onGoHome={handleBackToHome} onPremium={() => setScreen('premium')} />;
-    case 'premium':
-      return <PremiumScreen onBack={() => setScreen('home')} />;
-    case 'activity':
-      switch (activeCategory) {
-        case 'colors': return <ColorsActivity onBack={handleBackToCategories} />;
-        case 'animals': return <AnimalsActivity onBack={handleBackToCategories} />;
-        case 'letters': return <LettersActivity onBack={handleBackToCategories} />;
-        case 'numbers': return <NumbersActivity onBack={handleBackToCategories} />;
-        case 'shapes': return <ShapesActivity onBack={handleBackToCategories} />;
-        case 'math': return <MathActivity onBack={handleBackToCategories} />;
-        case 'syllables': return <SyllablesActivity onBack={handleBackToCategories} />;
-        case 'portuguese': return <PortugueseActivity onBack={handleBackToCategories} />;
-        default: return <CategoryScreen onBack={handleBackToHome} onSelectCategory={handleSelectCategory} onFarm={() => setScreen('farm')} onAchievements={() => setScreen('achievements')} />;
-      }
-    case 'home':
-    default:
-      return (
-        <HomeScreen
-          onSelectChild={handleSelectChild}
-          onAddChild={() => setScreen('addChild')}
-          onSettings={() => setScreen('parentDashboard')}
-          onLogin={() => setScreen('auth')}
-          onParentDashboard={() => setScreen('parentDashboard')}
-          onPremium={() => setScreen('premium')}
-        />
-      );
-  }
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <ShoppingBag className="w-16 h-16 text-primary" />
+        </div>
+        <h1 className="text-4xl font-bold tracking-tight">Nova Loja Virtual</h1>
+        <p className="text-muted-foreground max-w-[500px]">
+          A estrutura do aplicativo antigo foi removida. O projeto está pronto para começarmos a construção da sua nova loja virtual.
+        </p>
+        <div className="flex gap-4 justify-center pt-4">
+          <Button>Ver Produtos</Button>
+          <Button variant="outline">Saiba Mais</Button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Index;
