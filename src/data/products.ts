@@ -13,6 +13,8 @@ export interface Product {
   models: string[];
   stock: number;
   specifications: { key: string; value: string }[];
+  brand: string;
+  condition: "novo" | "seminovo";
 }
 
 export const products: Product[] = [
@@ -44,7 +46,9 @@ export const products: Product[] = [
       { key: "Memória RAM", value: "16GB LPDDR5X" },
       { key: "Tela", value: "6.8\" QHD+ 120Hz" },
       { key: "Bateria", value: "5000mAh (45W)" }
-    ]
+    ],
+    brand: "Samsung",
+    condition: "novo"
   },
   {
     id: 2,
@@ -73,7 +77,9 @@ export const products: Product[] = [
       { key: "Frequência", value: "20Hz - 20kHz" },
       { key: "Conexão", value: "USB-C / Wireless 2.4GHz" },
       { key: "Peso", value: "320g" }
-    ]
+    ],
+    brand: "Logitech",
+    condition: "novo"
   },
   {
     id: 3,
@@ -100,7 +106,9 @@ export const products: Product[] = [
       { key: "CPU", value: "Intel Core i9-15900HK" },
       { key: "Armazenamento", value: "2TB NVMe Gen5" },
       { key: "Tela", value: "16\" OLED 4K 165Hz" }
-    ]
+    ],
+    brand: "Nexus",
+    condition: "novo"
   },
   {
     id: 4,
@@ -129,7 +137,9 @@ export const products: Product[] = [
       { key: "Resistência", value: "5ATM (50 metros)" },
       { key: "Bateria", value: "Até 120 horas" },
       { key: "Compatibilidade", value: "iOS / Android" }
-    ]
+    ],
+    brand: "Nexus",
+    condition: "novo"
   },
   {
     id: 5,
@@ -158,7 +168,9 @@ export const products: Product[] = [
       { key: "Autonomia", value: "6h + 18h no estojo" },
       { key: "Codecs", value: "AAC, SBC" },
       { key: "Peso", value: "4g por fone" }
-    ]
+    ],
+    brand: "Apple",
+    condition: "seminovo"
   },
   {
     id: 6,
@@ -185,7 +197,9 @@ export const products: Product[] = [
       { key: "Switches", value: "Nexus Mechanical" },
       { key: "Iluminação", value: "Per-key RGB" },
       { key: "Cabo", value: "USB-C Removível" }
-    ]
+    ],
+    brand: "Razer",
+    condition: "novo"
   },
   {
     id: 7,
@@ -213,7 +227,9 @@ export const products: Product[] = [
       { key: "Aceleração", value: "50G" },
       { key: "Switches", value: "Ópticos (100M cliques)" },
       { key: "Bateria", value: "80h (Wireless)" }
-    ]
+    ],
+    brand: "Logitech",
+    condition: "novo"
   },
   {
     id: 8,
@@ -240,6 +256,8 @@ export const products: Product[] = [
       { key: "Canais", value: "2.1" },
       { key: "Bluetooth", value: "5.0" },
       { key: "Controle", value: "Remoto Wireless" }
-    ]
+    ],
+    brand: "Edifier",
+    condition: "novo"
   }
 ];
