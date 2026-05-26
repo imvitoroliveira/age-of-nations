@@ -232,9 +232,14 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex flex-col items-end justify-center sm:min-w-[120px]">
-                      <span className="text-xl font-syne font-bold text-[#7c3aed]">
+                      <motion.span 
+                        key={item.price * item.quantity}
+                        initial={{ scale: 1.1, color: "#7c3aed" }}
+                        animate={{ scale: 1, color: "#7c3aed" }}
+                        className="text-xl font-syne font-bold"
+                      >
                         R$ {(item.price * item.quantity).toLocaleString()}
-                      </span>
+                      </motion.span>
                       <span className="text-[10px] text-gray-500 uppercase tracking-widest">
                         R$ {item.price.toLocaleString()} un.
                       </span>
