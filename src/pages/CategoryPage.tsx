@@ -3,9 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronRight, LayoutGrid, List, SlidersHorizontal, 
-  X, Star, ArrowRight, Loader2,
+  X, Star, ArrowRight, Loader2, Zap,
   Smartphone, Headphones, Laptop, Gamepad2, Speaker, Watch
 } from "lucide-react";
+
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 

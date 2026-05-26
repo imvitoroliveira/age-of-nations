@@ -3,9 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronRight, Star, Heart, 
-  Minus, Plus, Shield, Truck, RefreshCw, Trophy, 
-  CheckCircle2, AlertTriangle, ArrowLeft, ArrowRight
+  Minus, Plus, Shield, Truck, RefreshCw, Trophy, Zap,
+  CheckCircle2, AlertTriangle, ArrowLeft, ArrowRight, ShoppingCart
 } from "lucide-react";
+
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 
