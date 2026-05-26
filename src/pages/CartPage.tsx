@@ -201,15 +201,18 @@ export default function CartPage() {
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[8px] font-bold text-[#7c3aed] uppercase tracking-widest">TECNOLOGIA</span>
-                          <div className="flex text-[#f59e0b] text-[8px]">
+                          <span className="bg-[#7c3aed]/20 text-[#7c3aed] text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-widest">
+                            TECNOLOGIA
+                          </span>
+                          <div className="flex text-[#f59e0b] text-[8px] items-center gap-0.5">
                             {[...Array(5)].map((_, i) => <Star key={i} size={8} fill="currentColor" />)}
+                            <span className="text-gray-500 ml-1">4.8</span>
                           </div>
                         </div>
                         <Link to={`/produto/${item.id}`}>
-                          <h3 className="text-lg font-syne font-bold uppercase tracking-tight hover:text-[#7c3aed] transition-colors">{item.name}</h3>
+                          <h3 className="text-lg font-syne font-bold uppercase tracking-tight hover:text-[#7c3aed] transition-colors line-clamp-1">{item.name}</h3>
                         </Link>
-                        <p className="text-[11px] text-gray-500 mt-1 uppercase tracking-widest">Variação: Padrão ORBE</p>
+                        <p className="text-[13px] text-gray-500 mt-1">Cor: Padrão ORBE · 256GB</p>
                       </div>
 
                       <div className="flex items-center justify-between mt-6">
