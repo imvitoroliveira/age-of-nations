@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Fuse from "fuse.js";
 import { 
   Zap, ChevronRight, LayoutGrid, List, SlidersHorizontal, 
   X, Star, ArrowRight, Loader2
