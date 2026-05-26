@@ -9,6 +9,7 @@ import { Suspense, lazy } from "react";
 // Implementation of Route-based Code Splitting to optimize Initial Bundle Size and LCP
 const Index = lazy(() => import("./pages/Index"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 /**
@@ -31,6 +32,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/produto/:id" element={<ProductDetail />} />
+            <Route path="/categoria/:slug" element={<CategoryPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
