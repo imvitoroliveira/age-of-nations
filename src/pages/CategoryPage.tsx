@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronRight, LayoutGrid, List, SlidersHorizontal, 
-  X, Star, Loader2, Zap, Smartphone, Headphones, 
+  X, Star, Zap, Smartphone, Headphones, 
   Laptop, Gamepad2, Speaker, Watch, ChevronDown, Heart, ShoppingCart
 } from "lucide-react";
 
