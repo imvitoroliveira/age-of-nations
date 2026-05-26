@@ -102,8 +102,8 @@ export default function Navbar() {
           )}
         </div>
 
-        <button 
-          onClick={() => toggleCart(true)}
+        <Link 
+          to="/carrinho"
           className="relative p-2 hover:bg-white/10 rounded-full transition-all text-gray-300"
         >
           <ShoppingCart size={20} />
@@ -112,7 +112,7 @@ export default function Navbar() {
               {cartCount}
             </span>
           )}
-        </button>
+        </Link>
 
         {/* DROPDOWN DE SUGESTÕES */}
         <AnimatePresence>
