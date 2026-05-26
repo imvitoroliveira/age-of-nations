@@ -1,4 +1,4 @@
-import { Instagram, Globe } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Footer = () => {
@@ -17,7 +17,7 @@ const Footer = () => {
           
           <div className="space-y-4">
             <h4 className="font-syne font-bold uppercase tracking-[0.3em] text-[#7c3aed] text-[12px]">SIGA A ORBE CONNECT</h4>
-            <a 
+            <motion.a 
               href="https://www.instagram.com/orbeconnect" 
               target="_blank" 
               rel="noopener noreferrer"
@@ -26,7 +26,7 @@ const Footer = () => {
             >
               <Instagram size={18} className="group-hover:rotate-12 transition-transform" />
               <span>@orbeconnect</span>
-            </a>
+            </motion.a>
           </div>
         </div>
         

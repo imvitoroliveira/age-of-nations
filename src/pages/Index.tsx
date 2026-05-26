@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw } from "lucide-react";
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
+import { useCartStore } from "@/store/cartStore";
 import Footer from "@/components/layout/Footer";
 
 
@@ -18,8 +19,8 @@ const categories = [
 
 export default function Index() {
   const [activeCategory, setActiveCategory] = useState("Todos");
-  const [cartCount, setCartCount] = useState(0);
-  const [addedProduct, setAddedProduct] = useState<number | null>(null);
+  const { addItem } = useCartStore();
+  const [addedProduct, setAddedProduct] = useState<number | string | null>(null);
   const [timeLeft, setTimeLeft] = useState({ h: 2, m: 30, s: 0 });
 
   useEffect(() => {
@@ -35,17 +36,22 @@ export default function Index() {
     return () => clearInterval(timer);
   }, []);
 
-  const addToCart = (e: React.MouseEvent, id: number) => {
+  const addToCart = (e: React.MouseEvent, product: any) => {
     e.preventDefault();
     e.stopPropagation();
-    setCartCount(prev => prev + 1);
-    setAddedProduct(id);
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0]
+    });
+    setAddedProduct(product.id);
     setTimeout(() => setAddedProduct(null), 1800);
   };
 
   return (
     <div className="min-h-screen bg-[#07080f] text-white font-sans overflow-x-hidden selection:bg-[#06b6d4] selection:text-black">
-      <Navbar cartCount={cartCount} />
+      <Navbar />
 
 
       {/* HERO SECTION */}
@@ -87,10 +93,16 @@ export default function Index() {
             { icon: CreditCard, text: "12x Sem Juros", sub: "Nos cartões" },
             { icon: RefreshCw, text: "Troca Fácil", sub: "30 dias" }
           ].map((b, i) => (
-            <div key={i} className="flex items-center gap-4">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="flex items-center gap-4"
+            >
               <div className="p-3 bg-white/5 rounded-lg border border-white/5"><b.icon className="text-[#7c3aed] w-5 h-5" /></div>
               <div><p className="font-bold font-syne text-sm uppercase tracking-wider">{b.text}</p><p className="text-[10px] text-gray-500 font-medium">{b.sub}</p></div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -106,14 +118,20 @@ export default function Index() {
             <p className="font-syne font-bold text-xs uppercase tracking-widest group-hover:text-[#7c3aed]">TODOS</p>
           </div>
           {categories.map((cat, i) => (
-            <Link 
-              key={i} 
-              to={`/categoria/${cat.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-")}`}
-              className={`p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <cat.icon size={32} className={`mb-4 transition-colors ${activeCategory === cat.name ? 'text-[#7c3aed]' : 'text-gray-600 group-hover:text-[#06b6d4]'}`} />
-              <p className="font-syne font-bold text-[10px] uppercase tracking-widest group-hover:text-[#7c3aed]">{cat.name}</p>
-            </Link>
+              <Link 
+                to={`/categoria/${cat.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-")}`}
+                className={`w-full p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}
+              >
+                <cat.icon size={32} className={`mb-4 transition-colors ${activeCategory === cat.name ? 'text-[#7c3aed]' : 'text-gray-600 group-hover:text-[#06b6d4]'}`} />
+                <p className="font-syne font-bold text-[10px] uppercase tracking-widest group-hover:text-[#7c3aed]">{cat.name}</p>
+              </Link>
+            </motion.div>
           ))}
 
         </div>
@@ -122,9 +140,16 @@ export default function Index() {
       {/* PRODUCT GRID */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.filter(p => activeCategory === "Todos" || p.category === activeCategory).map((prod) => (
+          {products.filter(p => activeCategory === "Todos" || p.category === activeCategory).map((prod, index) => (
             <Link to={`/produto/${prod.id}`} key={prod.id}>
-              <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="group bg-white/[0.02] border border-white/5 p-6 rounded-2xl hover:border-[#7c3aed]/50 transition-all hover:-translate-y-2 shadow-2xl relative">
+              <motion.div 
+                layout 
+                initial={{ opacity: 0, y: 24 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -6 }}
+                className="group bg-white/[0.02] border border-white/5 p-6 rounded-2xl hover:border-[#7c3aed]/50 transition-all shadow-2xl relative"
+              >
                 <div className="relative aspect-square bg-black/40 rounded-xl mb-6 overflow-hidden flex items-center justify-center p-4">
                   <img src={prod.images[0]} alt={prod.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
                   {prod.badge && <span className="absolute top-4 left-4 bg-[#7c3aed] text-white text-[9px] font-bold px-2 py-1 rounded-sm uppercase tracking-tighter">{prod.badge}</span>}
@@ -144,7 +169,8 @@ export default function Index() {
                   </div>
                 </div>
                 <button 
-                  onClick={(e) => addToCart(e, prod.id)} 
+                  onClick={(e) => addToCart(e, prod)} 
+
                   className={`w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 transition-all uppercase tracking-widest ${addedProduct === prod.id ? 'bg-[#10b981] text-white' : 'bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white shadow-lg shadow-[#7c3aed]/5'}`}
                 >
                   {addedProduct === prod.id ? "✓ ADICIONADO!" : "🛒 ADICIONAR"}
