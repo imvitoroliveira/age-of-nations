@@ -202,6 +202,17 @@ export default function CategoryPage() {
                       <button onClick={() => setCondition(null)} className="hover:text-white"><X size={10} /></button>
                     </motion.span>
                   )}
+                  {priceRange[1] < 10000 && (
+                    <motion.span 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="inline-flex items-center gap-1.5 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-[9px] font-bold uppercase text-amber-500"
+                    >
+                      Até R$ {priceRange[1]}
+                      <button onClick={() => setPriceRange([0, 10000])} className="hover:text-white"><X size={10} /></button>
+                    </motion.span>
+                  )}
                 </AnimatePresence>
               </div>
             </div>
