@@ -331,6 +331,8 @@ export default function CategoryPage() {
           </>
         )}
       </AnimatePresence>
+
+      <Footer />
     </div>
   );
 }
