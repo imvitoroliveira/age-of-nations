@@ -350,6 +350,7 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function ProductCard({ product, viewMode }: { product: any; viewMode: "grid" | "list" }) {
   const isList = viewMode === "list";
+  const { addItem } = useCartStore();
 
   return (
     <Link to={`/produto/${product.id}`} className="block">
@@ -392,12 +393,36 @@ function ProductCard({ product, viewMode }: { product: any; viewMode: "grid" | "
           </div>
 
           {!isList ? (
-            <button className="w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest group-hover:shadow-lg group-hover:shadow-[#7c3aed]/10">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addItem({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0]
+                });
+              }}
+              className="w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest group-hover:shadow-lg group-hover:shadow-[#7c3aed]/10"
+            >
               🛒 Adicionar
             </button>
           ) : (
             <div className="flex gap-4">
-               <button className="flex-1 bg-[#7c3aed] text-white py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all">
+               <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addItem({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images[0]
+                  });
+                }}
+                className="flex-1 bg-[#7c3aed] text-white py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all"
+               >
                 🛒 Adicionar ao Carrinho
               </button>
                <button className="px-6 border border-white/10 hover:border-[#7c3aed] rounded-xl transition-all">
