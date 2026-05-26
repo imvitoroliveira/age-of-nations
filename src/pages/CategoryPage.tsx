@@ -35,7 +35,9 @@ export default function CategoryPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [sortBy, setSortBy] = useState("relevancia");
-  const [/* selectedBrands */, setSelectedBrands] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
   const [minRating, setMinRating] = useState(0);
   const [condition, setCondition] = useState("novo");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
