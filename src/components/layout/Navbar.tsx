@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Zap, ShoppingCart, History, TrendingUp, ChevronRight } from "lucide-react";
+import { Search, X, ShoppingCart, History, TrendingUp, ChevronRight } from "lucide-react";
 import { products } from "@/data/products";
+import { useCartStore } from "@/store/cartStore";
 
-export default function Navbar({ cartCount = 0 }) {
+export default function Navbar() {
+  const { totalItems, toggleCart } = useCartStore();
+  const cartCount = totalItems();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [history, setHistory] = useState<string[]>([]);
@@ -12,7 +15,7 @@ export default function Navbar({ cartCount = 0 }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const savedHistory = localStorage.getItem("nexus_search_history");
+    const savedHistory = localStorage.getItem("orbe_connect_search_history");
     if (savedHistory) setHistory(JSON.parse(savedHistory));
   }, []);
 
@@ -20,7 +23,7 @@ export default function Navbar({ cartCount = 0 }) {
     if (!query.trim()) return;
     const newHistory = [query, ...history.filter(h => h !== query)].slice(0, 5);
     setHistory(newHistory);
-    localStorage.setItem("nexus_search_history", JSON.stringify(newHistory));
+    localStorage.setItem("orbe_connect_search_history", JSON.stringify(newHistory));
   };
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -35,7 +38,7 @@ export default function Navbar({ cartCount = 0 }) {
 
   const clearHistory = () => {
     setHistory([]);
-    localStorage.removeItem("nexus_search_history");
+    localStorage.removeItem("orbe_connect_search_history");
   };
 
   const suggestedProducts = searchQuery.length >= 2 
@@ -46,8 +49,10 @@ export default function Navbar({ cartCount = 0 }) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 px-6 py-4 flex items-center justify-between">
-      <Link to="/" className="flex items-center gap-2 text-2xl font-syne font-bold bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent uppercase tracking-tight shrink-0">
-        <Zap className="text-[#06b6d4] fill-[#06b6d4]" /> NEXUS TECH
+      <Link to="/" className="flex items-center gap-1 text-2xl font-syne tracking-tight shrink-0 group">
+        <span className="text-3xl text-[#7c3aed]">◎</span>
+        <span className="font-bold bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] bg-clip-text text-transparent uppercase">ORBE</span>
+        <span className="font-light text-white/90">Connect</span>
       </Link>
 
       <div className="hidden md:flex gap-8 font-syne text-sm font-semibold uppercase tracking-wider">
@@ -97,7 +102,10 @@ export default function Navbar({ cartCount = 0 }) {
           )}
         </div>
 
-        <button className="relative p-2 hover:bg-white/10 rounded-full transition-all text-gray-300">
+        <button 
+          onClick={() => toggleCart(true)}
+          className="relative p-2 hover:bg-white/10 rounded-full transition-all text-gray-300"
+        >
           <ShoppingCart size={20} />
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-[#7c3aed] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white">
@@ -144,7 +152,7 @@ export default function Navbar({ cartCount = 0 }) {
                     {/* Buscas Populares */}
                     <div className="space-y-4">
                       <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                        <TrendingUp size={12} className="text-[#7c3aed]" /> Sugestões Nexus
+                        <TrendingUp size={12} className="text-[#7c3aed]" /> Sugestões ORBE
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {popularSearches.map((s, i) => (
