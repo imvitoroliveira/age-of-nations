@@ -6,7 +6,7 @@ import { products } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 
 export default function Navbar() {
-  const { totalItems, toggleCart } = useCartStore();
+  const { totalItems } = useCartStore();
   const cartCount = totalItems();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,8 +102,8 @@ export default function Navbar() {
           )}
         </div>
 
-        <button 
-          onClick={() => toggleCart(true)}
+        <Link 
+          to="/carrinho"
           className="relative p-2 hover:bg-white/10 rounded-full transition-all text-gray-300"
         >
           <ShoppingCart size={20} />
@@ -112,7 +112,7 @@ export default function Navbar() {
               {cartCount}
             </span>
           )}
-        </button>
+        </Link>
 
         {/* DROPDOWN DE SUGESTÕES */}
         <AnimatePresence>
