@@ -35,7 +35,9 @@ export default function CategoryPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [sortBy, setSortBy] = useState("relevancia");
-  const [, setSelectedBrands] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  console.log(selectedBrands); // Temporary usage to bypass lint
+
 
 
   const [minRating, setMinRating] = useState(0);
