@@ -6,7 +6,8 @@ import {
   Minus, Plus, Shield, Truck, RefreshCw, Trophy, 
   CheckCircle2, AlertTriangle, ArrowLeft, ArrowRight
 } from "lucide-react";
-import { products, Product } from "@/data/products";
+import { products } from "@/data/products";
+
 
 export default function ProductDetail() {
   const { id } = useParams();
