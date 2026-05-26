@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -35,7 +35,7 @@ export default function CategoryPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [sortBy, setSortBy] = useState("relevancia");
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [/* selectedBrands */, setSelectedBrands] = useState<string[]>([]);
   const [minRating, setMinRating] = useState(0);
   const [condition, setCondition] = useState("novo");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
