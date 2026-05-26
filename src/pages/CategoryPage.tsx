@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Zap, ChevronRight, LayoutGrid, List, SlidersHorizontal, 
-  X, Star, ShoppingCart, ArrowRight, Loader2,
+  ChevronRight, LayoutGrid, List, SlidersHorizontal, 
+  X, Star, ArrowRight, Loader2,
   Smartphone, Headphones, Laptop, Gamepad2, Speaker, Watch
 } from "lucide-react";
 import { products } from "@/data/products";
+import Navbar from "@/components/layout/Navbar";
+
 
 const categoryIcons: Record<string, any> = {
   "celulares": Smartphone,
@@ -69,17 +71,8 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-[#07080f] text-white font-sans selection:bg-[#06b6d4] selection:text-black">
-      {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-2xl font-syne font-bold bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent uppercase tracking-tight">
-          <Zap className="text-[#06b6d4] fill-[#06b6d4]" /> NEXUS TECH
-        </Link>
-        <div className="flex items-center gap-4">
-          <button className="relative p-2 hover:bg-white/10 rounded-full transition-all">
-            <ShoppingCart className="w-5 h-5" />
-          </button>
-        </div>
-      </nav>
+      <Navbar />
+
 
       <main className="pt-20">
         {/* HEADER DA CATEGORIA */}
