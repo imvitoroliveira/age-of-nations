@@ -243,13 +243,13 @@ export default function ProductDetail() {
 
               {/* BOTÕES DE AÇÃO */}
               <div className="space-y-4 pt-4">
-                <button className="w-full bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm shadow-xl shadow-[#7c3aed]/20 hover:scale-[1.02] transition-all relative overflow-hidden group">
+                <button className="w-full bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm shadow-xl shadow-[#7c3aed]/20 hover:scale-[1.02] transition-all relative overflow-hidden group animate-pulse-slow">
                   <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
                   <span className="flex items-center justify-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
                     Comprar Agora
                   </span>
                 </button>
+
                 <button className="w-full border border-[#7c3aed] text-[#7c3aed] font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm hover:bg-[#7c3aed] hover:text-white transition-all flex items-center justify-center gap-3">
                   <ShoppingCart size={18} /> Adicionar ao Carrinho
                 </button>
