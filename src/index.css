@@ -4,37 +4,40 @@
 
 @layer base {
   :root {
-    --background: 7 11 18;
+    --background: 7 8 15;
     --foreground: 210 40% 98%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --border: 240 3.7% 15.9%;
   }
 
   * {
-    @apply border-gray-800;
+    @apply border-white/10;
   }
 
   body {
-    @apply bg-[#070b12] text-white font-sans selection:bg-[#00f0ff] selection:text-black;
+    @apply bg-[#07080f] text-white font-sans selection:bg-[#06b6d4] selection:text-black;
   }
 }
 
 @layer components {
   .glass {
-    @apply backdrop-blur-md bg-[#070b12]/80 border border-white/10;
+    @apply backdrop-blur-md bg-[#07080f]/80 border border-white/10;
   }
 
   .neon-ciano {
-    text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+    text-shadow: 0 0 10px #06b6d4, 0 0 20px #06b6d4;
   }
 
-  .neon-magenta {
-    text-shadow: 0 0 10px #ff2d78, 0 0 20px #ff2d78;
+  .neon-violet {
+    text-shadow: 0 0 10px #7c3aed, 0 0 20px #7c3aed;
   }
   
   .neon-border-ciano {
-    box-shadow: 0 0 5px #00f0ff, inset 0 0 5px #00f0ff;
+    box-shadow: 0 0 5px #06b6d4, inset 0 0 5px #06b6d4;
   }
 
-  .neon-border-magenta {
-    box-shadow: 0 0 5px #ff2d78, inset 0 0 5px #ff2d78;
+  .neon-border-violet {
+    box-shadow: 0 0 5px #7c3aed, inset 0 0 5px #7c3aed;
   }
 }

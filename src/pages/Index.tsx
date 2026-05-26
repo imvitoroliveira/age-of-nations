@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw, Mail, Instagram, Twitter, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw } from "lucide-react";
 
-const products = [
-  { id: 1, name: "Galaxy S25 Ultra", category: "Celulares", price: 6299, oldPrice: 6999, badge: "TOP" },
-  { id: 2, name: "Headset RGB Pro", category: "Áudio & Som", price: 499, oldPrice: 599, badge: "OFERTA" },
-  { id: 3, name: "Laptop Nexus X", category: "Mundo Gamer", price: 8599, badge: "NOVO" },
-  { id: 4, name: "Nexus Watch v2", category: "Smartwatches", price: 1299, badge: "" },
-  { id: 5, name: "Air Buds Lite", category: "Acessórios para Celular", price: 199, badge: "OFERTA" },
-  { id: 6, name: "Cyber Keyboard", category: "Computadores & Periféricos", price: 350, badge: "" },
-  { id: 7, name: "Gamer Mouse v3", category: "Mundo Gamer", price: 250, badge: "TOP" },
-  { id: 8, name: "Audio System 2.1", category: "Áudio & Som", price: 899, badge: "" },
-];
+import { products } from "@/data/products";
 
 const categories = [
   { name: "Celulares", icon: Smartphone },
@@ -41,27 +33,29 @@ export default function Index() {
     return () => clearInterval(timer);
   }, []);
 
-  const addToCart = (id: number) => {
+  const addToCart = (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
     setCartCount(prev => prev + 1);
     setAddedProduct(id);
     setTimeout(() => setAddedProduct(null), 1800);
   };
 
   return (
-    <div className="min-h-screen bg-[#070b12] text-white font-sans overflow-x-hidden selection:bg-[#00f0ff] selection:text-black">
+    <div className="min-h-screen bg-[#07080f] text-white font-sans overflow-x-hidden selection:bg-[#06b6d4] selection:text-black">
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-2xl font-rajdhani font-bold bg-gradient-to-r from-[#00f0ff] to-[#a855f7] bg-clip-text text-transparent">
-          <Zap className="text-[#00f0ff]" /> NEXUS TECH
+        <div className="flex items-center gap-2 text-2xl font-syne font-bold bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent uppercase tracking-tight">
+          <Zap className="text-[#06b6d4] fill-[#06b6d4]" /> NEXUS TECH
         </div>
-        <div className="hidden md:flex gap-8 font-rajdhani text-lg">
-          {["Produtos", "Promoções", "Sobre", "Contato"].map(item => <a key={item} href="#" className="hover:text-[#00f0ff] transition-colors">{item}</a>)}
+        <div className="hidden md:flex gap-8 font-syne text-sm font-semibold uppercase tracking-wider">
+          {["Produtos", "Promoções", "Sobre", "Contato"].map(item => <a key={item} href="#" className="hover:text-[#06b6d4] transition-colors">{item}</a>)}
         </div>
         <div className="flex items-center gap-4">
-          <Search className="cursor-pointer hover:text-[#00f0ff]" />
+          <Search className="cursor-pointer hover:text-[#06b6d4] w-5 h-5" />
           <button className="relative p-2 hover:bg-white/10 rounded-full transition-all">
-            <ShoppingCart />
-            {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-[#ff2d78] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>}
+            <ShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-[#7c3aed] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>}
           </button>
         </div>
       </nav>
@@ -69,36 +63,27 @@ export default function Index() {
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center px-6 overflow-hidden">
         {/* Background Grid & Particles Effect */}
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '50px 50px' }}></div>
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#00f0ff]/20 rounded-full blur-[120px] -z-10 animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#a855f7]/20 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute inset-0 z-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)', backgroundSize: '50px 50px' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#06b6d4]/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#7c3aed]/10 rounded-full blur-[120px] -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center z-10">
           <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <span className="text-[#00f0ff] font-rajdhani text-sm border border-[#00f0ff] px-4 py-1 rounded-full uppercase tracking-widest">Lançamentos 2025 disponíveis</span>
-            <h1 className="text-6xl md:text-8xl font-rajdhani font-bold mt-6 leading-none tracking-tight">O FUTURO DA<br/><span className="text-[#00f0ff] neon-ciano">TECNOLOGIA</span><br/>É AQUI.</h1>
-            <p className="mt-8 text-gray-400 text-xl max-w-lg">Sinta a evolução com os dispositivos mais avançados do planeta. Design disruptivo e performance extrema.</p>
+            <span className="text-[#06b6d4] font-syne text-[10px] border border-[#06b6d4] px-4 py-1 rounded-full uppercase tracking-[0.2em] font-bold">Lançamentos 2025</span>
+            <h1 className="text-6xl md:text-8xl font-syne font-extrabold mt-6 leading-none tracking-tighter">O FUTURO DA<br/><span className="text-[#06b6d4] neon-ciano">TECNOLOGIA</span><br/>É AQUI.</h1>
+            <p className="mt-8 text-gray-400 text-lg max-w-lg font-light leading-relaxed">Sinta a evolução com os dispositivos mais avançados do planeta. Design disruptivo e performance extrema para quem não aceita o comum.</p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <button className="bg-[#00f0ff] text-black font-bold px-8 py-4 rounded-lg flex items-center gap-2 hover:scale-105 transition-all shadow-[0_0_20px_#00f0ff]">⚡ VER OFERTAS AGORA</button>
-              <button className="border border-[#a855f7] text-[#a855f7] font-bold px-8 py-4 rounded-lg hover:bg-[#a855f7] hover:text-white transition-all">🎮 MUNDO GAMER</button>
-            </div>
-            <div className="mt-12 flex gap-12">
-              <div><p className="text-3xl font-rajdhani font-bold">5.000+</p><p className="text-gray-500 text-sm">Produtos</p></div>
-              <div><p className="text-3xl font-rajdhani font-bold">98%</p><p className="text-gray-500 text-sm">Satisfação</p></div>
-              <div><p className="text-3xl font-rajdhani font-bold">24h</p><p className="text-gray-500 text-sm">Suporte</p></div>
+              <button className="bg-[#7c3aed] text-white font-bold px-8 py-4 rounded-lg flex items-center gap-2 hover:scale-105 transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)] uppercase text-sm tracking-widest">⚡ VER OFERTAS AGORA</button>
+              <button className="border border-white/20 text-white font-bold px-8 py-4 rounded-lg hover:bg-white/5 transition-all uppercase text-sm tracking-widest">🎮 MUNDO GAMER</button>
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative hidden md:block">
-            <div className="w-full aspect-square bg-gradient-to-br from-[#00f0ff]/10 to-[#a855f7]/10 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden relative">
+            <div className="w-full aspect-square bg-gradient-to-br from-[#06b6d4]/5 to-[#7c3aed]/5 rounded-3xl border border-white/5 flex items-center justify-center overflow-hidden relative backdrop-blur-3xl">
               <img src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=1000&auto=format&fit=crop" alt="Hero" className="w-3/4 object-contain animate-float" />
-              <div className="absolute top-10 right-0 bg-[#070b12]/80 p-4 border border-[#00f0ff]/30 rounded-xl backdrop-blur-md animate-bounce-slow">
-                <p className="text-[#00f0ff] text-xs font-bold">🔥 MAIS VENDIDO</p>
-                <p className="font-bold">Galaxy S25 Ultra</p>
-                <p className="text-sm text-gray-400">R$ 6.299</p>
-              </div>
-              <div className="absolute bottom-10 left-0 bg-[#070b12]/80 p-4 border border-[#00f0ff]/30 rounded-xl backdrop-blur-md animate-bounce-slow" style={{ animationDelay: '0.5s' }}>
-                <p className="text-green-400 text-xs font-bold">✅ FRETE GRÁTIS</p>
-                <p className="font-bold">Em todo o Brasil</p>
+              <div className="absolute top-10 right-0 bg-[#07080f]/80 p-4 border border-[#06b6d4]/20 rounded-xl backdrop-blur-md animate-bounce-slow">
+                <p className="text-[#06b6d4] text-[10px] font-bold tracking-widest uppercase">🔥 MAIS VENDIDO</p>
+                <p className="font-syne font-bold">Galaxy S25 Ultra</p>
+                <p className="text-sm text-[#06b6d4] font-bold">R$ 6.299</p>
               </div>
             </div>
           </motion.div>
@@ -106,7 +91,7 @@ export default function Index() {
       </section>
 
       {/* STRIP DE BENEFÍCIOS */}
-      <section className="bg-white/5 py-8 border-y border-white/10 px-6">
+      <section className="bg-white/[0.02] py-10 border-y border-white/5 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
             { icon: Truck, text: "Frete Grátis", sub: "Acima de R$299" },
@@ -115,8 +100,8 @@ export default function Index() {
             { icon: RefreshCw, text: "Troca Fácil", sub: "30 dias" }
           ].map((b, i) => (
             <div key={i} className="flex items-center gap-4">
-              <div className="p-3 bg-white/5 rounded-lg"><b.icon className="text-[#00f0ff]" /></div>
-              <div><p className="font-bold font-rajdhani">{b.text}</p><p className="text-xs text-gray-500">{b.sub}</p></div>
+              <div className="p-3 bg-white/5 rounded-lg border border-white/5"><b.icon className="text-[#7c3aed] w-5 h-5" /></div>
+              <div><p className="font-bold font-syne text-sm uppercase tracking-wider">{b.text}</p><p className="text-[10px] text-gray-500 font-medium">{b.sub}</p></div>
             </div>
           ))}
         </div>
@@ -125,17 +110,17 @@ export default function Index() {
       {/* CATEGORIAS */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <span className="text-[#00f0ff] font-rajdhani text-sm font-bold tracking-widest uppercase">Categorias</span>
-          <h2 className="text-5xl font-rajdhani font-bold mt-4">EXPLORE O UNIVERSO TECH</h2>
+          <span className="text-[#7c3aed] font-syne text-[10px] font-bold tracking-[0.3em] uppercase">Categorias</span>
+          <h2 className="text-4xl font-syne font-extrabold mt-4 uppercase">Explorar Universo</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          <div onClick={() => setActiveCategory("Todos")} className={`p-8 rounded-2xl border border-white/5 cursor-pointer transition-all hover:border-[#00f0ff] group flex flex-col items-center justify-center text-center ${activeCategory === "Todos" ? 'border-[#00f0ff] bg-[#00f0ff]/10' : 'bg-white/5'}`}>
-            <p className="font-rajdhani font-bold text-lg group-hover:text-[#00f0ff]">TODOS</p>
+          <div onClick={() => setActiveCategory("Todos")} className={`p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === "Todos" ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}>
+            <p className="font-syne font-bold text-xs uppercase tracking-widest group-hover:text-[#7c3aed]">TODOS</p>
           </div>
           {categories.map((cat, i) => (
-            <div key={i} onClick={() => setActiveCategory(cat.name)} className={`p-8 rounded-2xl border border-white/5 cursor-pointer transition-all hover:border-[#00f0ff] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#00f0ff] bg-[#00f0ff]/10' : 'bg-white/5'}`}>
-              <cat.icon size={40} className={`mb-4 transition-colors ${activeCategory === cat.name ? 'text-[#00f0ff]' : 'text-[#a855f7]'}`} />
-              <p className="font-rajdhani font-bold text-sm group-hover:text-[#00f0ff]">{cat.name}</p>
+            <div key={i} onClick={() => setActiveCategory(cat.name)} className={`p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}>
+              <cat.icon size={32} className={`mb-4 transition-colors ${activeCategory === cat.name ? 'text-[#7c3aed]' : 'text-gray-600 group-hover:text-[#06b6d4]'}`} />
+              <p className="font-syne font-bold text-[10px] uppercase tracking-widest group-hover:text-[#7c3aed]">{cat.name}</p>
             </div>
           ))}
         </div>
@@ -145,37 +130,48 @@ export default function Index() {
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.filter(p => activeCategory === "Todos" || p.category === activeCategory).map((prod) => (
-            <motion.div key={prod.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="group bg-[#0f141e] border border-white/5 p-6 rounded-2xl hover:border-[#00f0ff] transition-all hover:-translate-y-2 shadow-2xl">
-              <div className="relative aspect-square bg-black/40 rounded-xl mb-6 overflow-hidden flex items-center justify-center">
-                <img src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500&auto=format&fit=crop&sig=${prod.id}`} alt={prod.name} className="w-3/4 object-contain group-hover:scale-110 transition-transform duration-500" />
-                {prod.badge && <span className="absolute top-4 left-4 bg-[#ff2d78] text-white text-[10px] font-bold px-2 py-1 rounded">{prod.badge}</span>}
-              </div>
-              <h4 className="font-rajdhani font-bold text-xl h-14">{prod.name}</h4>
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[#00f0ff] text-2xl font-bold">R$ {prod.price}</p>
-                  {prod.oldPrice && <p className="text-gray-500 text-xs line-through">R$ {prod.oldPrice}</p>}
+            <Link to={`/produto/${prod.id}`} key={prod.id}>
+              <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="group bg-white/[0.02] border border-white/5 p-6 rounded-2xl hover:border-[#7c3aed]/50 transition-all hover:-translate-y-2 shadow-2xl relative">
+                <div className="relative aspect-square bg-black/40 rounded-xl mb-6 overflow-hidden flex items-center justify-center p-4">
+                  <img src={prod.images[0]} alt={prod.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
+                  {prod.badge && <span className="absolute top-4 left-4 bg-[#7c3aed] text-white text-[9px] font-bold px-2 py-1 rounded-sm uppercase tracking-tighter">{prod.badge}</span>}
                 </div>
-                <div className="flex text-yellow-500">{"★".repeat(5)}</div>
-              </div>
-              <button onClick={() => addToCart(prod.id)} className={`w-full mt-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${addedProduct === prod.id ? 'bg-green-500 text-white' : 'border border-[#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black'}`}>
-                {addedProduct === prod.id ? "✓ ADICIONADO!" : "🛒 ADICIONAR AO CARRINHO"}
-              </button>
-            </motion.div>
+                <div className="h-12 flex items-center">
+                  <h4 className="font-syne font-bold text-sm uppercase tracking-tight line-clamp-2 leading-tight">{prod.name}</h4>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-lg font-bold">R$ {prod.price}</p>
+                    {prod.oldPrice && <p className="text-gray-500 text-[10px] line-through">R$ {prod.oldPrice}</p>}
+                  </div>
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={`text-[10px] ${i < Math.floor(prod.rating) ? 'text-[#f59e0b]' : 'text-gray-700'}`}>★</span>
+                    ))}
+                  </div>
+                </div>
+                <button 
+                  onClick={(e) => addToCart(e, prod.id)} 
+                  className={`w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 transition-all uppercase tracking-widest ${addedProduct === prod.id ? 'bg-[#10b981] text-white' : 'bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white shadow-lg shadow-[#7c3aed]/5'}`}
+                >
+                  {addedProduct === prod.id ? "✓ ADICIONADO!" : "🛒 ADICIONAR"}
+                </button>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* FLASH SALE BANNER */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
-        <div className="relative bg-[#0f141e] rounded-3xl border border-[#ff2d78]/30 p-12 overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff2d78]/10 rounded-full blur-[100px]"></div>
+        <div className="relative bg-white/[0.01] rounded-3xl border border-[#7c3aed]/20 p-12 overflow-hidden backdrop-blur-3xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#7c3aed]/5 rounded-full blur-[100px]"></div>
           <div className="flex flex-col md:flex-row items-center justify-between relative z-10 gap-12">
             <div>
-              <span className="bg-[#ff2d78] text-white font-rajdhani font-bold px-4 py-1 rounded-full text-sm">⚡ FLASH SALE</span>
-              <h2 className="text-5xl font-rajdhani font-bold mt-6">ATÉ 40% OFF EM GAMER</h2>
-              <p className="mt-4 text-gray-400">Oferta por tempo limitado. Garanta seu setup ultra-potente agora.</p>
-              <button className="mt-8 bg-gradient-to-r from-[#ff2d78] to-[#a855f7] text-white font-bold px-10 py-4 rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_#ff2d78/40]">APROVEITAR AGORA →</button>
+              <span className="bg-[#7c3aed] text-white font-syne font-bold px-4 py-1 rounded-full text-[10px] tracking-[0.2em] uppercase">⚡ FLASH SALE</span>
+              <h2 className="text-5xl font-syne font-extrabold mt-6 uppercase leading-tight">ATÉ 40% OFF EM<br/>SETUP GAMER</h2>
+              <p className="mt-4 text-gray-400 font-light">Oferta por tempo limitado. Garanta seu setup ultra-potente agora.</p>
+              <button className="mt-8 bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white font-bold px-10 py-4 rounded-xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(124,58,237,0.3)] uppercase text-sm tracking-widest">APROVEITAR AGORA</button>
             </div>
             <div className="flex gap-4">
               {[
@@ -184,8 +180,8 @@ export default function Index() {
                 { label: "Segundos", value: timeLeft.s }
               ].map((t, i) => (
                 <div key={i} className="flex flex-col items-center">
-                  <div className="w-24 h-24 bg-black/60 border border-[#ff2d78]/30 rounded-2xl flex items-center justify-center text-4xl font-rajdhani font-bold">{t.value.toString().padStart(2, '0')}</div>
-                  <span className="mt-2 text-xs text-gray-500 font-bold uppercase">{t.label}</span>
+                  <div className="w-24 h-24 bg-black/40 border border-white/5 rounded-2xl flex items-center justify-center text-4xl font-syne font-bold text-[#7c3aed]">{t.value.toString().padStart(2, '0')}</div>
+                  <span className="mt-2 text-[9px] text-gray-500 font-bold uppercase tracking-widest">{t.label}</span>
                 </div>
               ))}
             </div>
@@ -193,34 +189,16 @@ export default function Index() {
         </div>
       </section>
 
-      {/* NEWSLETTER */}
-      <section className="py-24 px-6 max-w-3xl mx-auto text-center">
-        <div className="p-12 bg-white/5 rounded-3xl border border-white/10">
-          <Mail className="mx-auto text-[#00f0ff] mb-6" size={48} />
-          <h2 className="text-4xl font-rajdhani font-bold uppercase">Fique por dentro</h2>
-          <p className="mt-4 text-gray-400">Receba ofertas exclusivas e as últimas novidades tecnológicas diretamente no seu e-mail.</p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4">
-            <input type="email" placeholder="Seu melhor e-mail" className="flex-1 bg-black/40 border border-white/10 rounded-xl px-6 py-4 focus:border-[#00f0ff] outline-none transition-all" />
-            <button className="bg-[#00f0ff] text-black font-bold px-8 py-4 rounded-xl hover:opacity-90 transition-all">QUERO DESCONTOS</button>
-          </div>
-        </div>
-      </section>
-
       {/* FOOTER */}
-      <footer className="py-24 border-t border-white/10 mt-20 px-6">
+      <footer className="py-24 border-t border-white/5 mt-20 px-6 bg-white/[0.01]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 text-2xl font-rajdhani font-bold text-[#00f0ff] mb-6"><Zap /> NEXUS TECH</div>
-            <p className="text-gray-500 text-sm leading-relaxed">A Nexus Tech é a sua porta de entrada para o futuro. Especializada em eletrônicos de alta gama e estética cyberpunk.</p>
-            <div className="flex gap-4 mt-8">
-              <Instagram className="cursor-pointer hover:text-[#00f0ff]" />
-              <Twitter className="cursor-pointer hover:text-[#00f0ff]" />
-              <Facebook className="cursor-pointer hover:text-[#00f0ff]" />
-            </div>
+            <div className="flex items-center gap-2 text-2xl font-syne font-bold text-[#06b6d4] mb-6 uppercase"><Zap className="fill-[#06b6d4]" /> NEXUS TECH</div>
+            <p className="text-gray-500 text-xs leading-relaxed max-w-xs font-light">A Nexus Tech é a sua porta de entrada para o futuro. Especializada em eletrônicos de alta gama e estética cyberpunk para quem vive à frente do seu tempo.</p>
           </div>
           <div>
-            <h4 className="font-rajdhani font-bold mb-6 uppercase tracking-widest text-[#00f0ff]">Produtos</h4>
-            <ul className="space-y-4 text-gray-500 text-sm">
+            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Produtos</h4>
+            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
               <li><a href="#" className="hover:text-white transition-colors">Smartphone</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Acessórios</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Computadores</a></li>
@@ -228,8 +206,8 @@ export default function Index() {
             </ul>
           </div>
           <div>
-            <h4 className="font-rajdhani font-bold mb-6 uppercase tracking-widest text-[#00f0ff]">Suporte</h4>
-            <ul className="space-y-4 text-gray-500 text-sm">
+            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Suporte</h4>
+            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
               <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Entregas</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Trocas</a></li>
@@ -237,8 +215,8 @@ export default function Index() {
             </ul>
           </div>
           <div>
-            <h4 className="font-rajdhani font-bold mb-6 uppercase tracking-widest text-[#00f0ff]">Empresa</h4>
-            <ul className="space-y-4 text-gray-500 text-sm">
+            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Empresa</h4>
+            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
               <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Trabalhe Conosco</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Novidades</a></li>
@@ -246,34 +224,13 @@ export default function Index() {
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-gray-600 text-xs">© 2025 NEXUS TECH. Todos os direitos reservados. Desenvolvido para o Futuro.</p>
-          <div className="flex gap-4 opacity-50 grayscale hover:grayscale-0 transition-all">
-            <span className="font-bold text-xs uppercase">Pix</span>
-            <span className="font-bold text-xs uppercase">Visa</span>
-            <span className="font-bold text-xs uppercase">Mastercard</span>
-            <span className="font-bold text-xs uppercase">Boleto</span>
+        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
+          <p className="text-gray-600 text-[10px] uppercase tracking-widest font-medium">© 2025 NEXUS TECH. Todos os direitos reservados.</p>
+          <div className="flex gap-6">
+            {["Pix", "Visa", "Master", "Boleto"].map(m => <span key={m} className="font-bold text-[9px] uppercase tracking-tighter">{m}</span>)}
           </div>
         </div>
       </footer>
-
-      {/* Estilos Globais Customizados Adicionais Inline */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }
