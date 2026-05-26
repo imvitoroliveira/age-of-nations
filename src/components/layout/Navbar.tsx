@@ -29,6 +29,7 @@ export default function Navbar({ cartCount = 0 }) {
       addToHistory(searchQuery);
       navigate(`/busca?q=${encodeURIComponent(searchQuery)}`);
       setIsSearchOpen(false);
+      setSearchQuery("");
     }
   };
 
