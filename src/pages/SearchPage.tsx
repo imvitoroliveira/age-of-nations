@@ -8,6 +8,7 @@ import {
 
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
