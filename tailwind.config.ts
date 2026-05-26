@@ -67,7 +67,9 @@ export default {
       },
       animation: {
         "pulse-glow": "pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "float": "float 6s ease-in-out infinite",
+
         "bounce-slow": "bounce-slow 4s ease-in-out infinite",
       },
       keyframes: {
