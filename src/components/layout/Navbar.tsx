@@ -6,7 +6,7 @@ import { products } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 
 export default function Navbar() {
-  const { totalItems, toggleCart } = useCartStore();
+  const { totalItems } = useCartStore();
   const cartCount = totalItems();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
