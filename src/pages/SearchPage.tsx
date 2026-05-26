@@ -296,6 +296,8 @@ export default function SearchPage() {
           </>
         )}
       </AnimatePresence>
+
+      <Footer />
     </div>
   );
 }
