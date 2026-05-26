@@ -3,27 +3,38 @@
 @tailwind utilities;
 
 @layer base {
-:root {
-  --background: 7 11 18;
-  --foreground: 210 40% 98%;
+  :root {
+    --background: 7 11 18;
+    --foreground: 210 40% 98%;
+  }
+
+  * {
+    @apply border-gray-800;
+  }
+
+  body {
+    @apply bg-[#070b12] text-white font-sans selection:bg-[#00f0ff] selection:text-black;
+  }
 }
 
-* {
-  @apply border-gray-800;
-}
+@layer components {
+  .glass {
+    @apply backdrop-blur-md bg-[#070b12]/80 border border-white/10;
+  }
 
-body {
-  @apply bg-[#070b12] text-white font-sans selection:bg-[#00f0ff] selection:text-black;
-}
+  .neon-ciano {
+    text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+  }
 
-.glass {
-  @apply backdrop-blur-md bg-[#070b12]/80 border border-white/10;
-}
+  .neon-magenta {
+    text-shadow: 0 0 10px #ff2d78, 0 0 20px #ff2d78;
+  }
+  
+  .neon-border-ciano {
+    box-shadow: 0 0 5px #00f0ff, inset 0 0 5px #00f0ff;
+  }
 
-.neon-ciano {
-  text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
-}
-
-.neon-magenta {
-  text-shadow: 0 0 10px #ff2d78, 0 0 20px #ff2d78;
+  .neon-border-magenta {
+    box-shadow: 0 0 5px #ff2d78, inset 0 0 5px #ff2d78;
+  }
 }
