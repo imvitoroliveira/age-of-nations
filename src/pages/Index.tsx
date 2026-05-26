@@ -118,11 +118,16 @@ export default function Index() {
             <p className="font-syne font-bold text-xs uppercase tracking-widest group-hover:text-[#7c3aed]">TODOS</p>
           </div>
           {categories.map((cat, i) => (
-            <div key={i} onClick={() => setActiveCategory(cat.name)} className={`p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}>
+            <Link 
+              key={i} 
+              to={`/categoria/${cat.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-")}`}
+              className={`p-8 rounded-2xl border cursor-pointer transition-all hover:border-[#7c3aed] group flex flex-col items-center justify-center text-center ${activeCategory === cat.name ? 'border-[#7c3aed] bg-[#7c3aed]/10' : 'border-white/5 bg-white/[0.02]'}`}
+            >
               <cat.icon size={32} className={`mb-4 transition-colors ${activeCategory === cat.name ? 'text-[#7c3aed]' : 'text-gray-600 group-hover:text-[#06b6d4]'}`} />
               <p className="font-syne font-bold text-[10px] uppercase tracking-widest group-hover:text-[#7c3aed]">{cat.name}</p>
-            </div>
+            </Link>
           ))}
+
         </div>
       </section>
 
