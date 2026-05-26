@@ -11,6 +11,7 @@ const Index = lazy(() => import("./pages/Index"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const SearchPage = lazy(() => import("./pages/SearchPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 /**
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/produto/:id" element={<ProductDetail />} />
             <Route path="/categoria/:slug" element={<CategoryPage />} />
             <Route path="/busca" element={<SearchPage />} />
+            <Route path="/carrinho" element={<CartPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
