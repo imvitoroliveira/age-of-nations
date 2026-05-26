@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Fuse from "fuse.js";
 import { 
   Zap, ChevronRight, LayoutGrid, List, SlidersHorizontal, 
   X, Star, ArrowRight, Loader2
@@ -21,17 +22,31 @@ export default function SearchPage() {
   const [minRating, setMinRating] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // Filter Logic
+  // Filter and Fuzzy Search Logic
   const filteredProducts = useMemo(() => {
-    let result = products.filter(p => {
-      const matchSearch = p.name.toLowerCase().includes(query.toLowerCase()) || 
-                          p.category.toLowerCase().includes(query.toLowerCase()) ||
-                          p.description.toLowerCase().includes(query.toLowerCase());
+    let result = [...products];
+
+    // Fuzzy search with Fuse.js
+    if (query.trim()) {
+      const fuse = new Fuse(products, {
+        keys: ["name", "category", "description", "brand"],
+        threshold: 0.4, // Lower is stricter, 0.4 is a good balance for fuzzy
+        distance: 100,
+        includeScore: true
+      });
+      
+      const searchResults = fuse.search(query);
+      result = searchResults.map(r => r.item);
+    }
+
+    // Apply Filters
+    result = result.filter(p => {
       const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
       const matchRating = p.rating >= minRating;
-      return matchSearch && matchPrice && matchRating;
+      return matchPrice && matchRating;
     });
 
+    // Apply Sorting
     if (sortBy === "preco-menor") result.sort((a, b) => a.price - b.price);
     if (sortBy === "preco-maior") result.sort((a, b) => b.price - a.price);
     if (sortBy === "avaliados") result.sort((a, b) => b.rating - a.rating);
