@@ -10,6 +10,7 @@ import {
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCartStore } from "@/store/cartStore";
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -265,7 +266,7 @@ export default function SearchPage() {
 
                 <div className="w-full border-t border-white/5 pt-20">
                   <div className="flex items-center justify-between mb-12">
-                    <h3 className="text-xl font-syne font-bold uppercase tracking-widest">Mais Vendidos da Orbe</h3>
+                    <h3 className="text-xl font-syne font-bold uppercase tracking-widest">Mais Vendidos da ORBE Connect</h3>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {products.slice(0, 4).map(p => (
@@ -334,7 +335,11 @@ function ProductCard({ product, viewMode, query, HighlightText }: { product: any
     <Link to={`/produto/${product.id}`} className="block">
       <motion.div 
         layout
-        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all hover:-translate-y-1 relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ scale: 1.02, y: -6 }}
+        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
       >
         <div className={`relative bg-black/40 rounded-xl overflow-hidden flex items-center justify-center p-4 transition-all ${isList ? 'w-48 h-48 shrink-0' : 'aspect-square mb-6'}`}>
           <img src={product.images[0]} alt={product.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />
@@ -353,7 +358,20 @@ function ProductCard({ product, viewMode, query, HighlightText }: { product: any
             </div>
           </div>
 
-          <button className={`w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest`}>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const { addItem } = useCartStore.getState();
+              addItem({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0]
+              });
+            }}
+            className={`w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest`}
+          >
              🛒 {isList ? "Adicionar ao Carrinho" : "Adicionar"}
           </button>
         </div>

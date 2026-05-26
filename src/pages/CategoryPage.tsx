@@ -10,6 +10,7 @@ import {
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCartStore } from "@/store/cartStore";
 
 
 const categoryIcons: Record<string, any> = {
@@ -354,7 +355,11 @@ function ProductCard({ product, viewMode }: { product: any; viewMode: "grid" | "
     <Link to={`/produto/${product.id}`} className="block">
       <motion.div 
         layout
-        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all hover:-translate-y-1 shadow-2xl relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ scale: 1.02, y: -6 }}
+        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all shadow-2xl relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
       >
         <div className={`relative bg-black/40 rounded-xl overflow-hidden flex items-center justify-center p-4 transition-all ${isList ? 'w-48 h-48 shrink-0' : 'aspect-square mb-6'}`}>
           <img 
