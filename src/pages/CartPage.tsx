@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronRight, Trash2, Minus, Plus, X, 
-  ArrowLeft, ShoppingBag, CreditCard, Lock, 
-  Truck, Tag, ChevronDown, CheckCircle2, AlertCircle
+  ArrowLeft, ShoppingBag, Lock, 
+  CheckCircle2, Star
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { toast } from "sonner";
