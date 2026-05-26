@@ -412,6 +412,8 @@ export default function ProductDetail() {
         </div>
       </main>
 
+      <Footer />
+
       <style>{`
         @keyframes pulse-wish {
           0% { transform: scale(1); }
