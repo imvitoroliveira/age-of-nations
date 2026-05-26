@@ -183,47 +183,7 @@ export default function Index() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-24 border-t border-white/5 mt-20 px-6 bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center gap-2 text-2xl font-syne font-bold text-[#06b6d4] mb-6 uppercase"><Zap className="fill-[#06b6d4]" /> NEXUS TECH</div>
-            <p className="text-gray-500 text-xs leading-relaxed max-w-xs font-light">A Nexus Tech é a sua porta de entrada para o futuro. Especializada em eletrônicos de alta gama e estética cyberpunk para quem vive à frente do seu tempo.</p>
-          </div>
-          <div>
-            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Produtos</h4>
-            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
-              <li><a href="#" className="hover:text-white transition-colors">Smartphone</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Acessórios</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Computadores</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Smartwatch</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Suporte</h4>
-            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
-              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Entregas</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Trocas</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacidade</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-syne font-bold mb-6 uppercase tracking-[0.2em] text-[#7c3aed] text-xs">Empresa</h4>
-            <ul className="space-y-3 text-gray-500 text-xs font-light uppercase tracking-wider">
-              <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Trabalhe Conosco</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Novidades</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 opacity-40">
-          <p className="text-gray-600 text-[10px] uppercase tracking-widest font-medium">© 2025 NEXUS TECH. Todos os direitos reservados.</p>
-          <div className="flex gap-6">
-            {["Pix", "Visa", "Master", "Boleto"].map(m => <span key={m} className="font-bold text-[9px] uppercase tracking-tighter">{m}</span>)}
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
