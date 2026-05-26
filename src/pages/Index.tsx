@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw } from "lucide-react";
-
+import { Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw, Zap } from "lucide-react";
 import { products } from "@/data/products";
+import Navbar from "@/components/layout/Navbar";
+
 
 const categories = [
   { name: "Celulares", icon: Smartphone },
@@ -43,22 +44,8 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-[#07080f] text-white font-sans overflow-x-hidden selection:bg-[#06b6d4] selection:text-black">
-      {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-2xl font-syne font-bold bg-gradient-to-r from-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent uppercase tracking-tight">
-          <Zap className="text-[#06b6d4] fill-[#06b6d4]" /> NEXUS TECH
-        </div>
-        <div className="hidden md:flex gap-8 font-syne text-sm font-semibold uppercase tracking-wider">
-          {["Produtos", "Promoções", "Sobre", "Contato"].map(item => <a key={item} href="#" className="hover:text-[#06b6d4] transition-colors">{item}</a>)}
-        </div>
-        <div className="flex items-center gap-4">
-          <Search className="cursor-pointer hover:text-[#06b6d4] w-5 h-5" />
-          <button className="relative p-2 hover:bg-white/10 rounded-full transition-all">
-            <ShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-[#7c3aed] text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>}
-          </button>
-        </div>
-      </nav>
+      <Navbar cartCount={cartCount} />
+
 
       {/* HERO SECTION */}
       <section className="relative h-screen flex items-center px-6 overflow-hidden">
