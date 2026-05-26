@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronRight, Star, Heart, 
-  Minus, Plus, Shield, Truck, RefreshCw, Trophy, Zap
+  Minus, Plus, Shield, Truck, RefreshCw, Trophy, ShoppingCart
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 
