@@ -101,9 +101,9 @@ export default function SearchPage() {
             
             <div className="flex flex-col md:flex-row md:items-end gap-4 justify-between">
               <div>
-                <h1 className="text-4xl md:text-5xl font-syne font-extrabold uppercase tracking-tighter">
-                  Resultados para <span className="text-[#7c3aed]">"{query}"</span>
-                </h1>
+            <h1 className="text-4xl md:text-5xl font-syne font-extrabold uppercase tracking-tighter">
+              Resultados para <span className="text-[#f59e0b]">"{query}"</span>
+            </h1>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-4">
                   {filteredProducts.length} itens encontrados em nossa órbita tecnológica
                 </p>
