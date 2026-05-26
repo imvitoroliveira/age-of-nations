@@ -147,7 +147,7 @@ export default function Index() {
           {products.filter(p => activeCategory === "Todos" || p.category === activeCategory).map((prod) => (
             <motion.div key={prod.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="group bg-[#0f141e] border border-white/5 p-6 rounded-2xl hover:border-[#00f0ff] transition-all hover:-translate-y-2 shadow-2xl">
               <div className="relative aspect-square bg-black/40 rounded-xl mb-6 overflow-hidden flex items-center justify-center">
-                <img src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500&auto=format&fit=crop`} alt={prod.name} className="w-3/4 object-contain group-hover:scale-110 transition-transform duration-500" />
+                <img src={`https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=500&auto=format&fit=crop&sig=${prod.id}`} alt={prod.name} className="w-3/4 object-contain group-hover:scale-110 transition-transform duration-500" />
                 {prod.badge && <span className="absolute top-4 left-4 bg-[#ff2d78] text-white text-[10px] font-bold px-2 py-1 rounded">{prod.badge}</span>}
               </div>
               <h4 className="font-rajdhani font-bold text-xl h-14">{prod.name}</h4>
