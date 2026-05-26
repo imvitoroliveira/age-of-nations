@@ -414,11 +414,21 @@ function SidebarFilters({
           <div className="flex items-center gap-3">
             <div className="flex-1 space-y-1.5">
               <label className="text-[9px] text-gray-500 font-bold uppercase">Mín</label>
-              <div className="bg-white/[0.02] border border-white/10 rounded-lg p-2 text-xs font-bold text-gray-300">R$ 0</div>
+              <input 
+                type="number"
+                value={priceRange[0]}
+                onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2 text-xs font-bold text-gray-300 outline-none focus:border-[#7c3aed] transition-colors"
+              />
             </div>
             <div className="flex-1 space-y-1.5">
               <label className="text-[9px] text-gray-500 font-bold uppercase">Máx</label>
-              <div className="bg-white/[0.02] border border-white/10 rounded-lg p-2 text-xs font-bold text-gray-300">R$ {priceRange[1]}</div>
+              <input 
+                type="number"
+                value={priceRange[1]}
+                onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 0])}
+                className="w-full bg-white/[0.02] border border-white/10 rounded-lg p-2 text-xs font-bold text-gray-300 outline-none focus:border-[#7c3aed] transition-colors"
+              />
             </div>
           </div>
         </CollapsibleContent>
