@@ -3,8 +3,9 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Zap, ChevronRight, LayoutGrid, List, SlidersHorizontal, 
-  X, Star, ShoppingCart, ArrowRight, Loader2, Search
+  X, Star, ArrowRight, Loader2
 } from "lucide-react";
+
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 
