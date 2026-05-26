@@ -10,6 +10,7 @@ import {
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCartStore } from "@/store/cartStore";
 
 
 const categoryIcons: Record<string, any> = {
@@ -349,12 +350,17 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function ProductCard({ product, viewMode }: { product: any; viewMode: "grid" | "list" }) {
   const isList = viewMode === "list";
+  const { addItem } = useCartStore();
 
   return (
     <Link to={`/produto/${product.id}`} className="block">
       <motion.div 
         layout
-        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all hover:-translate-y-1 shadow-2xl relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        whileHover={{ scale: 1.02, y: -6 }}
+        className={`group bg-white/[0.02] border border-white/5 rounded-2xl hover:border-[#7c3aed]/50 transition-all shadow-2xl relative overflow-hidden ${isList ? 'flex gap-8 p-6' : 'p-6'}`}
       >
         <div className={`relative bg-black/40 rounded-xl overflow-hidden flex items-center justify-center p-4 transition-all ${isList ? 'w-48 h-48 shrink-0' : 'aspect-square mb-6'}`}>
           <img 
@@ -387,12 +393,36 @@ function ProductCard({ product, viewMode }: { product: any; viewMode: "grid" | "
           </div>
 
           {!isList ? (
-            <button className="w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest group-hover:shadow-lg group-hover:shadow-[#7c3aed]/10">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addItem({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0]
+                });
+              }}
+              className="w-full mt-6 py-3 rounded-lg text-[10px] font-bold flex items-center justify-center gap-2 bg-[#7c3aed]/10 border border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white transition-all uppercase tracking-widest group-hover:shadow-lg group-hover:shadow-[#7c3aed]/10"
+            >
               🛒 Adicionar
             </button>
           ) : (
             <div className="flex gap-4">
-               <button className="flex-1 bg-[#7c3aed] text-white py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all">
+               <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addItem({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images[0]
+                  });
+                }}
+                className="flex-1 bg-[#7c3aed] text-white py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-all"
+               >
                 🛒 Adicionar ao Carrinho
               </button>
                <button className="px-6 border border-white/10 hover:border-[#7c3aed] rounded-xl transition-all">

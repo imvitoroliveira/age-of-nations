@@ -10,15 +10,19 @@ import {
 import { products } from "@/data/products";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 
 
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = products.find(p => p.id === Number(id));
+  const { addItem, toggleCart } = useCartStore();
+  const { toggleItem, isInWishlist } = useWishlistStore();
   
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const isWishlisted = product ? isInWishlist(product.id) : false;
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedModel, setSelectedModel] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -88,7 +92,7 @@ export default function ProductDetail() {
               )}
 
               <button 
-                onClick={() => setIsWishlisted(!isWishlisted)}
+                onClick={() => product && toggleItem(product.id)}
                 className="absolute top-6 right-6 p-3 bg-black/40 backdrop-blur-md rounded-full border border-white/10 hover:border-[#7c3aed]/50 transition-all group/wish"
               >
                 <Heart 
@@ -234,14 +238,39 @@ export default function ProductDetail() {
 
               {/* BOTÕES DE AÇÃO */}
               <div className="space-y-4 pt-4">
-                <button className="w-full bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm shadow-xl shadow-[#7c3aed]/20 hover:scale-[1.02] transition-all relative overflow-hidden group animate-pulse-slow">
+                <button 
+                  onClick={() => {
+                    if (product) {
+                      addItem({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.images[0]
+                      });
+                      toggleCart(true);
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-[#7c3aed] to-[#06b6d4] text-white font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm shadow-xl shadow-[#7c3aed]/20 hover:scale-[1.02] transition-all relative overflow-hidden group"
+                >
                   <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
                   <span className="flex items-center justify-center gap-3">
                     Comprar Agora
                   </span>
                 </button>
 
-                <button className="w-full border border-[#7c3aed] text-[#7c3aed] font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm hover:bg-[#7c3aed] hover:text-white transition-all flex items-center justify-center gap-3">
+                <button 
+                  onClick={() => {
+                    if (product) {
+                      addItem({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.images[0]
+                      });
+                    }
+                  }}
+                  className="w-full border border-[#7c3aed] text-[#7c3aed] font-black py-5 rounded-xl uppercase tracking-[0.2em] text-sm hover:bg-[#7c3aed] hover:text-white transition-all flex items-center justify-center gap-3"
+                >
                   <ShoppingCart size={18} /> Adicionar ao Carrinho
                 </button>
               </div>
