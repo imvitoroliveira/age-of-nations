@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Mail, ChevronRight } from "lucide-react";
+import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch } from "lucide-react";
 
 const products = [
   { id: 1, name: "Galaxy S25 Ultra", category: "Celulares", price: 6299, oldPrice: 6999, badge: "TOP" },
