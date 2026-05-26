@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ShoppingCart, Search, Zap, Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw } from "lucide-react";
-
+import { Gamepad2, Smartphone, Headphones, Laptop, Speaker, Watch, Truck, Shield, CreditCard, RefreshCw, Zap } from "lucide-react";
 import { products } from "@/data/products";
+import Navbar from "@/components/layout/Navbar";
+
 
 const categories = [
   { name: "Celulares", icon: Smartphone },
