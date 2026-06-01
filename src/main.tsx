@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 
 // Versioning for automatic cache cleaning
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.3";
 const storedVersion = localStorage.getItem("app_version");
 
 if (storedVersion !== APP_VERSION) {
