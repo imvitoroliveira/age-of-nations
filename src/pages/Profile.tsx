@@ -1,16 +1,43 @@
 import { useProfile } from "@/hooks/useProfile";
-import { User, LogOut, Heart, Calendar, Save, Key } from "lucide-react";
+import { User, LogOut, Heart, Calendar, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function Profile() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [newPassword, setNewPassword] = useState("");
   const [resetMode, setResetMode] = useState(false);
-  const { data: profile } = useProfile();
+  const { theme, setTheme } = useTheme();
+  
+  const { 
+    data: profile, 
+    updateProfile, 
+    isUpdating, 
+    linkPartner, 
+    isLinking, 
+    unlinkPartner, 
+    isUnlinking 
+  } = useProfile();
+
+  // Local state for form fields
+  const [displayName, setDisplayName] = useState("");
+  const [height, setHeight] = useState("");
+  const [initialWeight, setInitialWeight] = useState("");
+  const [goal, setGoal] = useState("");
+  const [partnerCode, setPartnerCode] = useState("");
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setHeight(profile.height?.toString() || "");
+      setInitialWeight(profile.initial_weight?.toString() || "");
+      setGoal(profile.goal || "");
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (searchParams.get("reset") === "true") {
@@ -40,20 +67,66 @@ export default function Profile() {
     toast.success("Até logo!");
   };
 
+  const handleSaveProfile = () => {
+    updateProfile({
+      display_name: displayName,
+      height: height ? parseFloat(height) : null,
+      initial_weight: initialWeight ? parseFloat(initialWeight) : null,
+      goal: goal
+    });
+  };
+
+  const handleLinkPartner = () => {
+    if (!partnerCode.trim()) {
+      toast.error("Informe o código do parceiro.");
+      return;
+    }
+    linkPartner(partnerCode.trim());
+    setPartnerCode("");
+  };
+
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6 max-w-2xl mx-auto pb-20">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display">Meu Perfil</h2>
+        <h2 className="text-3xl font-bold font-display text-foreground">Meu Perfil</h2>
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-2 rounded-xl bg-red-50 px-4 py-2 text-red-600 font-bold transition-colors hover:bg-red-100"
+          className="flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2 text-destructive font-bold transition-colors hover:bg-destructive/20"
         >
           <LogOut size={18} />
           Sair
         </button>
       </div>
 
-      <div className="rounded-3xl bg-white p-8 shadow-lg">
+      <div className="rounded-3xl bg-card p-8 shadow-lg border border-border">
+        {/* Theme Toggler */}
+        <div className="mb-8 p-4 bg-muted/30 rounded-2xl flex items-center justify-between">
+          <span className="font-bold text-sm">Tema do Aplicativo</span>
+          <div className="flex bg-muted rounded-lg p-1">
+            <button 
+              onClick={() => setTheme("light")}
+              className={`p-2 rounded-md transition-all ${theme === "light" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+              title="Claro"
+            >
+              <Sun size={18} />
+            </button>
+            <button 
+              onClick={() => setTheme("system")}
+              className={`p-2 rounded-md transition-all ${theme === "system" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+              title="Sistema"
+            >
+              <Monitor size={18} />
+            </button>
+            <button 
+              onClick={() => setTheme("dark")}
+              className={`p-2 rounded-md transition-all ${theme === "dark" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
+              title="Escuro"
+            >
+              <Moon size={18} />
+            </button>
+          </div>
+        </div>
+
         {resetMode && (
           <div className="mb-8 p-6 bg-primary/5 rounded-2xl border-2 border-primary/20 animate-in fade-in slide-in-from-top-4">
             <h4 className="font-bold flex items-center gap-2 mb-4">
@@ -64,7 +137,7 @@ export default function Profile() {
               <input 
                 type="password" 
                 placeholder="Nova senha" 
-                className="flex-1 rounded-xl bg-bg px-4 py-2 text-sm outline-none ring-primary focus:ring-2"
+                className="flex-1 rounded-xl bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2 text-foreground"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
@@ -77,65 +150,130 @@ export default function Profile() {
             </div>
           </div>
         )}
+
         <div className="mb-8 flex flex-col items-center gap-4">
-          <div className="relative h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-white shadow-xl">
+          <div className="relative h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-card shadow-xl">
             <User size={40} className="text-primary" />
-            <button className="absolute bottom-0 right-0 rounded-full bg-white p-2 shadow-md border border-bg">
-              <Calendar size={14} />
-            </button>
           </div>
-          <div className="text-center">
-            <h3 className="text-xl font-bold">{profile?.display_name || profile?.username || "Carregando..." }</h3>
-            <p className="text-sm text-text-muted">Objetivo: Emagrecimento</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-2xl bg-bg p-4">
-            <p className="text-xs font-bold text-text-muted uppercase">Altura</p>
-            <p className="text-lg font-bold">175 <span className="text-sm font-medium">cm</span></p>
-          </div>
-          <div className="rounded-2xl bg-bg p-4">
-            <p className="text-xs font-bold text-text-muted uppercase">Peso Inicial</p>
-            <p className="text-lg font-bold">82.0 <span className="text-sm font-medium">kg</span></p>
+          <div className="w-full max-w-xs text-center">
+            <input 
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Seu nome"
+              className="text-xl font-bold bg-transparent border-b border-dashed border-muted text-center w-full focus:outline-none focus:border-primary text-foreground"
+            />
           </div>
         </div>
 
-        <div className="mt-8 space-y-4">
-          <h4 className="font-bold">Dados do Casal</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
+              <Ruler size={14} /> Altura (cm)
+            </label>
+            <input 
+              type="number"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+              placeholder="175"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
+              <Weight size={14} /> Peso Inicial (kg)
+            </label>
+            <input 
+              type="number"
+              step="0.1"
+              value={initialWeight}
+              onChange={(e) => setInitialWeight(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+              placeholder="80.0"
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-2">
+          <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
+            <Target size={14} /> Objetivo Principal
+          </label>
+          <select 
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
+          >
+            <option value="">Selecione um objetivo</option>
+            <option value="Emagrecimento">Emagrecimento</option>
+            <option value="Ganho de Massa">Ganho de Massa</option>
+            <option value="Condicionamento">Condicionamento Físico</option>
+            <option value="Saúde">Saúde e Bem-estar</option>
+          </select>
+        </div>
+
+        <div className="mt-10 pt-10 border-t border-border space-y-4">
+          <h4 className="font-bold text-foreground">Vínculo de Casal</h4>
           {profile?.partner_id ? (
             <div className="flex items-center justify-between rounded-2xl bg-accent/10 p-4 border-2 border-accent/20">
                <div className="flex items-center gap-3">
                  <Heart className="text-accent fill-accent" size={20} />
-                 <span className="font-bold">Vinculado a Maria</span>
+                 <span className="font-bold text-foreground">Conectado(a)</span>
                </div>
-               <button className="text-sm font-bold text-accent">Desvincular</button>
+               <button 
+                disabled={isUnlinking}
+                onClick={() => profile.partner_id && unlinkPartner(profile.partner_id)}
+                className="text-sm font-bold text-destructive hover:underline disabled:opacity-50"
+               >
+                 {isUnlinking ? "Desvinculando..." : "Desvincular"}
+               </button>
             </div>
           ) : (
-            <div className="rounded-2xl border-2 border-dashed border-bg p-6 text-center">
-              <p className="text-sm text-text-muted mb-4">Você ainda não vinculou um parceiro.</p>
+            <div className="rounded-2xl border-2 border-dashed border-muted p-6 text-center">
+              <p className="text-sm text-muted-foreground mb-4">Você ainda não vinculou um parceiro.</p>
               <div className="flex gap-2">
                 <input 
                   type="text" 
                   placeholder="Código do parceiro" 
-                  className="flex-1 rounded-xl bg-bg px-4 py-2 text-sm outline-none ring-primary focus:ring-2"
+                  value={partnerCode}
+                  onChange={(e) => setPartnerCode(e.target.value)}
+                  className="flex-1 rounded-xl bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2 text-foreground"
                 />
-                <button className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20">
-                   Vincular
+                <button 
+                  disabled={isLinking}
+                  onClick={handleLinkPartner}
+                  className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20 disabled:opacity-50"
+                >
+                   {isLinking ? "..." : "Vincular"}
                 </button>
               </div>
-              <p className="mt-4 text-[10px] text-text-muted uppercase font-bold tracking-wider">
-                Seu código: <span className="text-primary select-all">FIT-7392</span>
-              </p>
+              <div className="mt-4 p-3 bg-muted/50 rounded-xl inline-block">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">
+                  Seu código para compartilhar:
+                </p>
+                <span className="text-primary font-mono font-bold select-all text-lg">
+                  {profile?.pairing_code || "---"}
+                </span>
+              </div>
             </div>
           )}
         </div>
 
-        <button className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-surface p-4 font-bold text-white shadow-xl transition-all active:scale-95">
-          <Save size={20} />
-          Salvar Alterações
+        <button 
+          onClick={handleSaveProfile}
+          disabled={isUpdating}
+          className="mt-10 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary p-4 font-bold text-white shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+        >
+          {isUpdating ? (
+            "Salvando..."
+          ) : (
+            <>
+              <Save size={20} />
+              Salvar Alterações
+            </>
+          )}
         </button>
       </div>
     </div>
   );
 }
+
