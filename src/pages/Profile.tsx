@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { User, LogOut, Heart, Calendar, ArrowRight, Save } from "lucide-react";
+import { User, LogOut, Heart, Calendar, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
