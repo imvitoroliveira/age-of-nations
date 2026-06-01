@@ -1,13 +1,18 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award } from "lucide-react";
+import { Flame, Award, Loader2 } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
 import { useQuery } from "@tanstack/react-query";
 import { profileService } from "@/services/profile.service";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useNavigate } from "react-router-dom";
+import { workoutService } from "@/services/workout.service";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data: profile } = useProfile();
+  const { data: stats, isLoading: statsLoading } = useDashboardData(profile?.id);
 
   const { data: partnerProfile } = useQuery({
     queryKey: ['partner_profile', profile?.partner_id],
@@ -15,9 +20,16 @@ export default function Dashboard() {
     enabled: !!profile?.partner_id
   });
 
+  const { data: workoutPlans } = useQuery({
+    queryKey: ['workout_plans'],
+    queryFn: () => workoutService.getWorkoutPlans()
+  });
+
+  const nextWorkout = workoutPlans?.[0];
+
   const weeklyProgress = [
-    { name: 'Completed', value: 3, fill: 'var(--color-accent)' },
-    { name: 'Remaining', value: 2, fill: '#E2E8F0' }
+    { name: 'Completed', value: stats?.weeklyCount || 0, fill: 'var(--color-accent)' },
+    { name: 'Remaining', value: Math.max(0, (stats?.weeklyGoal || 5) - (stats?.weeklyCount || 0)), fill: '#E2E8F0' }
   ];
 
   return (
@@ -31,19 +43,31 @@ export default function Dashboard() {
             <h2 className="text-2xl font-bold font-display text-foreground">Olá, {profile?.display_name || profile?.username || "atleta"}!</h2>
             <div className="flex items-center gap-1 text-orange-500">
               <Flame size={16} fill="currentColor" />
-              <span className="text-sm font-bold">5 dias seguidos</span>
+              <span className="text-sm font-bold">{stats?.streak || 0} dias seguidos</span>
             </div>
           </div>
         </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <TodayWorkoutCard 
-          title="Peito & Tríceps"
-          exercisesCount={5}
-          duration="45 min"
-          onStart={() => console.log("Starting workout...")}
-        />
+        {nextWorkout ? (
+          <TodayWorkoutCard 
+            title={nextWorkout.name}
+            exercisesCount={5} // This could also be dynamic if we query exercises
+            duration="45 min"
+            onStart={() => navigate(`/workout-execution/${nextWorkout.id}`)}
+          />
+        ) : (
+          <div className="rounded-3xl bg-card p-6 shadow-lg border border-border flex flex-col items-center justify-center text-center">
+            <p className="text-muted-foreground mb-4">Nenhum treino disponível.</p>
+            <button 
+              onClick={() => navigate('/workouts')}
+              className="text-primary font-bold hover:underline"
+            >
+              Criar Plano de Treino
+            </button>
+          </div>
+        )}
 
         <PartnerStatusCard 
           name={partnerProfile?.display_name || "Parceiro"}
@@ -61,7 +85,7 @@ export default function Dashboard() {
               </RadialBarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-center text-sm font-medium text-muted-foreground">3 de 5 treinos feitos</p>
+          <p className="text-center text-sm font-medium text-muted-foreground">{stats?.weeklyCount || 0} de {stats?.weeklyGoal || 5} treinos feitos</p>
         </div>
 
         <div className="rounded-3xl bg-card p-6 shadow-lg border border-border md:col-span-2">
