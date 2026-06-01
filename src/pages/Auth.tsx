@@ -48,20 +48,27 @@ export default function Auth() {
   }, [setValue]);
 
   const onAuthSubmit = async (data: AuthFormData) => {
+    console.log("Iniciando processo de autenticação:", { mode, email: data.email });
     setLoading(true);
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
+        const { error, data: signInData } = await supabase.auth.signInWithPassword({
+          email: data.email.trim(),
           password: data.password,
         });
-        if (error) throw error;
+        
+        if (error) {
+          console.error("Erro no login:", error);
+          throw error;
+        }
+        
+        console.log("Login bem-sucedido:", signInData);
         
         if (rememberMe) {
           localStorage.setItem(
             SAVED_LOGIN_KEY,
-            JSON.stringify({ email: data.email, password: data.password })
+            JSON.stringify({ email: data.email.trim(), password: data.password })
           );
         } else {
           localStorage.removeItem(SAVED_LOGIN_KEY);
@@ -69,7 +76,7 @@ export default function Auth() {
         toast.success("Bem-vindo de volta!");
       } else if (mode === "signup") {
         const { data: signUpData, error } = await supabase.auth.signUp({
-          email: data.email,
+          email: data.email.trim(),
           password: data.password,
           options: {
             data: {
@@ -77,22 +84,28 @@ export default function Auth() {
             },
           },
         });
-        if (error) throw error;
+        
+        if (error) {
+          console.error("Erro no cadastro:", error);
+          throw error;
+        }
+        
+        console.log("Cadastro bem-sucedido:", signUpData);
         
         if (signUpData.user) {
-          const { error: profileError } = await supabase.from('profiles').insert([
+          const { error: profileError } = await supabase.from('profiles').upsert([
             {
               id: signUpData.user.id,
-              username: data.name || '',
+              username: data.name || data.email.split('@')[0],
               display_name: data.name || '',
             }
-          ]);
-          if (profileError) console.error(profileError);
+          ], { onConflict: 'id' });
+          if (profileError) console.error("Erro ao criar perfil:", profileError);
         }
         
         toast.success("Conta criada! Verifique seu email se necessário.");
       } else if (mode === "forgot_password") {
-        const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim(), {
           redirectTo: `${window.location.origin}/profile?reset=true`,
         });
         if (error) throw error;
@@ -100,10 +113,18 @@ export default function Auth() {
         setMode("login");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Erro na autenticação:", error);
+      toast.error(error.message || "Ocorreu um erro na autenticação. Tente novamente.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const onAuthError = (errors: any) => {
+    console.log("Erros de validação do formulário:", errors);
+    if (errors.email) toast.error("E-mail inválido");
+    else if (errors.password) toast.error("A senha deve ter pelo menos 6 caracteres");
+    else toast.error("Por favor, preencha todos os campos corretamente.");
   };
 
   return (
@@ -122,7 +143,7 @@ export default function Auth() {
         </div>
 
         <div className="rounded-3xl bg-card p-8 shadow-2xl border border-border">
-          <form onSubmit={handleSubmit(onAuthSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onAuthSubmit, onAuthError)} className="space-y-4">
             {mode === "forgot_password" && (
               <button 
                 type="button"
