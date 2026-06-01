@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Mail, Lock, User as UserIcon, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
@@ -6,15 +6,29 @@ import { toast } from "sonner";
 
 type AuthMode = "login" | "signup" | "forgot_password";
 
+const SAVED_LOGIN_KEY = "fitcouple_saved_login";
+
 export default function Auth() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     name: "",
     partnerCode: "",
   });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SAVED_LOGIN_KEY);
+      if (saved) {
+        const { email, password } = JSON.parse(saved);
+        setFormData((prev) => ({ ...prev, email: email || "", password: password || "" }));
+        setRememberMe(true);
+      }
+    } catch {}
+  }, []);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +41,14 @@ export default function Auth() {
           password: formData.password,
         });
         if (error) throw error;
+        if (rememberMe) {
+          localStorage.setItem(
+            SAVED_LOGIN_KEY,
+            JSON.stringify({ email: formData.email, password: formData.password })
+          );
+        } else {
+          localStorage.removeItem(SAVED_LOGIN_KEY);
+        }
         toast.success("Bem-vindo de volta!");
       } else if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
@@ -142,6 +164,18 @@ export default function Auth() {
                   onChange={(e) => setFormData({ ...formData, partnerCode: e.target.value })}
                 />
               </div>
+            )}
+
+            {mode === "login" && (
+              <label className="flex items-center gap-2 text-sm font-medium text-text-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded accent-primary cursor-pointer"
+                />
+                Salvar login
+              </label>
             )}
 
             {mode === "login" && (
