@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 
 export const workoutSessionService = {
-  async startWorkout(planId: string) {
+  async startWorkout(_planId: string) {
     // Current code doesn't have an explicit 'start' in DB, it just tracks duration at finish
   },
 

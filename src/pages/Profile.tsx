@@ -1,15 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useProfile } from "@/hooks/useProfile";
 import { User, LogOut, Heart, Calendar, Save, Key } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Profile() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [newPassword, setNewPassword] = useState("");
   const [resetMode, setResetMode] = useState(false);
+  const { data: profile } = useProfile();
 
   useEffect(() => {
     if (searchParams.get("reset") === "true") {
@@ -32,15 +33,6 @@ export default function Profile() {
       setNewPassword("");
     }
   };
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      return data;
-    }
-  });
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
