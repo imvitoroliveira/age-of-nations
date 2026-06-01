@@ -16,32 +16,33 @@ export type Database = {
     Tables: {
       achievements: {
         Row: {
-          achievement_key: string
-          child_id: string
+          category: string
+          created_at: string | null
+          description: string
+          icon: string
           id: string
-          unlocked_at: string | null
+          key: string
+          title: string
         }
         Insert: {
-          achievement_key: string
-          child_id: string
+          category: string
+          created_at?: string | null
+          description: string
+          icon: string
           id?: string
-          unlocked_at?: string | null
+          key: string
+          title: string
         }
         Update: {
-          achievement_key?: string
-          child_id?: string
+          category?: string
+          created_at?: string | null
+          description?: string
+          icon?: string
           id?: string
-          unlocked_at?: string | null
+          key?: string
+          title?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "achievements_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       activity_progress: {
         Row: {
@@ -89,6 +90,53 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      body_measurements: {
+        Row: {
+          arm_cm: number | null
+          chest_cm: number | null
+          created_at: string | null
+          hip_cm: number | null
+          id: string
+          recorded_at: string
+          thigh_cm: number | null
+          user_id: string
+          waist_cm: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          arm_cm?: number | null
+          chest_cm?: number | null
+          created_at?: string | null
+          hip_cm?: number | null
+          id?: string
+          recorded_at?: string
+          thigh_cm?: number | null
+          user_id: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          arm_cm?: number | null
+          chest_cm?: number | null
+          created_at?: string | null
+          hip_cm?: number | null
+          id?: string
+          recorded_at?: string
+          thigh_cm?: number | null
+          user_id?: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "body_measurements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -173,38 +221,108 @@ export type Database = {
           },
         ]
       }
+      exercises: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          notes: string | null
+          order_index: number
+          reps: string
+          rest_seconds: number | null
+          sets: number
+          weight_kg: number | null
+          workout_plan_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          order_index: number
+          reps: string
+          rest_seconds?: number | null
+          sets: number
+          weight_kg?: number | null
+          workout_plan_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          order_index?: number
+          reps?: string
+          rest_seconds?: number | null
+          sets?: number
+          weight_kg?: number | null
+          workout_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercises_workout_plan_id_fkey"
+            columns: ["workout_plan_id"]
+            isOneToOne: false
+            referencedRelation: "workout_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_date: string | null
           created_at: string | null
+          goal: string | null
+          height_cm: number | null
           id: string
           is_premium: boolean | null
           parent_pin: string | null
+          partner_id: string | null
           premium_until: string | null
           updated_at: string | null
           username: string
+          weight_kg: number | null
         }
         Insert: {
           avatar_url?: string | null
+          birth_date?: string | null
           created_at?: string | null
+          goal?: string | null
+          height_cm?: number | null
           id: string
           is_premium?: boolean | null
           parent_pin?: string | null
+          partner_id?: string | null
           premium_until?: string | null
           updated_at?: string | null
           username: string
+          weight_kg?: number | null
         }
         Update: {
           avatar_url?: string | null
+          birth_date?: string | null
           created_at?: string | null
+          goal?: string | null
+          height_cm?: number | null
           id?: string
           is_premium?: boolean | null
           parent_pin?: string | null
+          partner_id?: string | null
           premium_until?: string | null
           updated_at?: string | null
           username?: string
+          weight_kg?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       screen_time_settings: {
         Row: {
@@ -237,6 +355,138 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: true
             referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workout_plans: {
+        Row: {
+          assigned_to: string
+          created_at: string | null
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          muscle_groups: string[] | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to: string
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          muscle_groups?: string[] | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          muscle_groups?: string[] | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_plans_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workout_sessions: {
+        Row: {
+          duration_minutes: number | null
+          finished_at: string | null
+          id: string
+          notes: string | null
+          started_at: string | null
+          user_id: string
+          workout_plan_id: string | null
+        }
+        Insert: {
+          duration_minutes?: number | null
+          finished_at?: string | null
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          user_id: string
+          workout_plan_id?: string | null
+        }
+        Update: {
+          duration_minutes?: number | null
+          finished_at?: string | null
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          user_id?: string
+          workout_plan_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_sessions_workout_plan_id_fkey"
+            columns: ["workout_plan_id"]
+            isOneToOne: false
+            referencedRelation: "workout_plans"
             referencedColumns: ["id"]
           },
         ]
