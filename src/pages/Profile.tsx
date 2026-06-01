@@ -1,11 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { User, LogOut, Heart, Calendar, Save } from "lucide-react";
+import { User, LogOut, Heart, Calendar, Save, Key } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Profile() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [newPassword, setNewPassword] = useState("");
+  const [resetMode, setResetMode] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("reset") === "true") {
+      setResetMode(true);
+      toast.info("Defina sua nova senha abaixo.");
+    }
+  }, [searchParams]);
+
+  const handleUpdatePassword = async () => {
+    if (newPassword.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Senha atualizada com sucesso!");
+      setResetMode(false);
+      setNewPassword("");
+    }
+  };
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -35,6 +61,29 @@ export default function Profile() {
       </div>
 
       <div className="rounded-3xl bg-white p-8 shadow-lg">
+        {resetMode && (
+          <div className="mb-8 p-6 bg-primary/5 rounded-2xl border-2 border-primary/20 animate-in fade-in slide-in-from-top-4">
+            <h4 className="font-bold flex items-center gap-2 mb-4">
+              <Key size={18} className="text-primary" />
+              Redefinir Senha
+            </h4>
+            <div className="flex gap-2">
+              <input 
+                type="password" 
+                placeholder="Nova senha" 
+                className="flex-1 rounded-xl bg-bg px-4 py-2 text-sm outline-none ring-primary focus:ring-2"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button 
+                onClick={handleUpdatePassword}
+                className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20"
+              >
+                 Atualizar
+              </button>
+            </div>
+          </div>
+        )}
         <div className="mb-8 flex flex-col items-center gap-4">
           <div className="relative h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-white shadow-xl">
             <User size={40} className="text-primary" />
