@@ -276,13 +276,17 @@ export type Database = {
           display_name: string | null
           gender: string | null
           goal: string | null
+          height: number | null
           height_cm: number | null
           id: string
+          initial_weight: number | null
           is_premium: boolean | null
+          pairing_code: string | null
           parent_pin: string | null
           partner_id: string | null
           partner_name: string | null
           premium_until: string | null
+          theme_preference: string | null
           updated_at: string | null
           username: string
           weight_kg: number | null
@@ -294,13 +298,17 @@ export type Database = {
           display_name?: string | null
           gender?: string | null
           goal?: string | null
+          height?: number | null
           height_cm?: number | null
           id: string
+          initial_weight?: number | null
           is_premium?: boolean | null
+          pairing_code?: string | null
           parent_pin?: string | null
           partner_id?: string | null
           partner_name?: string | null
           premium_until?: string | null
+          theme_preference?: string | null
           updated_at?: string | null
           username: string
           weight_kg?: number | null
@@ -312,13 +320,17 @@ export type Database = {
           display_name?: string | null
           gender?: string | null
           goal?: string | null
+          height?: number | null
           height_cm?: number | null
           id?: string
+          initial_weight?: number | null
           is_premium?: boolean | null
+          pairing_code?: string | null
           parent_pin?: string | null
           partner_id?: string | null
           partner_name?: string | null
           premium_until?: string | null
+          theme_preference?: string | null
           updated_at?: string | null
           username?: string
           weight_kg?: number | null
