@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award, Loader2 } from "lucide-react";
+import { Flame, Award } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
@@ -12,7 +12,7 @@ import { workoutService } from "@/services/workout.service";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
-  const { data: stats, isLoading: statsLoading } = useDashboardData(profile?.id);
+  const { data: stats } = useDashboardData(profile?.id);
 
   const { data: partnerProfile } = useQuery({
     queryKey: ['partner_profile', profile?.partner_id],
