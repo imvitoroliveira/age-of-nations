@@ -17,8 +17,8 @@ export default function Progress() {
   });
 
   const weightData = measurements?.map(m => ({
-    date: new Date(m.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-    weight: m.weight_kg
+    date: new Date(m.measured_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+    weight: m.weight
   })) || [];
 
   return (
