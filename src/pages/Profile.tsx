@@ -28,6 +28,8 @@ export default function Profile() {
   const [height, setHeight] = useState("");
   const [initialWeight, setInitialWeight] = useState("");
   const [goal, setGoal] = useState("");
+  const [gender, setGender] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [partnerCode, setPartnerCode] = useState("");
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function Profile() {
       setHeight(profile.height?.toString() || "");
       setInitialWeight(profile.initial_weight?.toString() || "");
       setGoal(profile.goal || "");
+      setGender(profile.gender || "");
+      setBirthDate(profile.birth_date || "");
     }
   }, [profile]);
 
@@ -72,7 +76,9 @@ export default function Profile() {
       display_name: displayName,
       height: height ? parseFloat(height) : null,
       initial_weight: initialWeight ? parseFloat(initialWeight) : null,
-      goal: goal
+      goal: goal,
+      gender: gender,
+      birth_date: birthDate
     });
   };
 
@@ -88,7 +94,7 @@ export default function Profile() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-20">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-foreground">Meu Perfil</h2>
+        <h2 className="text-3xl font-bold font-display text-foreground">Configurações do Perfil</h2>
         <button 
           onClick={handleLogout}
           className="flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2 text-destructive font-bold transition-colors hover:bg-destructive/20"
@@ -151,64 +157,93 @@ export default function Profile() {
           </div>
         )}
 
-        <div className="mb-8 flex flex-col items-center gap-4">
-          <div className="relative h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-card shadow-xl">
-            <User size={40} className="text-primary" />
-          </div>
-          <div className="w-full max-w-xs text-center">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              <User size={16} className="text-primary" /> Nome de usuário
+            </label>
             <input 
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Seu nome"
-              className="text-xl font-bold bg-transparent border-b border-dashed border-muted text-center w-full focus:outline-none focus:border-primary text-foreground"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
-              <Ruler size={14} /> Altura (cm)
-            </label>
-            <input 
-              type="number"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
+              placeholder="Ex: João Silva"
               className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
-              placeholder="175"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
-              <Weight size={14} /> Peso Inicial (kg)
-            </label>
-            <input 
-              type="number"
-              step="0.1"
-              value={initialWeight}
-              onChange={(e) => setInitialWeight(e.target.value)}
-              className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
-              placeholder="80.0"
-            />
-          </div>
-        </div>
 
-        <div className="mt-6 space-y-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
-            <Target size={14} /> Objetivo Principal
-          </label>
-          <select 
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
-          >
-            <option value="">Selecione um objetivo</option>
-            <option value="Emagrecimento">Emagrecimento</option>
-            <option value="Ganho de Massa">Ganho de Massa</option>
-            <option value="Condicionamento">Condicionamento Físico</option>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-foreground flex items-center gap-1">
+                <Ruler size={16} className="text-primary" /> Altura (cm)
+              </label>
+              <input 
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+                placeholder="175"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-foreground flex items-center gap-1">
+                <Weight size={16} className="text-primary" /> Peso (kg)
+              </label>
+              <input 
+                type="number"
+                step="0.1"
+                value={initialWeight}
+                onChange={(e) => setInitialWeight(e.target.value)}
+                className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+                placeholder="80.0"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              <Target size={16} className="text-primary" /> Objetivo
+            </label>
+            <select 
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
+            >
+              <option value="">Selecione um objetivo</option>
+              <option value="Emagrecimento">Emagrecimento</option>
+              <option value="Ganho de Massa">Ganho de Massa</option>
+              <option value="Condicionamento">Condicionamento Físico</option>
             <option value="Saúde">Saúde e Bem-estar</option>
           </select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              Gênero
+            </label>
+            <select 
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
+            >
+              <option value="">Selecione</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              Data de Nascimento
+            </label>
+            <input 
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+          </div>
+        </div>
         </div>
 
         <div className="mt-10 pt-10 border-t border-border space-y-4">
