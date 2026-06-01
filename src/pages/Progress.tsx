@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Scale, Ruler, TrendingUp, TrendingDown, Plus } from "lucide-react";
-import { motion } from "framer-motion";
+
 
 export default function Progress() {
   const { data: measurements } = useQuery({
