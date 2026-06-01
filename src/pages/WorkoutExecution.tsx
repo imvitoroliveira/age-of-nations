@@ -17,6 +17,7 @@ export default function WorkoutExecution() {
   const { data: plan, isLoading } = useQuery({
     queryKey: ['plan', id],
     queryFn: async () => {
+      if (!id) return null;
       const { data: planData } = await supabase.from('workout_plans').select('*').eq('id', id).single();
       const { data: exercises } = await supabase
         .from('exercises')
@@ -24,7 +25,8 @@ export default function WorkoutExecution() {
         .eq('workout_plan_id', id)
         .order('order_index', { ascending: true });
       return { ...planData, exercises: exercises || [] };
-    }
+    },
+    enabled: !!id,
   });
 
   const exercises = plan?.exercises || [];
@@ -40,9 +42,10 @@ export default function WorkoutExecution() {
     const duration = Math.floor((Date.now() - startTime) / 60000);
     
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !id) return;
     
     await supabase.from('workout_sessions').insert({
-      user_id: user?.id,
+      user_id: user.id,
       workout_plan_id: id,
       duration_minutes: duration,
       finished_at: new Date().toISOString(),
