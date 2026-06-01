@@ -7,20 +7,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-const emptyStringToUndefined = (value: unknown) =>
-  typeof value === "string" && value.trim() === "" ? undefined : value;
-
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.preprocess(
-    emptyStringToUndefined,
-    z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional()
-  ),
-  name: z.preprocess(
-    emptyStringToUndefined,
-    z.string().min(2, "Nome muito curto").optional()
-  ),
-  partnerCode: z.preprocess(emptyStringToUndefined, z.string().optional()),
+  password: z.string().optional(),
+  name: z.string().optional(),
+  partnerCode: z.string().optional(),
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
@@ -58,13 +49,15 @@ export default function Auth() {
 
   const onAuthSubmit = async (data: AuthFormData) => {
     console.log("Iniciando processo de autenticação:", { mode, email: data.email });
+    const password = data.password ?? "";
+    const name = (data.name ?? "").trim();
 
-    if (mode !== "forgot_password" && !data.password) {
+    if (mode !== "forgot_password" && password.length < 6) {
       toast.error("Informe sua senha para continuar.");
       return;
     }
 
-    if (mode === "signup" && !data.name) {
+    if (mode === "signup" && name.length < 2) {
       toast.error("Informe seu nome para criar a conta.");
       return;
     }
@@ -75,7 +68,7 @@ export default function Auth() {
       if (mode === "login") {
         const { error, data: signInData } = await supabase.auth.signInWithPassword({
           email: data.email.trim(),
-          password: data.password,
+          password,
         });
         
         if (error) {
@@ -114,11 +107,11 @@ export default function Auth() {
       } else if (mode === "signup") {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email: data.email.trim(),
-          password: data.password,
+          password,
           options: {
             emailRedirectTo: window.location.origin,
             data: {
-              name: data.name.trim(),
+              name,
             },
           },
         });
@@ -135,8 +128,8 @@ export default function Auth() {
           const { error: profileError } = await supabase.from('profiles').upsert([
             {
               id: signUpData.user.id,
-              username: data.name.trim() || data.email.split('@')[0],
-              display_name: data.name.trim(),
+              username: name || data.email.split('@')[0],
+              display_name: name,
             }
           ], { onConflict: 'id' });
           
