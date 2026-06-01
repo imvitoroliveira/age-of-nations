@@ -7,16 +7,27 @@ export function useSession() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     authService.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
       setSession(session);
+      setLoading(false);
+    }).catch(() => {
+      if (!mounted) return;
+      setSession(null);
       setLoading(false);
     });
 
     const { data: { subscription } } = authService.onAuthStateChange((_event, session) => {
       setSession(session);
+      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { session, loading };

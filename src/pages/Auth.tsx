@@ -9,8 +9,8 @@ import * as z from "zod";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-  name: z.string().min(2, "Nome muito curto").optional(),
+  password: z.string().optional(),
+  name: z.string().optional(),
   partnerCode: z.string().optional(),
 });
 
@@ -25,7 +25,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<AuthFormData>({
+  const { register, handleSubmit, setValue, clearErrors, formState: { errors } } = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
@@ -47,15 +47,34 @@ export default function Auth() {
     } catch {}
   }, [setValue]);
 
+  const switchMode = (nextMode: AuthMode) => {
+    clearErrors();
+    setLoading(false);
+    setMode(nextMode);
+  };
+
   const onAuthSubmit = async (data: AuthFormData) => {
     console.log("Iniciando processo de autenticação:", { mode, email: data.email });
+    const password = data.password ?? "";
+    const name = (data.name ?? "").trim();
+
+    if (mode !== "forgot_password" && password.length < 6) {
+      toast.error("Informe sua senha para continuar.");
+      return;
+    }
+
+    if (mode === "signup" && name.length < 2) {
+      toast.error("Informe seu nome para criar a conta.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (mode === "login") {
         const { error, data: signInData } = await supabase.auth.signInWithPassword({
           email: data.email.trim(),
-          password: data.password,
+          password,
         });
         
         if (error) {
@@ -75,7 +94,7 @@ export default function Auth() {
         if (rememberMe) {
           localStorage.setItem(
             SAVED_LOGIN_KEY,
-            JSON.stringify({ email: data.email.trim(), password: data.password })
+            JSON.stringify({ email: data.email.trim(), password })
           );
         } else {
           localStorage.removeItem(SAVED_LOGIN_KEY);
@@ -94,10 +113,11 @@ export default function Auth() {
       } else if (mode === "signup") {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email: data.email.trim(),
-          password: data.password,
+          password,
           options: {
+            emailRedirectTo: window.location.origin,
             data: {
-              name: data.name,
+              name,
             },
           },
         });
@@ -114,8 +134,8 @@ export default function Auth() {
           const { error: profileError } = await supabase.from('profiles').upsert([
             {
               id: signUpData.user.id,
-              username: data.name || data.email.split('@')[0],
-              display_name: data.name || '',
+              username: name || data.email.split('@')[0],
+              display_name: name,
             }
           ], { onConflict: 'id' });
           
@@ -146,6 +166,7 @@ export default function Auth() {
     console.log("Erros de validação do formulário:", errors);
     if (errors.email) toast.error("E-mail inválido");
     else if (errors.password) toast.error("A senha deve ter pelo menos 6 caracteres");
+    else if (errors.name) toast.error("Informe um nome com pelo menos 2 caracteres");
     else toast.error("Por favor, preencha todos os campos corretamente.");
   };
 
@@ -169,7 +190,7 @@ export default function Auth() {
             {mode === "forgot_password" && (
               <button 
                 type="button"
-                onClick={() => setMode("login")}
+                onClick={() => switchMode("login")}
                 className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-2"
               >
                 <ArrowLeft size={16} /> Voltar para o login
@@ -245,7 +266,7 @@ export default function Auth() {
             {mode === "login" && (
               <button
                 type="button"
-                onClick={() => setMode("forgot_password")}
+                onClick={() => switchMode("forgot_password")}
                 className="w-full text-right text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 Esqueceu a senha?
@@ -270,7 +291,7 @@ export default function Auth() {
 
           {mode !== "forgot_password" && (
             <button
-              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              onClick={() => switchMode(mode === "login" ? "signup" : "login")}
               className="mt-6 w-full text-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               {mode === "login" ? "Não tem uma conta? Cadastre-se" : "Já tem uma conta? Entre"}

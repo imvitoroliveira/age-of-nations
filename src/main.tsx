@@ -7,25 +7,31 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 
 // Versioning for automatic cache cleaning
-const APP_VERSION = "1.0.4"; // Incrementing version to force clean
-const storedVersion = localStorage.getItem("app_version");
+const APP_VERSION = "1.0.5";
+const VERSION_KEY = "app_version";
+const RELOAD_KEY = "app_reload_after_update";
+const storedVersion = localStorage.getItem(VERSION_KEY);
 
 if (storedVersion !== APP_VERSION) {
   console.log(`Versão antiga detectada (${storedVersion}). Limpando cache para v${APP_VERSION}...`);
-  localStorage.clear();
-  localStorage.setItem("app_version", APP_VERSION);
-  
-  // Clear service worker if exists
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (const registration of registrations) {
-        registration.unregister();
-      }
-    });
+  localStorage.setItem(VERSION_KEY, APP_VERSION);
+
+  const clearAppCache = async () => {
+    if ("serviceWorker" in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+    }
+
+    if ("caches" in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+    }
+  };
+
+  if (sessionStorage.getItem(RELOAD_KEY) !== APP_VERSION) {
+    sessionStorage.setItem(RELOAD_KEY, APP_VERSION);
+    clearAppCache().finally(() => window.location.reload());
   }
-  
-  // Force a hard reload to ensure the new version is loaded
-  window.location.reload();
 }
 
 const queryClient = new QueryClient({
