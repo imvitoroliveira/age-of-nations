@@ -9,8 +9,8 @@ export default function Workouts() {
     queryFn: async () => {
       const { data } = await supabase
         .from('workout_plans')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*');
+      return data || [];
       return data || [];
     }
   });
@@ -42,19 +42,17 @@ export default function Workouts() {
               <div>
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex gap-1">
-                    {plan.muscle_groups?.map((group: string) => (
-                      <span key={group} className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">
-                        {group}
-                      </span>
-                    ))}
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary uppercase">
+                      Treino
+                    </span>
                   </div>
-                  {plan.created_by === plan.assigned_to ? (
+                  {plan.creator_profile_id === plan.user_profile_id ? (
                     <User size={16} className="text-text-muted" />
                   ) : (
                     <Users size={16} className="text-primary" />
                   )}
                 </div>
-                <h3 className="text-xl font-bold font-display group-hover:text-primary transition-colors">{plan.name}</h3>
+                <h3 className="text-xl font-bold font-display group-hover:text-primary transition-colors">{plan.title}</h3>
                 <p className="text-sm text-text-muted line-clamp-2 mt-1">{plan.description}</p>
               </div>
               

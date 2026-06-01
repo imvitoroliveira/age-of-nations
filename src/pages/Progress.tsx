@@ -10,8 +10,8 @@ export default function Progress() {
     queryFn: async () => {
       const { data } = await supabase
         .from('body_measurements')
-        .select('*')
-        .order('recorded_at', { ascending: true });
+        .select('*');
+      return data || [];
       return data || [];
     }
   });

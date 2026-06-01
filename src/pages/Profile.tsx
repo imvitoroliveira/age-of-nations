@@ -92,7 +92,7 @@ export default function Profile() {
             </button>
           </div>
           <div className="text-center">
-            <h3 className="text-xl font-bold">{profile?.name || "Carregando..." }</h3>
+            <h3 className="text-xl font-bold">{profile?.display_name || profile?.username || "Carregando..." }</h3>
             <p className="text-sm text-text-muted">Objetivo: Emagrecimento</p>
           </div>
         </div>
