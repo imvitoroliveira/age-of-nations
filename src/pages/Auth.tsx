@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { Mail, Lock, User as UserIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store/useAuthStore";
+
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
