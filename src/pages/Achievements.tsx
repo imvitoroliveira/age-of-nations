@@ -17,7 +17,8 @@ export default function Achievements() {
     queryKey: ['user_achievements'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data } = await supabase.from('user_achievements').select('achievement_id').eq('user_profile_id', user?.id);
+      if (!user) return [];
+      const { data } = await supabase.from('user_achievements').select('achievement_id').eq('user_id', user.id);
       return data?.map(a => a.achievement_id) || [];
     }
   });

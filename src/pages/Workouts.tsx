@@ -9,8 +9,8 @@ export default function Workouts() {
     queryFn: async () => {
       const { data } = await supabase
         .from('workout_plans')
-        .select('*');
-      return data || [];
+        .select('*')
+        .order('created_at', { ascending: false });
       return data || [];
     }
   });
@@ -46,13 +46,13 @@ export default function Workouts() {
                       Treino
                     </span>
                   </div>
-                  {plan.creator_profile_id === plan.user_profile_id ? (
+                  {plan.created_by === plan.assigned_to ? (
                     <User size={16} className="text-text-muted" />
                   ) : (
                     <Users size={16} className="text-primary" />
                   )}
                 </div>
-                <h3 className="text-xl font-bold font-display group-hover:text-primary transition-colors">{plan.title}</h3>
+                <h3 className="text-xl font-bold font-display group-hover:text-primary transition-colors">{plan.name}</h3>
                 <p className="text-sm text-text-muted line-clamp-2 mt-1">{plan.description}</p>
               </div>
               
