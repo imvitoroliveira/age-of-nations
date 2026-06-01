@@ -273,12 +273,15 @@ export type Database = {
           avatar_url: string | null
           birth_date: string | null
           created_at: string | null
+          display_name: string | null
+          gender: string | null
           goal: string | null
           height_cm: number | null
           id: string
           is_premium: boolean | null
           parent_pin: string | null
           partner_id: string | null
+          partner_name: string | null
           premium_until: string | null
           updated_at: string | null
           username: string
@@ -288,12 +291,15 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string | null
+          display_name?: string | null
+          gender?: string | null
           goal?: string | null
           height_cm?: number | null
           id: string
           is_premium?: boolean | null
           parent_pin?: string | null
           partner_id?: string | null
+          partner_name?: string | null
           premium_until?: string | null
           updated_at?: string | null
           username: string
@@ -303,12 +309,15 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string | null
           created_at?: string | null
+          display_name?: string | null
+          gender?: string | null
           goal?: string | null
           height_cm?: number | null
           id?: string
           is_premium?: boolean | null
           parent_pin?: string | null
           partner_id?: string | null
+          partner_name?: string | null
           premium_until?: string | null
           updated_at?: string | null
           username?: string
