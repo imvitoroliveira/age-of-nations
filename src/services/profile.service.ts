@@ -41,16 +41,17 @@ export const profileService = {
   },
 
   async linkPartner(userId: string, pairingCode: string): Promise<void> {
-    // Find the partner with the given pairing code
-    const { data: partner, error: partnerError } = await supabase
-      .from('profiles')
-      .select('id, display_name')
-      .eq('pairing_code', pairingCode)
-      .single();
+    // Find the partner using the secure RPC function
+    const { data: partners, error: partnerError } = await supabase
+      .rpc('find_profile_by_code', { search_code: pairingCode });
 
-    if (partnerError || !partner) {
+    if (partnerError || !partners || partners.length === 0) {
+      console.error("Error finding partner:", partnerError);
       throw new Error("Código de parceiro inválido.");
     }
+
+    const partner = partners[0];
+
 
     if (partner.id === userId) {
       throw new Error("Você não pode se vincular a si mesmo.");
