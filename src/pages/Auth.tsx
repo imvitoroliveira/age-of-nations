@@ -107,7 +107,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-dark p-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,13 +121,13 @@ export default function Auth() {
           <p className="text-white/60">Fortalecendo o corpo e a relação.</p>
         </div>
 
-        <div className="rounded-3xl bg-white p-8 shadow-2xl">
+        <div className="rounded-3xl bg-card p-8 shadow-2xl border border-border">
           <form onSubmit={handleSubmit(onAuthSubmit)} className="space-y-4">
             {mode === "forgot_password" && (
               <button 
                 type="button"
                 onClick={() => setMode("login")}
-                className="flex items-center gap-2 text-sm font-medium text-text-muted hover:text-primary transition-colors mb-2"
+                className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-2"
               >
                 <ArrowLeft size={16} /> Voltar para o login
               </button>
@@ -136,12 +136,12 @@ export default function Auth() {
             {mode === "signup" && (
               <div className="space-y-1">
                 <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <input
                     {...register("name")}
                     type="text"
                     placeholder="Seu nome"
-                    className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                    className="w-full rounded-xl bg-muted p-3 pl-12 outline-none ring-primary focus:ring-2 text-foreground"
                   />
                 </div>
                 {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
@@ -150,12 +150,12 @@ export default function Auth() {
             
             <div className="space-y-1">
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                 <input
                   {...register("email")}
                   type="email"
                   placeholder="Email"
-                  className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                  className="w-full rounded-xl bg-muted p-3 pl-12 outline-none ring-primary focus:ring-2 text-foreground"
                 />
               </div>
               {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -164,12 +164,12 @@ export default function Auth() {
             {mode !== "forgot_password" && (
               <div className="space-y-1">
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <input
                     {...register("password")}
                     type="password"
                     placeholder="Senha"
-                    className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                    className="w-full rounded-xl bg-muted p-3 pl-12 outline-none ring-primary focus:ring-2 text-foreground"
                   />
                 </div>
                 {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
@@ -182,13 +182,13 @@ export default function Auth() {
                   {...register("partnerCode")}
                   type="text"
                   placeholder="Código do parceiro (opcional)"
-                  className="w-full rounded-xl bg-bg p-3 outline-none ring-primary focus:ring-2"
+                  className="w-full rounded-xl bg-muted p-3 outline-none ring-primary focus:ring-2 text-foreground"
                 />
               </div>
             )}
 
             {mode === "login" && (
-              <label className="flex items-center gap-2 text-sm font-medium text-text-muted cursor-pointer select-none">
+              <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -203,7 +203,7 @@ export default function Auth() {
               <button
                 type="button"
                 onClick={() => setMode("forgot_password")}
-                className="w-full text-right text-xs font-medium text-text-muted hover:text-primary transition-colors"
+                className="w-full text-right text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 Esqueceu a senha?
               </button>
@@ -221,7 +221,7 @@ export default function Auth() {
           {mode !== "forgot_password" && (
             <button
               onClick={() => setMode(mode === "login" ? "signup" : "login")}
-              className="mt-6 w-full text-center text-sm font-medium text-text-muted"
+              className="mt-6 w-full text-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               {mode === "login" ? "Não tem uma conta? Cadastre-se" : "Já tem uma conta? Entre"}
             </button>
