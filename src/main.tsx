@@ -7,13 +7,15 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 
 // Versioning for automatic cache cleaning
-const APP_VERSION = "1.0.3";
+const APP_VERSION = "1.0.4"; // Incrementing version to force clean
 const storedVersion = localStorage.getItem("app_version");
 
 if (storedVersion !== APP_VERSION) {
+  console.log(`Versão antiga detectada (${storedVersion}). Limpando cache para v${APP_VERSION}...`);
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
-  // Optional: Force reload to clear service worker cache if any
+  
+  // Clear service worker if exists
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.getRegistrations().then((registrations) => {
       for (const registration of registrations) {
@@ -21,6 +23,9 @@ if (storedVersion !== APP_VERSION) {
       }
     });
   }
+  
+  // Force a hard reload to ensure the new version is loaded
+  window.location.reload();
 }
 
 const queryClient = new QueryClient({
