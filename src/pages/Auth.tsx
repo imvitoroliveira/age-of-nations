@@ -167,6 +167,18 @@ export default function Auth() {
             )}
 
             {mode === "login" && (
+              <label className="flex items-center gap-2 text-sm font-medium text-text-muted cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded accent-primary cursor-pointer"
+                />
+                Salvar login
+              </label>
+            )}
+
+            {mode === "login" && (
               <button
                 type="button"
                 onClick={() => setMode("forgot_password")}
