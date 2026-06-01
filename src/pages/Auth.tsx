@@ -7,11 +7,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
+const emptyStringToUndefined = (value: unknown) =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
+
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
-  name: z.string().min(2, "Nome muito curto").optional(),
-  partnerCode: z.string().optional(),
+  password: z.preprocess(
+    emptyStringToUndefined,
+    z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional()
+  ),
+  name: z.preprocess(
+    emptyStringToUndefined,
+    z.string().min(2, "Nome muito curto").optional()
+  ),
+  partnerCode: z.preprocess(emptyStringToUndefined, z.string().optional()),
 });
 
 type AuthFormData = z.infer<typeof authSchema>;
@@ -49,6 +58,17 @@ export default function Auth() {
 
   const onAuthSubmit = async (data: AuthFormData) => {
     console.log("Iniciando processo de autenticação:", { mode, email: data.email });
+
+    if (mode !== "forgot_password" && !data.password) {
+      toast.error("Informe sua senha para continuar.");
+      return;
+    }
+
+    if (mode === "signup" && !data.name) {
+      toast.error("Informe seu nome para criar a conta.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -96,8 +116,9 @@ export default function Auth() {
           email: data.email.trim(),
           password: data.password,
           options: {
+            emailRedirectTo: window.location.origin,
             data: {
-              name: data.name,
+              name: data.name.trim(),
             },
           },
         });
@@ -114,8 +135,8 @@ export default function Auth() {
           const { error: profileError } = await supabase.from('profiles').upsert([
             {
               id: signUpData.user.id,
-              username: data.name || data.email.split('@')[0],
-              display_name: data.name || '',
+              username: data.name.trim() || data.email.split('@')[0],
+              display_name: data.name.trim(),
             }
           ], { onConflict: 'id' });
           
@@ -146,6 +167,7 @@ export default function Auth() {
     console.log("Erros de validação do formulário:", errors);
     if (errors.email) toast.error("E-mail inválido");
     else if (errors.password) toast.error("A senha deve ter pelo menos 6 caracteres");
+    else if (errors.name) toast.error("Informe um nome com pelo menos 2 caracteres");
     else toast.error("Por favor, preencha todos os campos corretamente.");
   };
 
