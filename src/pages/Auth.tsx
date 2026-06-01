@@ -233,9 +233,16 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary p-4 font-bold text-white shadow-lg shadow-primary/30 transition-all active:scale-95 disabled:opacity-50"
+              className="w-full rounded-xl bg-primary p-4 font-bold text-white shadow-lg shadow-primary/30 transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Processando..." : mode === "login" ? "Entrar" : mode === "signup" ? "Criar Conta" : "Enviar Recuperação"}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Processando...
+                </span>
+              ) : (
+                mode === "login" ? "Entrar" : mode === "signup" ? "Criar Conta" : "Enviar Recuperação"
+              )}
             </button>
           </form>
 
