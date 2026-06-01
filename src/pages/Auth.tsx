@@ -3,6 +3,18 @@ import { supabase } from "@/lib/supabase";
 import { Mail, Lock, User as UserIcon, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const authSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  name: z.string().min(2, "Nome muito curto").optional(),
+  partnerCode: z.string().optional(),
+});
+
+type AuthFormData = z.infer<typeof authSchema>;
 
 type AuthMode = "login" | "signup" | "forgot_password";
 
@@ -12,11 +24,15 @@ export default function Auth() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    partnerCode: "",
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<AuthFormData>({
+    resolver: zodResolver(authSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      name: "",
+      partnerCode: "",
+    }
   });
 
   useEffect(() => {
@@ -24,56 +40,59 @@ export default function Auth() {
       const saved = localStorage.getItem(SAVED_LOGIN_KEY);
       if (saved) {
         const { email, password } = JSON.parse(saved);
-        setFormData((prev) => ({ ...prev, email: email || "", password: password || "" }));
+        setValue("email", email || "");
+        setValue("password", password || "");
         setRememberMe(true);
       }
     } catch {}
-  }, []);
+  }, [setValue]);
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onAuthSubmit = async (data: AuthFormData) => {
     setLoading(true);
 
     try {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
+          email: data.email,
+          password: data.password,
         });
         if (error) throw error;
+        
         if (rememberMe) {
           localStorage.setItem(
             SAVED_LOGIN_KEY,
-            JSON.stringify({ email: formData.email, password: formData.password })
+            JSON.stringify({ email: data.email, password: data.password })
           );
         } else {
           localStorage.removeItem(SAVED_LOGIN_KEY);
         }
         toast.success("Bem-vindo de volta!");
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
+        const { data: signUpData, error } = await supabase.auth.signUp({
+          email: data.email,
+          password: data.password,
           options: {
             data: {
-              name: formData.name,
+              name: data.name,
             },
           },
         });
         if (error) throw error;
         
-        if (data.user) {
-          const { error: profileError } = await supabase.from('profiles').upsert({
-            id: data.user.id,
-            username: formData.name,
-            display_name: formData.name,
-          });
+        if (signUpData.user) {
+          const { error: profileError } = await supabase.from('profiles').insert([
+            {
+              id: signUpData.user.id,
+              username: data.name || '',
+              display_name: data.name || '',
+            }
+          ]);
           if (profileError) console.error(profileError);
         }
         
         toast.success("Conta criada! Verifique seu email se necessário.");
       } else if (mode === "forgot_password") {
-        const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+        const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
           redirectTo: `${window.location.origin}/profile?reset=true`,
         });
         if (error) throw error;
@@ -103,7 +122,7 @@ export default function Auth() {
         </div>
 
         <div className="rounded-3xl bg-white p-8 shadow-2xl">
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleSubmit(onAuthSubmit)} className="space-y-4">
             {mode === "forgot_password" && (
               <button 
                 type="button"
@@ -115,53 +134,55 @@ export default function Auth() {
             )}
 
             {mode === "signup" && (
-              <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
-                <input
-                  type="text"
-                  placeholder="Seu nome"
-                  required
-                  className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
+              <div className="space-y-1">
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                  <input
+                    {...register("name")}
+                    type="text"
+                    placeholder="Seu nome"
+                    className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                  />
+                </div>
+                {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
               </div>
             )}
             
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
-              <input
-                type="email"
-                placeholder="Email"
-                required
-                className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
+            <div className="space-y-1">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                <input
+                  {...register("email")}
+                  type="email"
+                  placeholder="Email"
+                  className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                />
+              </div>
+              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             {mode !== "forgot_password" && (
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
-                <input
-                  type="password"
-                  placeholder="Senha"
-                  required
-                  className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
+              <div className="space-y-1">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+                  <input
+                    {...register("password")}
+                    type="password"
+                    placeholder="Senha"
+                    className="w-full rounded-xl bg-bg p-3 pl-12 outline-none ring-primary focus:ring-2"
+                  />
+                </div>
+                {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
               </div>
             )}
 
             {mode === "signup" && (
               <div className="relative">
                 <input
+                  {...register("partnerCode")}
                   type="text"
                   placeholder="Código do parceiro (opcional)"
                   className="w-full rounded-xl bg-bg p-3 outline-none ring-primary focus:ring-2"
-                  value={formData.partnerCode}
-                  onChange={(e) => setFormData({ ...formData, partnerCode: e.target.value })}
                 />
               </div>
             )}
@@ -189,6 +210,7 @@ export default function Auth() {
             )}
 
             <button
+              type="submit"
               disabled={loading}
               className="w-full rounded-xl bg-primary p-4 font-bold text-white shadow-lg shadow-primary/30 transition-all active:scale-95 disabled:opacity-50"
             >
