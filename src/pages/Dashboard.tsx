@@ -1,5 +1,4 @@
 import { useProfile } from "@/hooks/useProfile";
-import { motion } from "framer-motion";
 import { Flame, Award } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
