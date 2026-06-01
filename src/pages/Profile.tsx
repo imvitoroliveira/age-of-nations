@@ -212,9 +212,38 @@ export default function Profile() {
               <option value="Emagrecimento">Emagrecimento</option>
               <option value="Ganho de Massa">Ganho de Massa</option>
               <option value="Condicionamento">Condicionamento Físico</option>
-              <option value="Saúde">Saúde e Bem-estar</option>
+            <option value="Saúde">Saúde e Bem-estar</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              Gênero
+            </label>
+            <select 
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
+            >
+              <option value="">Selecione</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+              <option value="Outro">Outro</option>
             </select>
           </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-foreground flex items-center gap-1">
+              Data de Nascimento
+            </label>
+            <input 
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+          </div>
+        </div>
         </div>
 
         <div className="mt-10 pt-10 border-t border-border space-y-4">
