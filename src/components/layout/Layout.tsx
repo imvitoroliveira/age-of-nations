@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { Home, Dumbbell, LineChart, Award, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
