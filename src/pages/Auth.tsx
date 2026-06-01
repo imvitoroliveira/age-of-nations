@@ -41,6 +41,14 @@ export default function Auth() {
           password: formData.password,
         });
         if (error) throw error;
+        if (rememberMe) {
+          localStorage.setItem(
+            SAVED_LOGIN_KEY,
+            JSON.stringify({ email: formData.email, password: formData.password })
+          );
+        } else {
+          localStorage.removeItem(SAVED_LOGIN_KEY);
+        }
         toast.success("Bem-vindo de volta!");
       } else if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
