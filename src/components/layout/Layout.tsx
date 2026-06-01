@@ -1,6 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { Home, Dumbbell, LineChart, Award, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/useProfile";
 
 
 const navItems = [
@@ -12,6 +13,7 @@ const navItems = [
 ];
 
 export default function Layout() {
+  const { data: profile } = useProfile();
   return (
     <div className="min-h-screen pb-20 md:pb-0 md:pl-64">
       {/* Desktop Sidebar */}
@@ -51,15 +53,25 @@ export default function Layout() {
           </NavLink>
         </nav>
 
-        <div className="mt-auto flex items-center gap-3 rounded-2xl bg-white/5 p-4">
-          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-            <User className="text-primary" />
+        <NavLink 
+          to="/profile"
+          className={({ isActive }) => cn(
+            "mt-auto flex items-center gap-3 rounded-2xl p-4 transition-colors",
+            isActive ? "bg-white/10" : "bg-white/5 hover:bg-white/10"
+          )}
+        >
+          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30">
+            {profile?.display_name ? (
+              <span className="font-bold text-primary">{profile.display_name.charAt(0)}</span>
+            ) : (
+              <User className="text-primary" />
+            )}
           </div>
           <div className="overflow-hidden">
-            <p className="truncate text-sm font-bold">Usuário</p>
+            <p className="truncate text-sm font-bold text-white">{profile?.display_name || profile?.username || "Usuário"}</p>
             <p className="text-xs text-white/50">Ver perfil</p>
           </div>
-        </div>
+        </NavLink>
       </aside>
 
       {/* Mobile Bottom Nav */}

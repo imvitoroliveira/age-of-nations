@@ -16,6 +16,20 @@ export default function WorkoutExecution() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [completedSets, setCompletedSets] = useState<boolean[]>([]);
   const [startTime] = useState(Date.now());
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [startTime]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const { data: plan, isLoading } = useQuery({
     queryKey: ['plan', id],
@@ -78,7 +92,7 @@ export default function WorkoutExecution() {
         </div>
         <div className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-primary">
           <Timer size={16} />
-          <span className="text-sm font-bold">12:04</span>
+          <span className="text-sm font-bold">{formatTime(elapsedSeconds)}</span>
         </div>
       </header>
 
