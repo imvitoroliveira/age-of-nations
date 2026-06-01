@@ -28,6 +28,8 @@ export default function Profile() {
   const [height, setHeight] = useState("");
   const [initialWeight, setInitialWeight] = useState("");
   const [goal, setGoal] = useState("");
+  const [gender, setGender] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [partnerCode, setPartnerCode] = useState("");
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function Profile() {
       setHeight(profile.height?.toString() || "");
       setInitialWeight(profile.initial_weight?.toString() || "");
       setGoal(profile.goal || "");
+      setGender(profile.gender || "");
+      setBirthDate(profile.birth_date || "");
     }
   }, [profile]);
 
@@ -72,7 +76,9 @@ export default function Profile() {
       display_name: displayName,
       height: height ? parseFloat(height) : null,
       initial_weight: initialWeight ? parseFloat(initialWeight) : null,
-      goal: goal
+      goal: goal,
+      gender: gender,
+      birth_date: birthDate
     });
   };
 
