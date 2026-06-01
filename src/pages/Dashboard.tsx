@@ -1,19 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import { motion } from "framer-motion";
-import { Flame, Dumbbell, Users, Award, Play } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
+import { Flame, Award } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
+import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
+import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
 
 export default function Dashboard() {
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      return data;
-    }
-  });
+  const { data: profile } = useProfile();
 
   const weeklyProgress = [
     { name: 'Completed', value: 3, fill: 'var(--color-accent)' },
@@ -38,48 +30,20 @@ export default function Dashboard() {
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Treino de Hoje Card */}
-        <motion.div 
-          whileHover={{ y: -4 }}
-          className="rounded-3xl bg-surface p-6 text-white shadow-xl"
-        >
-          <div className="mb-4 flex items-center justify-between">
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider">Treino de Hoje</span>
-            <Dumbbell className="text-primary" />
-          </div>
-          <h3 className="mb-2 text-2xl font-bold font-display">Peito & Tríceps</h3>
-          <p className="mb-6 text-white/60">5 exercícios • 45 min aprox.</p>
-          <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary p-4 font-bold text-white transition-all active:scale-95">
-            <Play size={20} fill="currentColor" />
-            Iniciar Treino
-          </button>
-        </motion.div>
+        <TodayWorkoutCard 
+          title="Peito & Tríceps"
+          exercisesCount={5}
+          duration="45 min"
+          onStart={() => console.log("Starting workout...")}
+        />
 
-        {/* Parceiro Card */}
-        <motion.div 
-          whileHover={{ y: -4 }}
-          className="rounded-3xl bg-white p-6 shadow-lg"
-        >
-          <div className="mb-4 flex items-center justify-between">
-            <span className="rounded-full bg-bg p-2 text-primary">
-              <Users size={20} />
-            </span>
-            <span className="text-xs font-bold text-text-muted uppercase">Status do Parceiro</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-full bg-accent/20 flex items-center justify-center border-2 border-accent">
-              <span className="text-xl font-bold text-accent">M</span>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold">Maria</h3>
-              <p className="text-sm text-green-500 font-medium">Treinou hoje! ✅</p>
-            </div>
-          </div>
-        </motion.div>
+        <PartnerStatusCard 
+          name="Maria"
+          trainedToday={true}
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Progresso Semanal */}
         <div className="rounded-3xl bg-white p-6 shadow-lg md:col-span-1">
           <h4 className="mb-2 font-bold">Progresso Semanal</h4>
           <div className="h-40 w-full">
@@ -92,7 +56,6 @@ export default function Dashboard() {
           <p className="text-center text-sm font-medium text-text-muted">3 de 5 treinos feitos</p>
         </div>
 
-        {/* Últimas Conquistas */}
         <div className="rounded-3xl bg-white p-6 shadow-lg md:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h4 className="font-bold">Últimas Conquistas</h4>

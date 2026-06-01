@@ -1,27 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 import { Award, Lock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useAchievements } from "@/hooks/useAchievements";
 
 export default function Achievements() {
-  const { data: allAchievements } = useQuery({
-    queryKey: ['achievements'],
-    queryFn: async () => {
-      const { data } = await supabase.from('achievements').select('*');
-      return data || [];
-    }
-  });
-
-  const { data: unlocked } = useQuery({
-    queryKey: ['user_achievements'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data } = await supabase.from('user_achievements').select('achievement_id').eq('user_id', user.id);
-      return data?.map(a => a.achievement_id) || [];
-    }
-  });
+  const { allAchievements, unlocked } = useAchievements();
 
   return (
     <div className="space-y-6">

@@ -6,6 +6,9 @@ import { ChevronLeft, ChevronRight, Check, Timer, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { workoutSessionService } from "@/services/workoutSession.service";
+import { authService } from "@/services/auth.service";
+import { cn } from "@/lib/utils";
 
 export default function WorkoutExecution() {
   const { id } = useParams();
@@ -41,25 +44,24 @@ export default function WorkoutExecution() {
   const handleFinish = async () => {
     const duration = Math.floor((Date.now() - startTime) / 60000);
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !id) return;
-    
-    await supabase.from('workout_sessions').insert({
-      user_id: user.id,
-      workout_plan_id: id,
-      duration_minutes: duration,
-      finished_at: new Date().toISOString(),
-    });
+    try {
+      const user = await authService.getCurrentUser();
+      if (!user || !id) return;
+      
+      await workoutSessionService.finishWorkout(user.id, id, duration);
 
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#85BAEA', '#E2EB88', '#99251F']
-    });
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#85BAEA', '#E2EB88', '#99251F']
+      });
 
-    toast.success("Treino finalizado com sucesso!");
-    navigate('/');
+      toast.success("Treino finalizado com sucesso!");
+      navigate('/');
+    } catch (error: any) {
+      toast.error("Erro ao finalizar treino: " + error.message);
+    }
   };
 
   if (isLoading) return <div className="flex h-screen items-center justify-center bg-bg-dark text-white">Iniciando...</div>;
@@ -150,9 +152,4 @@ export default function WorkoutExecution() {
       </footer>
     </div>
   );
-}
-
-// Minimal cn for this component to avoid import issues during parallel write
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
 }

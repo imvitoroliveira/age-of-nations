@@ -1,20 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useMeasurements } from "@/hooks/useMeasurements";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Scale, Ruler, TrendingUp, TrendingDown, Plus } from "lucide-react";
 
-
 export default function Progress() {
-  const { data: measurements } = useQuery({
-    queryKey: ['measurements'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('body_measurements')
-        .select('*')
-        .order('recorded_at', { ascending: true });
-      return data || [];
-    }
-  });
+  const { data: measurements } = useMeasurements();
 
   const weightData = measurements?.map(m => ({
     date: new Date(m.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
