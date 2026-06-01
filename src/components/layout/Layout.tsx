@@ -63,11 +63,11 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around bg-white p-3 shadow-up md:hidden">
+      <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around bg-card p-3 shadow-up md:hidden border-t border-border">
         {navItems.map((item) => {
           if (item.isFab) {
             return (
-              <NavLink key={item.path} to={item.path} className="relative -top-8 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-white transition-transform active:scale-90">
+              <NavLink key={item.path} to={item.path} className="relative -top-8 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-card transition-transform active:scale-90">
                 <Plus size={32} />
               </NavLink>
             );
@@ -79,7 +79,7 @@ export default function Layout() {
               className={({ isActive }) =>
                 cn(
                   "relative flex flex-col items-center gap-1 transition-colors",
-                  isActive ? "text-primary" : "text-text-muted"
+                  isActive ? "text-primary" : "text-muted-foreground"
                 )
               }
             >
