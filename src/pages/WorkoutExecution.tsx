@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Check, Timer, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { cn } from "@/lib/utils";
 import { workoutSessionService } from "@/services/workoutSession.service";
 import { authService } from "@/services/auth.service";
 
