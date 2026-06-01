@@ -83,8 +83,8 @@ export default function Auth() {
           const { error: profileError } = await supabase.from('profiles').insert([
             {
               id: signUpData.user.id,
-              username: data.name,
-              display_name: data.name,
+              username: data.name || '',
+              display_name: data.name || '',
             }
           ]);
           if (profileError) console.error(profileError);
