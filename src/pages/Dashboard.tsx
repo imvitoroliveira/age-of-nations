@@ -25,10 +25,10 @@ export default function Dashboard() {
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary">
-            <span className="text-xl font-bold text-primary">{profile?.name?.charAt(0)}</span>
+            <span className="text-xl font-bold text-primary">{(profile?.display_name || profile?.username || "U").charAt(0)}</span>
           </div>
           <div>
-            <h2 className="text-2xl font-bold font-display">Olá, {profile?.name}!</h2>
+            <h2 className="text-2xl font-bold font-display">Olá, {profile?.display_name || profile?.username || "atleta"}!</h2>
             <div className="flex items-center gap-1 text-orange-500">
               <Flame size={16} fill="currentColor" />
               <span className="text-sm font-bold">5 dias seguidos</span>

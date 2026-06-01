@@ -10,15 +10,15 @@ export default function Progress() {
     queryFn: async () => {
       const { data } = await supabase
         .from('body_measurements')
-        .select('*')
-        .order('recorded_at', { ascending: true });
+        .select('*');
+      return data || [];
       return data || [];
     }
   });
 
   const weightData = measurements?.map(m => ({
-    date: new Date(m.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-    weight: m.weight_kg
+    date: new Date(m.measured_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+    weight: m.weight
   })) || [];
 
   return (
