@@ -60,6 +60,13 @@ export default function Auth() {
         
         if (error) {
           console.error("Erro no login:", error);
+          // Adicionando feedback específico para erros comuns
+          if (error.message.includes("Invalid login credentials") || error.message.includes("Invalid email")) {
+            throw new Error("E-mail ou senha incorretos.");
+          }
+          if (error.message.includes("Email not confirmed")) {
+            throw new Error("Por favor, confirme seu e-mail antes de acessar.");
+          }
           throw error;
         }
         
@@ -73,7 +80,17 @@ export default function Auth() {
         } else {
           localStorage.removeItem(SAVED_LOGIN_KEY);
         }
-        toast.success("Bem-vindo de volta!");
+        
+        // Garante que a sessão seja persistida antes de qualquer redirecionamento
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          toast.success("Bem-vindo de volta!");
+          // O Redirecionamento é feito pelo App.tsx baseado na sessão
+        } else {
+          console.warn("Sessão não encontrada após login");
+          toast.error("Erro ao iniciar sessão. Tente novamente.");
+        }
+        
       } else if (mode === "signup") {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email: data.email.trim(),
@@ -93,6 +110,7 @@ export default function Auth() {
         console.log("Cadastro bem-sucedido:", signUpData);
         
         if (signUpData.user) {
+          // Criar perfil com retry manual caso necessário, ou apenas logar
           const { error: profileError } = await supabase.from('profiles').upsert([
             {
               id: signUpData.user.id,
@@ -100,20 +118,24 @@ export default function Auth() {
               display_name: data.name || '',
             }
           ], { onConflict: 'id' });
-          if (profileError) console.error("Erro ao criar perfil:", profileError);
+          
+          if (profileError) {
+            console.error("Erro ao criar perfil:", profileError);
+            // Mesmo com erro no perfil, a conta foi criada
+          }
         }
         
-        toast.success("Conta criada! Verifique seu email se necessário.");
+        toast.success("Conta criada! Verifique seu email para confirmar.");
       } else if (mode === "forgot_password") {
         const { error } = await supabase.auth.resetPasswordForEmail(data.email.trim(), {
-          redirectTo: `${window.location.origin}/profile?reset=true`,
+          redirectTo: `${window.location.origin}/auth?reset=true`,
         });
         if (error) throw error;
         toast.success("Email de recuperação enviado!");
         setMode("login");
       }
     } catch (error: any) {
-      console.error("Erro na autenticação:", error);
+      console.error("Erro detalhado na autenticação:", error);
       toast.error(error.message || "Ocorreu um erro na autenticação. Tente novamente.");
     } finally {
       setLoading(false);
