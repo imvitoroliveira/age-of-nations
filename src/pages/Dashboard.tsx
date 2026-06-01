@@ -12,7 +12,8 @@ import { workoutService } from "@/services/workout.service";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
-  const { data: stats } = useDashboardData(profile?.id);
+  const { data: stats } = useDashboardData(profile?.id ?? undefined);
+  const { data: partnerStats } = useDashboardData(profile?.partner_id ?? undefined);
 
   const { data: partnerProfile } = useQuery({
     queryKey: ['partner_profile', profile?.partner_id],
@@ -71,7 +72,7 @@ export default function Dashboard() {
 
         <PartnerStatusCard 
           name={partnerProfile?.display_name || "Parceiro"}
-          trainedToday={true}
+          trainedToday={partnerStats?.trainedToday || false}
         />
       </div>
 
