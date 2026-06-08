@@ -14,6 +14,8 @@ export default function AdminExercises() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exercises, setExercises] = useState<ExerciseLibrary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
 
   useEffect(() => {
     loadExercises();
@@ -23,11 +25,28 @@ export default function AdminExercises() {
     try {
       const data = await workoutService.getExerciseLibrary();
       setExercises(data);
+      
+      // Load signed URLs for videos
+      const urls: Record<string, string> = {};
+      for (const ex of data) {
+        if (ex.video_url && !ex.video_url.startsWith('http')) {
+          try {
+            const url = await workoutService.getExerciseVideoUrl(ex.video_url);
+            urls[ex.id] = url;
+          } catch (e) {
+            console.error("Error signing URL:", e);
+          }
+        } else if (ex.video_url) {
+          urls[ex.id] = ex.video_url;
+        }
+      }
+      setSignedUrls(urls);
     } catch (error) {
       toast.error("Erro ao carregar exercícios.");
     } finally {
       setLoading(false);
     }
+
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,12 +205,17 @@ export default function AdminExercises() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-slate-900 dark:text-white truncate">{ex.name}</h3>
                   <p className="text-sm text-slate-400 line-clamp-1">{ex.description}</p>
-                  {ex.video_url && (
-                    <span className="text-[10px] font-black uppercase text-indigo-500 flex items-center gap-1 mt-1">
-                      <Video size={10} /> Possui vídeo
-                    </span>
+                  {signedUrls[ex.id] && (
+                    <div className="mt-2">
+                      <video 
+                        src={signedUrls[ex.id]} 
+                        controls 
+                        className="h-20 w-32 rounded-lg bg-black object-cover"
+                      />
+                    </div>
                   )}
                 </div>
+
                 <button 
                   onClick={() => deleteExercise(ex.id, ex.video_url)}
                   className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
