@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { workoutService } from "@/services/workout.service";
