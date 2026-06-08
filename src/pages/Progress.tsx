@@ -1,9 +1,59 @@
 import { useMeasurements } from "@/hooks/useMeasurements";
+import { useProfile } from "@/hooks/useProfile";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { Scale, Ruler, TrendingUp, TrendingDown, Plus } from "lucide-react";
+import { Scale, Ruler, TrendingUp, TrendingDown, Plus, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function Progress() {
-  const { data: measurements } = useMeasurements();
+  const { data: measurements, addMeasurement, isAdding } = useMeasurements();
+  const { data: profile } = useProfile();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showReminder, setShowReminder] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    weight_kg: "",
+    waist_cm: "",
+    thigh_cm: "",
+    hip_cm: ""
+  });
+
+  useEffect(() => {
+    if (profile?.last_measurement_date) {
+      const lastDate = new Date(profile.last_measurement_date);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - lastDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays >= 30) {
+        setShowReminder(true);
+      }
+    } else if (profile && !profile.last_measurement_date && measurements?.length === 0) {
+      setShowReminder(true);
+    }
+  }, [profile, measurements]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.weight_kg) {
+      toast.error("O peso é obrigatório");
+      return;
+    }
+
+    addMeasurement({
+      weight_kg: parseFloat(formData.weight_kg),
+      waist_cm: formData.waist_cm ? parseFloat(formData.waist_cm) : null,
+      thigh_cm: formData.thigh_cm ? parseFloat(formData.thigh_cm) : null,
+      hip_cm: formData.hip_cm ? parseFloat(formData.hip_cm) : null,
+    }, {
+      onSuccess: () => {
+        setIsModalOpen(false);
+        setShowReminder(false);
+        setFormData({ weight_kg: "", waist_cm: "", thigh_cm: "", hip_cm: "" });
+      }
+    });
+  };
 
   const weightData = measurements?.map(m => ({
     date: new Date(m.recorded_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
@@ -17,10 +67,38 @@ export default function Progress() {
           <h2 className="text-3xl font-bold font-display">Progresso</h2>
           <p className="text-text-muted">Acompanhe sua evolução física.</p>
         </div>
-        <button className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 transition-all active:scale-95">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 transition-all active:scale-95 hover:scale-110"
+        >
           <Plus size={24} />
         </button>
       </div>
+
+      <AnimatePresence>
+        {showReminder && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-indigo-600 text-white p-4 rounded-3xl shadow-xl flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <Scale size={24} />
+              <div>
+                <p className="font-bold">Hora de atualizar suas medidas!</p>
+                <p className="text-sm text-indigo-100">Faz mais de um mês desde sua última pesagem.</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-white text-indigo-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors"
+            >
+              Atualizar Agora
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-3xl bg-white p-6 shadow-lg">
@@ -126,6 +204,87 @@ export default function Progress() {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl dark:bg-slate-900"
+            >
+              <div className="mb-6 flex items-center justify-between">
+                <h3 className="text-2xl font-bold">Nova Medição</h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase text-slate-400">Peso (kg)</label>
+                  <input 
+                    type="number" 
+                    step="0.1"
+                    required
+                    value={formData.weight_kg}
+                    onChange={(e) => setFormData({...formData, weight_kg: e.target.value})}
+                    className="w-full rounded-2xl bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800"
+                    placeholder="Ex: 75.5"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">Cintura (cm)</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={formData.waist_cm}
+                      onChange={(e) => setFormData({...formData, waist_cm: e.target.value})}
+                      className="w-full rounded-2xl bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800"
+                      placeholder="80"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">Coxa (cm)</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={formData.thigh_cm}
+                      onChange={(e) => setFormData({...formData, thigh_cm: e.target.value})}
+                      className="w-full rounded-2xl bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800"
+                      placeholder="55"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-slate-400">Quadril (cm)</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      value={formData.hip_cm}
+                      onChange={(e) => setFormData({...formData, hip_cm: e.target.value})}
+                      className="w-full rounded-2xl bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800"
+                      placeholder="95"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={isAdding}
+                  className="w-full rounded-2xl bg-primary p-4 font-bold text-white shadow-lg shadow-primary/30 transition-all hover:bg-primary/90 active:scale-95 disabled:opacity-50"
+                >
+                  {isAdding ? "Salvando..." : "Salvar Medidas"}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
