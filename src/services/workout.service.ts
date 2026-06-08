@@ -101,10 +101,19 @@ export const workoutService = {
 
     if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('exercise-videos')
-      .getPublicUrl(filePath);
+    // Since the bucket is private, we store the file path and will generate a signed URL when needed
+    // or we can try to return the path and handle it in the component.
+    // For simplicity, let's return the path and have a helper to get the signed URL.
+    return filePath;
+  },
 
-    return publicUrl;
+  async getExerciseVideoUrl(path: string): Promise<string> {
+    const { data, error } = await supabase.storage
+      .from('exercise-videos')
+      .createSignedUrl(path, 3600); // 1 hour expiration
+
+    if (error) throw error;
+    return data.signedUrl;
   }
+
 };
