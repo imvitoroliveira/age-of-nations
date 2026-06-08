@@ -66,10 +66,10 @@ export default function Progress() {
         <div className="rounded-3xl bg-white p-6 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <TrendingUp className="text-primary" size={20} />
-            <span className="text-[10px] font-bold text-text-muted uppercase">Pescoço</span>
+            <span className="text-[10px] font-bold text-text-muted uppercase">Coxa</span>
           </div>
           <p className="text-3xl font-bold">
-            {measurements?.[measurements.length - 1]?.neck_cm || "---"}
+            {measurements?.[measurements.length - 1]?.thigh_cm || "---"}
             <span className="text-sm font-medium text-text-muted ml-1">cm</span>
           </p>
         </div>
