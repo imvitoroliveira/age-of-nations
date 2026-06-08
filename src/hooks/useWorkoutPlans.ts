@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { workoutService } from "@/services/workout.service";
 import { supabase } from "@/lib/supabase";
 
 export function useWorkoutPlans() {
