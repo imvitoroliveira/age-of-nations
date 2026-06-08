@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check } from "lucide-react";
+import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check, Calendar, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -251,6 +251,36 @@ export default function Profile() {
                 className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
                 placeholder="80.0"
               />
+            </section>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <section className="space-y-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+                <Calendar size={14} className="text-indigo-500" /> Data de Nascimento
+              </label>
+              <input 
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all [color-scheme:light] dark:[color-scheme:dark]"
+              />
+            </section>
+            <section className="space-y-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+                <Users size={14} className="text-indigo-500" /> Gênero
+              </label>
+              <select 
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all appearance-none cursor-pointer"
+              >
+                <option value="" disabled>Selecione...</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+                <option value="Prefiro não dizer">Prefiro não dizer</option>
+              </select>
             </section>
           </div>
 
