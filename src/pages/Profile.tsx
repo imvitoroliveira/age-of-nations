@@ -31,6 +31,7 @@ export default function Profile() {
   const [initialWeight, setInitialWeight] = useState("");
   const [fitnessGoals, setFitnessGoals] = useState<string[]>([]);
   const [bio, setBio] = useState("");
+  const [customGoal, setCustomGoal] = useState("");
   const [gender, setGender] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [partnerCode, setPartnerCode] = useState("");
@@ -41,6 +42,7 @@ export default function Profile() {
       setHeight(profile.height?.toString() || "");
       setInitialWeight(profile.initial_weight?.toString() || "");
       setFitnessGoals(profile.fitness_goals || []);
+      setCustomGoal(profile.custom_fitness_goal || "");
       setBio(profile.bio || "");
       setGender(profile.gender || "");
       setBirthDate(profile.birth_date || "");
@@ -88,6 +90,7 @@ export default function Profile() {
       height: height ? parseFloat(height) : null,
       initial_weight: initialWeight ? parseFloat(initialWeight) : null,
       fitness_goals: fitnessGoals,
+      custom_fitness_goal: customGoal,
       bio: bio,
       gender: gender,
       birth_date: birthDate
@@ -292,6 +295,19 @@ export default function Profile() {
                 </button>
               ))}
             </div>
+          <section className="space-y-4">
+            <div className="flex justify-between items-center ml-1">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                <Target size={14} className="text-indigo-500" /> Objetivo Personalizado
+              </label>
+            </div>
+            <textarea 
+              value={customGoal}
+              onChange={(e) => setCustomGoal(e.target.value)}
+              placeholder="O que você deseja alcançar com seus treinos?"
+              rows={2}
+              className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all resize-none"
+            />
           </section>
 
           <section className="space-y-4">
