@@ -93,7 +93,7 @@ export default function Profile() {
       custom_fitness_goal: customGoal,
       bio: bio,
       gender: gender,
-      birth_date: birthDate
+      birth_date: birthDate || null
     });
   };
 
