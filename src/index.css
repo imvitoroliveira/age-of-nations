@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Syne:wght@400..800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +15,7 @@
     --color-text-muted: #64748b;
     --color-card: #ffffff;
     --color-surface: #ffffff;
-    
+
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
@@ -43,7 +43,7 @@
     --color-text: #f1f5f9;
     --color-text-muted: #94a3b8;
     --color-card: #0f172a;
-    
+
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
     --card: 222 47% 11%;
@@ -60,7 +60,12 @@
     font-feature-settings: "ss01", "ss02", "cv01", "cv03";
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display tracking-tight;
   }
 
@@ -74,7 +79,7 @@
   .glass {
     @apply bg-white/50 dark:bg-slate-950/50 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
   }
-  
+
   .card-premium {
     @apply rounded-[2rem] bg-card p-8 border border-slate-200 dark:border-white/5 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)];
   }
@@ -82,4 +87,8 @@
   .skeleton {
     @apply animate-pulse bg-slate-200 dark:bg-slate-800 rounded-lg;
   }
+}
+
+#lovable-badge {
+  display: none !important;
 }
