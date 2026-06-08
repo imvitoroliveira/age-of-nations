@@ -28,11 +28,22 @@ export default function Progress() {
             <Scale className="text-primary" size={20} />
             <span className="text-[10px] font-bold text-text-muted uppercase">Peso Atual</span>
           </div>
-          <p className="text-3xl font-bold">78.5 <span className="text-sm font-medium text-text-muted">kg</span></p>
-          <div className="mt-2 flex items-center gap-1 text-green-500 text-sm font-bold">
-            <TrendingDown size={14} />
-            <span>-1.2kg este mês</span>
-          </div>
+          <p className="text-3xl font-bold">
+            {measurements?.[measurements.length - 1]?.weight_kg || "---"} 
+            <span className="text-sm font-medium text-text-muted ml-1">kg</span>
+          </p>
+          {measurements && measurements.length > 1 && (
+            <div className={`mt-2 flex items-center gap-1 text-sm font-bold ${
+              measurements[measurements.length - 1].weight_kg! < measurements[measurements.length - 2].weight_kg! 
+                ? "text-green-500" 
+                : "text-red-500"
+            }`}>
+              {measurements[measurements.length - 1].weight_kg! < measurements[measurements.length - 2].weight_kg! ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+              <span>
+                {Math.abs(measurements[measurements.length - 1].weight_kg! - measurements[measurements.length - 2].weight_kg!).toFixed(1)}kg desde a última
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="rounded-3xl bg-white p-6 shadow-lg">
@@ -40,29 +51,38 @@ export default function Progress() {
             <Ruler className="text-primary" size={20} />
             <span className="text-[10px] font-bold text-text-muted uppercase">Cintura</span>
           </div>
-          <p className="text-3xl font-bold">84 <span className="text-sm font-medium text-text-muted">cm</span></p>
-          <div className="mt-2 flex items-center gap-1 text-green-500 text-sm font-bold">
-            <TrendingDown size={14} />
-            <span>-2cm total</span>
-          </div>
+          <p className="text-3xl font-bold">
+            {measurements?.[measurements.length - 1]?.waist_cm || "---"} 
+            <span className="text-sm font-medium text-text-muted ml-1">cm</span>
+          </p>
+          {measurements && measurements.length > 1 && measurements[measurements.length - 1].waist_cm && measurements[0].waist_cm && (
+            <div className="mt-2 flex items-center gap-1 text-green-500 text-sm font-bold">
+              <TrendingDown size={14} />
+              <span>{Math.abs(measurements[measurements.length - 1].waist_cm! - measurements[0].waist_cm!).toFixed(1)}cm total</span>
+            </div>
+          )}
         </div>
 
         <div className="rounded-3xl bg-white p-6 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <TrendingUp className="text-primary" size={20} />
-            <span className="text-[10px] font-bold text-text-muted uppercase">IMC</span>
+            <span className="text-[10px] font-bold text-text-muted uppercase">Coxa</span>
           </div>
-          <p className="text-3xl font-bold">24.2</p>
-          <span className="mt-2 inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-600 uppercase">Saudável</span>
+          <p className="text-3xl font-bold">
+            {measurements?.[measurements.length - 1]?.thigh_cm || "---"}
+            <span className="text-sm font-medium text-text-muted ml-1">cm</span>
+          </p>
         </div>
 
         <div className="rounded-3xl bg-white p-6 shadow-lg">
           <div className="mb-2 flex items-center justify-between">
             <Plus className="text-primary" size={20} />
-            <span className="text-[10px] font-bold text-text-muted uppercase">Gordura</span>
+            <span className="text-[10px] font-bold text-text-muted uppercase">Quadril</span>
           </div>
-          <p className="text-3xl font-bold">18 <span className="text-sm font-medium text-text-muted">%</span></p>
-          <p className="text-xs text-text-muted mt-2">Estimativa baseada em medidas</p>
+          <p className="text-3xl font-bold">
+            {measurements?.[measurements.length - 1]?.hip_cm || "---"}
+            <span className="text-sm font-medium text-text-muted ml-1">cm</span>
+          </p>
         </div>
       </div>
 
