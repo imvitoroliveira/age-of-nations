@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { workoutService, ExerciseLibrary } from "@/services/workout.service";
-import { ChevronLeft, Plus, Trash2, Save, Dumbbell, User, Users, Search } from "lucide-react";
+import { ChevronLeft, Plus, Trash2, Save, Dumbbell, User, Users, Search, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
