@@ -187,12 +187,12 @@ export default function CreateWorkout() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="flex items-center gap-3 flex-1">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-700 shrink-0">
                       <Dumbbell size={18} />
                     </div>
-                    <div className="flex-1 relative">
+                    <div className="flex-1">
                       <input 
                         type="text"
                         placeholder="Nome do exercício"
@@ -201,31 +201,27 @@ export default function CreateWorkout() {
                         className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                       />
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        setActiveExerciseIndex(index);
-                        setSearchTerm("");
-                      }}
-                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all border border-indigo-100 dark:border-indigo-500/20 whitespace-nowrap"
-                    >
-                      <Search size={14} />
-                      Adicionar da biblioteca
-                    </button>
-                    
                     <button 
                       onClick={() => removeExercise(index)}
-                      className="p-3 text-slate-300 hover:text-rose-500 transition-colors bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700"
+                      className="p-3 text-slate-300 hover:text-rose-500 transition-colors bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shrink-0"
                     >
                       <Trash2 size={18} />
                     </button>
                   </div>
                   
                   <div className="relative">
-                    
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setActiveExerciseIndex(index);
+                        setSearchTerm("");
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all border border-indigo-100 dark:border-indigo-500/20"
+                    >
+                      <Search size={14} />
+                      Adicionar da biblioteca
+                    </button>
+
                     <AnimatePresence>
                       {activeExerciseIndex === index && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
