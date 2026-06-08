@@ -21,6 +21,12 @@ export default function Progress() {
     hip_cm: ""
   });
 
+  const { data: sessions } = useQuery({
+    queryKey: ['workout_sessions', profile?.id],
+    queryFn: () => profile?.id ? workoutSessionService.getSessions(profile.id) : Promise.resolve([]),
+    enabled: !!profile?.id
+  });
+
   useEffect(() => {
     if (profile?.last_measurement_date) {
       const lastDate = new Date(profile.last_measurement_date);
@@ -35,6 +41,37 @@ export default function Progress() {
       setShowReminder(true);
     }
   }, [profile, measurements]);
+
+  const weeklyWorkoutData = (() => {
+    if (!sessions || sessions.length === 0) return [];
+    
+    const weeks: Record<string, number> = {};
+    const now = new Date();
+    
+    // Get last 4 weeks
+    for (let i = 0; i < 4; i++) {
+      const d = new Date();
+      d.setDate(now.getDate() - (i * 7));
+      const weekNum = Math.ceil((d.getDate() + 1) / 7); // Simple week estimation
+      const label = `S${4-i}`;
+      weeks[label] = 0;
+    }
+
+    sessions.forEach(session => {
+      const sessionDate = new Date(session.finished_at);
+      const diffDays = Math.floor((now.getTime() - sessionDate.getTime()) / (1000 * 3600 * 24));
+      
+      if (diffDays <= 28) {
+        const weekIdx = 4 - Math.floor(diffDays / 7);
+        if (weekIdx >= 1 && weekIdx <= 4) {
+          const label = `S${weekIdx}`;
+          weeks[label] = (weeks[label] || 0) + 1;
+        }
+      }
+    });
+
+    return Object.entries(weeks).map(([name, value]) => ({ w: name, v: value })).sort((a, b) => a.w.localeCompare(b.w));
+  })();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
