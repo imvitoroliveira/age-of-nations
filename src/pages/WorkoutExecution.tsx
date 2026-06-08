@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { ChevronLeft, ChevronRight, Check, Timer, X, PlayCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Timer, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -120,11 +120,10 @@ export default function WorkoutExecution() {
                   playsInline
                   className="w-full h-48 object-cover"
                   onLoadStart={(e) => {
-                    // If it's a storage path, we'd need to sign it here. 
-                    // For now, let's assume it's a URL or handle signing if it looks like a path.
-                    if (!currentExercise.video_url.startsWith('http')) {
+                    const videoUrl = currentExercise.video_url;
+                    if (videoUrl && !videoUrl.startsWith('http')) {
                       import('@/services/workout.service').then(({ workoutService }) => {
-                        workoutService.getExerciseVideoUrl(currentExercise.video_url).then(url => {
+                        workoutService.getExerciseVideoUrl(videoUrl).then(url => {
                           (e.target as HTMLVideoElement).src = url;
                         });
                       });
