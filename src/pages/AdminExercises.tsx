@@ -197,31 +197,40 @@ export default function AdminExercises() {
               <motion.div 
                 layout
                 key={ex.id}
-                className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center gap-4 group"
+                className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col gap-4 group"
               >
-                <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500">
-                  <Dumbbell size={24} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 dark:text-white truncate">{ex.name}</h3>
-                  <p className="text-sm text-slate-400 line-clamp-1">{ex.description}</p>
-                  {signedUrls[ex.id] && (
-                    <div className="mt-2">
-                      <video 
-                        src={signedUrls[ex.id]} 
-                        controls 
-                        className="h-20 w-32 rounded-lg bg-black object-cover"
-                      />
-                    </div>
-                  )}
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500">
+                    <Dumbbell size={24} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 dark:text-white truncate">{ex.name}</h3>
+                    <p className="text-sm text-slate-400 line-clamp-1">{ex.description}</p>
+                  </div>
+
+                  <button 
+                    onClick={() => deleteExercise(ex.id, ex.video_url)}
+                    className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
 
-                <button 
-                  onClick={() => deleteExercise(ex.id, ex.video_url)}
-                  className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  <Trash2 size={18} />
-                </button>
+                {signedUrls[ex.id] && (
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-100 dark:border-slate-800">
+                    <video 
+                      src={signedUrls[ex.id]} 
+                      muted
+                      autoPlay
+                      loop
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
+                      Sem Áudio
+                    </div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

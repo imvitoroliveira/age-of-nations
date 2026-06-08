@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { ChevronLeft, ChevronRight, Check, Timer, X, PlayCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Timer, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -111,15 +111,26 @@ export default function WorkoutExecution() {
             </div>
 
             {currentExercise?.video_url && (
-              <a 
-                href={currentExercise.video_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mb-8 flex items-center gap-3 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all"
-              >
-                <PlayCircle size={24} />
-                <span className="font-bold text-sm">Ver vídeo de execução</span>
-              </a>
+              <div className="mb-8 overflow-hidden rounded-2xl bg-black border border-white/5 shadow-2xl">
+                <video 
+                  src={currentExercise.video_url.startsWith('http') ? currentExercise.video_url : undefined} 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-48 object-cover"
+                  onLoadStart={(e) => {
+                    const videoUrl = currentExercise.video_url;
+                    if (videoUrl && !videoUrl.startsWith('http')) {
+                      import('@/services/workout.service').then(({ workoutService }) => {
+                        workoutService.getExerciseVideoUrl(videoUrl).then(url => {
+                          (e.target as HTMLVideoElement).src = url;
+                        });
+                      });
+                    }
+                  }}
+                />
+              </div>
             )}
 
             <div className="space-y-4">
