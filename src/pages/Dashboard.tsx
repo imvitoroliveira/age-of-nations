@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus, Moon } from "lucide-react";
+import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { useAchievements } from "@/hooks/useAchievements";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
@@ -30,7 +30,7 @@ const item: Variants = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: stats, isLoading: isStatsLoading } = useDashboardData(profile?.id ?? undefined);
   const { data: partnerStats, isLoading: isPartnerStatsLoading } = useDashboardData(profile?.partner_id ?? undefined);

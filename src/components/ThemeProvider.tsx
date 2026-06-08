@@ -11,11 +11,9 @@ const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undef
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
   storageKey = "vite-ui-theme",
 }: {
   children: React.ReactNode;
-  defaultTheme?: Theme;
   storageKey?: string;
 }) {
   const [theme, setTheme] = useState<Theme>(
