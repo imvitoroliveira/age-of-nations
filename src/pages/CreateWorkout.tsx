@@ -29,6 +29,33 @@ export default function CreateWorkout() {
     }
   }, [profile, assignedTo]);
 
+  useEffect(() => {
+    const fetchLibrary = async () => {
+      try {
+        const data = await workoutService.getExerciseLibrary();
+        setExerciseLibrary(data);
+      } catch (error) {
+        console.error("Erro ao carregar biblioteca:", error);
+      }
+    };
+    fetchLibrary();
+  }, []);
+
+  const selectFromLibrary = (exercise: ExerciseLibrary) => {
+    if (activeExerciseIndex !== null) {
+      updateExercise(activeExerciseIndex, 'name', exercise.name);
+      if (exercise.video_url) {
+        updateExercise(activeExerciseIndex, 'video_url', exercise.video_url);
+      }
+      setActiveExerciseIndex(null);
+      setSearchTerm("");
+    }
+  };
+
+  const filteredLibrary = exerciseLibrary.filter(ex => 
+    ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const addExercise = () => {
     setExercises([...exercises, { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "", video_url: "" }]);
   };
