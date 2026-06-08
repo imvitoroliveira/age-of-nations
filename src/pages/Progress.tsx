@@ -1,7 +1,7 @@
 import { useMeasurements } from "@/hooks/useMeasurements";
 import { useProfile } from "@/hooks/useProfile";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { Scale, Ruler, TrendingUp, TrendingDown, Plus, X, BarChart3 } from "lucide-react";
+import { Scale, Ruler, TrendingUp, TrendingDown, Plus, X } from "lucide-react";
 import { workoutSessionService } from "@/services/workoutSession.service";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
