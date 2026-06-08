@@ -77,8 +77,8 @@ export default function CreateWorkout() {
       return;
     }
 
-    if (exercises.some(ex => !ex.name.trim())) {
-      toast.error("Todos os exercícios precisam de um nome.");
+    if (exercises.some(ex => !ex.name || !ex.name.trim())) {
+      toast.error("Todos os exercícios precisam ter um nome selecionado.");
       return;
     }
 
