@@ -97,22 +97,6 @@ export default function Profile() {
     });
   };
 
-  const toggleGoal = (goal: string) => {
-    setFitnessGoals(prev => 
-      prev.includes(goal) 
-        ? prev.filter(g => g !== goal) 
-        : [...prev, goal]
-    );
-  };
-
-  const goalsOptions = [
-    { value: "Emagrecimento", label: "🔥 Emagrecimento" },
-    { value: "Ganho de Massa", label: "💪 Ganho de Massa" },
-    { value: "Condicionamento", label: "⚡ Condicionamento" },
-    { value: "Saúde", label: "🌿 Saúde e Bem-estar" },
-    { value: "Flexibilidade", label: "🧘 Flexibilidade" },
-    { value: "Resistência", label: "🏃 Resistência" }
-  ];
 
   const handleLinkPartner = () => {
     if (!partnerCode.trim()) {
