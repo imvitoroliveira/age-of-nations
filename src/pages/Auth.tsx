@@ -36,11 +36,9 @@ export default function Auth() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(SAVED_LOGIN_KEY);
-      if (saved) {
-        const { email, password } = JSON.parse(saved);
-        setValue("email", email || "");
-        setValue("password", password || "");
+      const savedEmail = localStorage.getItem(SAVED_LOGIN_KEY);
+      if (savedEmail) {
+        setValue("email", savedEmail);
         setRememberMe(true);
       }
     } catch {}
