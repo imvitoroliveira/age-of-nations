@@ -23,6 +23,12 @@ export default function CreateWorkout() {
     if (profile) setAssignedTo(profile.id);
   });
 
+  useEffect(() => {
+    if (profile && !assignedTo) {
+      setAssignedTo(profile.id);
+    }
+  }, [profile, assignedTo]);
+
   const addExercise = () => {
     setExercises([...exercises, { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "" }]);
   };
