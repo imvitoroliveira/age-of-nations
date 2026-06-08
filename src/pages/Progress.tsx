@@ -233,7 +233,7 @@ export default function Progress() {
           <h4 className="mb-6 font-bold">Treinos por Semana</h4>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[{w: 'S1', v: 4}, {w: 'S2', v: 5}, {w: 'S3', v: 3}, {w: 'S4', v: 5}]}>
+              <BarChart data={weeklyWorkoutData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                 <XAxis dataKey="w" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94A3B8' }} />
                 <YAxis hide />
