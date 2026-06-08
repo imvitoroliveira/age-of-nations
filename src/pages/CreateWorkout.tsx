@@ -1,0 +1,220 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useProfile } from "@/hooks/useProfile";
+import { workoutService } from "@/services/workout.service";
+import { ChevronLeft, Plus, Trash2, Save, Dumbbell, User, Users } from "lucide-react";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+export default function CreateWorkout() {
+  const navigate = useNavigate();
+  const { data: profile } = useProfile();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState(""); // Default to empty, will set to self in useEffect
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [exercises, setExercises] = useState([
+    { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "" }
+  ]);
+
+  useState(() => {
+    if (profile) setAssignedTo(profile.id);
+  });
+
+  const addExercise = () => {
+    setExercises([...exercises, { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "" }]);
+  };
+
+  const removeExercise = (index: number) => {
+    if (exercises.length === 1) return;
+    setExercises(exercises.filter((_, i) => i !== index));
+  };
+
+  const updateExercise = (index: number, field: string, value: any) => {
+    const newExercises = [...exercises];
+    (newExercises[index] as any)[field] = value;
+    setExercises(newExercises);
+  };
+
+  const handleSubmit = async () => {
+    if (!name.trim()) {
+      toast.error("O treino precisa de um nome.");
+      return;
+    }
+
+    if (exercises.some(ex => !ex.name.trim())) {
+      toast.error("Todos os exercícios precisam de um nome.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await workoutService.createWorkoutPlan(name, description, assignedTo, exercises as any);
+      toast.success("Plano de treino criado!");
+      navigate('/workouts');
+    } catch (error: any) {
+      toast.error("Erro ao criar plano: " + error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8 max-w-2xl mx-auto pb-28 md:pb-12">
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <h2 className="text-3xl font-bold font-display tracking-tight text-slate-900 dark:text-white">Novo Treino</h2>
+      </div>
+
+      <div className="card-premium space-y-8">
+        <section className="space-y-4">
+          <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Informações Básicas</label>
+          <input 
+            type="text"
+            placeholder="Nome do Treino (ex: Superiores A)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
+          />
+          <textarea 
+            placeholder="Breve descrição ou objetivo..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all resize-none"
+            rows={2}
+          />
+        </section>
+
+        <section className="space-y-4">
+          <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Para quem é este treino?</label>
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => setAssignedTo(profile?.id || "")}
+              className={cn(
+                "flex flex-col items-center gap-3 p-6 rounded-[1.8rem] border-2 transition-all",
+                assignedTo === profile?.id 
+                  ? "bg-indigo-50 dark:bg-indigo-950/30 border-indigo-500 text-indigo-600 dark:text-indigo-400" 
+                  : "bg-slate-50 dark:bg-slate-900 border-transparent text-slate-400"
+              )}
+            >
+              <User size={24} />
+              <span className="font-bold text-sm">Para Mim</span>
+            </button>
+            
+            <button
+              disabled={!profile?.partner_id}
+              onClick={() => profile?.partner_id && setAssignedTo(profile.partner_id)}
+              className={cn(
+                "flex flex-col items-center gap-3 p-6 rounded-[1.8rem] border-2 transition-all",
+                assignedTo === profile?.partner_id 
+                  ? "bg-rose-50 dark:bg-rose-950/30 border-rose-500 text-rose-600 dark:text-rose-400" 
+                  : "bg-slate-50 dark:bg-slate-900 border-transparent text-slate-400",
+                !profile?.partner_id && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              <Users size={24} />
+              <span className="font-bold text-sm">Para o Parceiro</span>
+              {!profile?.partner_id && <span className="text-[10px] uppercase font-black">Nenhum parceiro vinculado</span>}
+            </button>
+          </div>
+        </section>
+
+        <section className="space-y-6">
+          <div className="flex items-center justify-between ml-1">
+            <label className="text-xs font-bold uppercase tracking-widest text-slate-400">Exercícios</label>
+            <span className="text-xs font-bold text-indigo-500">{exercises.length} total</span>
+          </div>
+
+          <div className="space-y-4">
+            {exercises.map((ex, index) => (
+              <motion.div 
+                layout
+                key={index}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-700">
+                    <Dumbbell size={18} />
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Nome do Exercício"
+                    value={ex.name}
+                    onChange={(e) => updateExercise(index, 'name', e.target.value)}
+                    className="flex-1 bg-transparent text-lg font-bold outline-none text-slate-900 dark:text-white"
+                  />
+                  <button 
+                    onClick={() => removeExercise(index)}
+                    className="p-2 text-slate-300 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Séries</label>
+                    <input 
+                      type="number"
+                      value={ex.sets}
+                      onChange={(e) => updateExercise(index, 'sets', parseInt(e.target.value))}
+                      className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 text-center font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Reps/Tempo</label>
+                    <input 
+                      type="text"
+                      value={ex.reps}
+                      onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                      className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 text-center font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Peso (kg)</label>
+                    <input 
+                      type="number"
+                      value={ex.weight_kg}
+                      onChange={(e) => updateExercise(index, 'weight_kg', parseFloat(e.target.value))}
+                      className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 text-center font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+
+            <button 
+              onClick={addExercise}
+              className="w-full flex items-center justify-center gap-2 p-5 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all font-bold text-sm"
+            >
+              <Plus size={18} />
+              Adicionar Exercício
+            </button>
+          </div>
+        </section>
+
+        <button 
+          disabled={isSubmitting}
+          onClick={handleSubmit}
+          className="w-full flex items-center justify-center gap-3 p-5 rounded-2xl bg-indigo-600 text-white font-bold shadow-xl shadow-indigo-600/30 hover:bg-indigo-700 transition-all disabled:opacity-50"
+        >
+          {isSubmitting ? "Salvando..." : (
+            <>
+              <Save size={20} />
+              Salvar Plano de Treino
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}

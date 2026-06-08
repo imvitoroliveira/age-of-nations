@@ -8,6 +8,7 @@ import Profile from "@/pages/Profile";
 import Achievements from "@/pages/Achievements";
 import Layout from "@/components/layout/Layout";
 import WorkoutExecution from "@/pages/WorkoutExecution";
+import CreateWorkout from "@/pages/CreateWorkout";
 
 function App() {
   const { session, loading } = useSession();
@@ -21,6 +22,7 @@ function App() {
       <Route element={session ? <Layout /> : <Navigate to="/auth" />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/workouts" element={<Workouts />} />
+        <Route path="/workouts/create" element={<CreateWorkout />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/achievements" element={<Achievements />} />
         <Route path="/profile" element={<Profile />} />

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { User, Users, ChevronRight } from "lucide-react";
+import { User, Users, ChevronRight, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { WorkoutPlan } from "@/services/workout.service";
 
 interface WorkoutCardProps {
@@ -7,6 +8,7 @@ interface WorkoutCardProps {
 }
 
 export function WorkoutCard({ plan }: WorkoutCardProps) {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -33,9 +35,12 @@ export function WorkoutCard({ plan }: WorkoutCardProps) {
       
       <div className="mt-6 flex items-center justify-between">
         <span className="text-xs font-medium text-text-muted">5 exercícios</span>
-        <button className="flex items-center gap-1 text-sm font-bold text-primary">
-          Ver Detalhes
-          <ChevronRight size={16} />
+        <button 
+          onClick={() => navigate(`/workout-execution/${plan.id}`)}
+          className="flex items-center gap-1 text-sm font-bold text-primary hover:bg-primary/10 px-4 py-2 rounded-xl transition-colors"
+        >
+          <Play size={16} fill="currentColor" />
+          Treinar Agora
         </button>
       </div>
     </motion.div>
