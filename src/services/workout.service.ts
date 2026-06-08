@@ -12,7 +12,7 @@ export const workoutService = {
   async getWorkoutPlans(): Promise<WorkoutPlan[]> {
     const { data, error } = await supabase
       .from('workout_plans')
-      .select('*')
+      .select('*, exercises(*)')
       .order('created_at', { ascending: false });
     
     if (error) {
