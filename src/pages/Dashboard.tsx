@@ -27,20 +27,22 @@ const item: Variants = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: profile } = useProfile();
-  const { data: stats } = useDashboardData(profile?.id ?? undefined);
-  const { data: partnerStats } = useDashboardData(profile?.partner_id ?? undefined);
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const { data: stats, isLoading: isStatsLoading } = useDashboardData(profile?.id ?? undefined);
+  const { data: partnerStats, isLoading: isPartnerStatsLoading } = useDashboardData(profile?.partner_id ?? undefined);
 
-  const { data: partnerProfile } = useQuery({
+  const { data: partnerProfile, isLoading: isPartnerProfileLoading } = useQuery({
     queryKey: ['partner_profile', profile?.partner_id],
     queryFn: () => profile?.partner_id ? profileService.getPartnerProfile(profile.partner_id) : null,
     enabled: !!profile?.partner_id
   });
 
-  const { data: workoutPlans } = useQuery({
+  const { data: workoutPlans, isLoading: isWorkoutPlansLoading } = useQuery({
     queryKey: ['workout_plans'],
     queryFn: () => workoutService.getWorkoutPlans()
   });
+
+  const isDataLoading = isProfileLoading || isStatsLoading || isWorkoutPlansLoading;
 
   const nextWorkout = workoutPlans?.[0];
 
@@ -56,6 +58,24 @@ export default function Dashboard() {
       fill: 'rgba(99, 102, 241, 0.1)' 
     }
   ];
+
+  if (isDataLoading) {
+    return (
+      <div className="space-y-10 pb-28 md:pb-12 animate-pulse">
+        <div className="flex items-center gap-5">
+          <div className="h-16 w-16 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+            <div className="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+          </div>
+        </div>
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2 h-64 bg-slate-200 dark:bg-slate-800 rounded-[2.5rem]" />
+          <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-[2.5rem]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -82,10 +102,13 @@ export default function Dashboard() {
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               Olá, <span className="text-indigo-600 dark:text-indigo-400">{profile?.display_name || profile?.username || "atleta"}</span>!
             </h2>
-            <p className="text-slate-500 font-medium mt-0.5">Sua meta semanal está 60% concluída.</p>
+            <p className="text-slate-500 font-medium mt-0.5">Sua meta semanal está {Math.round(((stats?.weeklyCount || 0) / (stats?.weeklyGoal || 5)) * 100)}% concluída.</p>
           </div>
         </div>
-        <button className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+        <button 
+          aria-label="Ativar reforço"
+          className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-primary"
+        >
           <Zap size={20} className="text-indigo-600" />
         </button>
       </motion.header>
@@ -107,10 +130,10 @@ export default function Dashboard() {
                   <Plus size={32} className="text-slate-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Sem treinos para hoje</h3>
-                <p className="text-slate-500 max-w-[200px] mx-auto mb-6">Que tal planejar sua próxima sessão?</p>
+                <p className="text-slate-500 max-w-[200px] mx-auto mb-6 font-medium">Que tal planejar sua próxima sessão?</p>
                 <button 
                   onClick={() => navigate('/workouts')}
-                  className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-colors"
+                  className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all hover:scale-[1.02]"
                 >
                   Criar Plano
                 </button>
@@ -125,7 +148,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats?.streak || 0}</div>
-                  <div className="text-sm font-medium text-slate-500 mt-1">Dias de Fogo</div>
+                  <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-3">Dias de Fogo</div>
                 </div>
              </div>
              <div className="card-premium flex flex-col justify-between group">
@@ -134,17 +157,21 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">12.5h</div>
-                  <div className="text-sm font-medium text-slate-500 mt-1">Total Ativo</div>
+                  <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-3">Total Ativo</div>
                 </div>
              </div>
           </div>
         </motion.div>
 
         <motion.div variants={item} className="space-y-8">
-          <PartnerStatusCard 
-            name={partnerProfile?.display_name || "Parceiro"}
-            trainedToday={partnerStats?.trainedToday || false}
-          />
+          {isPartnerProfileLoading || isPartnerStatsLoading ? (
+            <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-[2.5rem] animate-pulse" />
+          ) : (
+            <PartnerStatusCard 
+              name={partnerProfile?.display_name || "Parceiro"}
+              trainedToday={partnerStats?.trainedToday || false}
+            />
+          )}
           
           <div className="card-premium overflow-hidden group">
             <div className="flex items-center justify-between mb-8">
@@ -158,13 +185,13 @@ export default function Dashboard() {
                 </RadialBarChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-slate-900 dark:text-white">{stats?.weeklyCount || 0}</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Treinos</span>
+                <span className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats?.weeklyCount || 0}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">Treinos</span>
               </div>
             </div>
-            <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
               <span>Seg</span>
-              <span className="text-indigo-600">Ter</span>
+              <span className="text-indigo-600 dark:text-indigo-400">Ter</span>
               <span>Qua</span>
               <span>Qui</span>
               <span>Sex</span>
@@ -177,15 +204,20 @@ export default function Dashboard() {
 
       <motion.div variants={item} className="card-premium">
         <div className="mb-8 flex items-center justify-between">
-          <h4 className="font-bold text-xl text-slate-900 dark:text-white flex items-center gap-3">
+          <h4 className="font-bold text-xl text-slate-900 dark:text-white flex items-center gap-3 font-display tracking-tight">
             <Trophy className="text-orange-400" size={24} />
             Conquistas de Elite
           </h4>
-          <button onClick={() => navigate('/achievements')} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">Ver todas</button>
+          <button 
+            onClick={() => navigate('/achievements')} 
+            className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors"
+          >
+            Ver todas
+          </button>
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex min-w-[140px] flex-col items-center gap-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6 border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div key={i} className="flex min-w-[140px] flex-col items-center gap-4 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 p-6 border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
               <div className="relative">
                 <div className="h-16 w-16 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
                    <Award size={32} className="text-indigo-500 group-hover:scale-110 transition-transform duration-500" />
@@ -198,7 +230,7 @@ export default function Dashboard() {
               </div>
               <div className="text-center">
                 <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Primeiro Passo</p>
-                <p className="text-[10px] text-slate-400 mt-1 font-medium">Completado</p>
+                <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Completado</p>
               </div>
             </div>
           ))}
