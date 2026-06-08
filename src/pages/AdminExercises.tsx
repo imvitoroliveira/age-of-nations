@@ -1,10 +1,87 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { workoutService, ExerciseLibrary } from "@/services/workout.service";
 import { ChevronLeft, Trash2, Save, Video, Dumbbell, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+
+const VideoPlayer = ({ src, name, description, onDelete }: { 
+  src: string; 
+  name: string; 
+  description: string;
+  onDelete: () => void;
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          videoRef.current?.play().catch(() => {});
+        } else {
+          videoRef.current?.pause();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <motion.div 
+      layout
+      className="relative rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col group aspect-[9/16]"
+    >
+      <div className="absolute inset-0 z-0 bg-slate-100 dark:bg-slate-800">
+        {isVisible && (
+          <video 
+            ref={videoRef}
+            src={src} 
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 p-4 z-10 space-y-1">
+        <h3 className="font-bold text-white text-sm line-clamp-1 drop-shadow-md">{name}</h3>
+        {description && (
+          <p className="text-[10px] text-white/70 line-clamp-2 leading-tight drop-shadow-md">
+            {description}
+          </p>
+        )}
+      </div>
+
+      <div className="absolute top-2 right-2 z-20 flex gap-2">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
+          className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-rose-500 transition-all opacity-0 group-hover:opacity-100"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+
+      <div className="absolute top-2 left-2 z-20 px-2 py-1 rounded-md bg-black/40 backdrop-blur-sm text-[8px] font-bold text-white uppercase tracking-wider">
+        VÍDEO
+      </div>
+    </motion.div>
+  );
+};
 
 export default function AdminExercises() {
   const navigate = useNavigate();
@@ -16,7 +93,6 @@ export default function AdminExercises() {
   const [loading, setLoading] = useState(true);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
-
   useEffect(() => {
     loadExercises();
   }, []);
@@ -26,7 +102,6 @@ export default function AdminExercises() {
       const data = await workoutService.getExerciseLibrary();
       setExercises(data);
       
-      // Load signed URLs for videos
       const urls: Record<string, string> = {};
       for (const ex of data) {
         if (ex.video_url && !ex.video_url.startsWith('http')) {
@@ -46,7 +121,6 @@ export default function AdminExercises() {
     } finally {
       setLoading(false);
     }
-
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,11 +167,9 @@ export default function AdminExercises() {
         .delete()
         .eq('id', id);
 
-
       if (error) throw error;
 
       if (videoUrl) {
-        // Optional: delete from storage too if it's a supabase URL
         const fileName = videoUrl.split('/').pop();
         if (fileName) {
           await supabase.storage.from('exercise-videos').remove([fileName]);
@@ -194,53 +266,38 @@ export default function AdminExercises() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {exercises.map((ex) => (
-              <motion.div 
-                layout
-                key={ex.id}
-                className="relative rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col group aspect-[9/16]"
-              >
-                {signedUrls[ex.id] ? (
-                  <div className="absolute inset-0 z-0">
-                    <video 
-                      src={signedUrls[ex.id]} 
-                      muted
-                      autoPlay
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                ) : (
+              signedUrls[ex.id] ? (
+                <VideoPlayer 
+                  key={ex.id}
+                  src={signedUrls[ex.id]}
+                  name={ex.name}
+                  description={ex.description || ""}
+                  onDelete={() => deleteExercise(ex.id, ex.video_url)}
+                />
+              ) : (
+                <motion.div 
+                  layout
+                  key={ex.id}
+                  className="relative rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col group aspect-[9/16]"
+                >
                   <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
                     <Dumbbell className="text-slate-300 dark:text-slate-700" size={48} />
                   </div>
-                )}
 
-                <div className="absolute inset-x-0 bottom-0 p-4 z-10 space-y-1">
-                  <h3 className="font-bold text-white text-sm line-clamp-1 drop-shadow-md">{ex.name}</h3>
-                  {ex.description && (
-                    <p className="text-[10px] text-white/70 line-clamp-2 leading-tight drop-shadow-md">
-                      {ex.description}
-                    </p>
-                  )}
-                </div>
-
-                <div className="absolute top-2 right-2 z-20 flex gap-2">
-                  <button 
-                    onClick={() => deleteExercise(ex.id, ex.video_url)}
-                    className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-rose-500 transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-
-                {signedUrls[ex.id] && (
-                  <div className="absolute top-2 left-2 z-20 px-2 py-1 rounded-md bg-black/40 backdrop-blur-sm text-[8px] font-bold text-white uppercase tracking-wider">
-                    VÍDEO
+                  <div className="absolute inset-x-0 bottom-0 p-4 z-10 space-y-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">{ex.name}</h3>
                   </div>
-                )}
-              </motion.div>
+
+                  <div className="absolute top-2 right-2 z-20">
+                    <button 
+                      onClick={() => deleteExercise(ex.id, ex.video_url)}
+                      className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </motion.div>
+              )
             ))}
           </div>
         )}
