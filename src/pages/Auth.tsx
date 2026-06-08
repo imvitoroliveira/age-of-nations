@@ -115,10 +115,12 @@ export default function Auth() {
         
         if (signUpData.user) {
           try {
+            // Updated to match current profiles schema
             await supabase.from('profiles').upsert({
               id: signUpData.user.id,
+              display_name: name || data.email.split('@')[0],
               username: name || data.email.split('@')[0],
-              display_name: name,
+              tracking_code: Math.random().toString(36).substring(2, 10).toUpperCase(),
             }, { onConflict: 'id' });
           } catch (e) {
             console.error("Erro na lógica de perfil pós-cadastro:", e);
