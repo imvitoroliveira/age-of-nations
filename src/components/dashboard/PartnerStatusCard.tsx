@@ -45,7 +45,16 @@ export function PartnerStatusCard({ name, trainedToday }: PartnerStatusCardProps
       
       {!trainedToday && (
         <div className="mt-8">
-           <button className="w-full py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-indigo-600 transition-all">
+           <button 
+             onClick={() => {
+               window.location.href = `whatsapp://send?text=Bora treinar, ${name}! Não esquece do treino de hoje! 🔥`;
+               // Fallback for desktop or non-installed whatsapp
+               setTimeout(() => {
+                 window.open(`https://wa.me/?text=Bora treinar, ${name}! Não esquece do treino de hoje! 🔥`, '_blank');
+               }, 100);
+             }}
+             className="w-full py-3 rounded-xl border-2 border-slate-100 dark:border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-indigo-600 transition-all"
+           >
              Enviar Incentivo
            </button>
         </div>

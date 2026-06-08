@@ -166,8 +166,8 @@ export default function Layout() {
             return (
               <NavLink 
                 key={item.path} 
-                to={item.path} 
-                aria-label="Novo treino rápido"
+                to="/workouts/create" 
+                aria-label="Novo treino"
                 className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 ring-4 ring-slate-950/50 transition-transform active:scale-90 outline-none focus-visible:ring-indigo-500"
               >
                 <Plus size={32} />
