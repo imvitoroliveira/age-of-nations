@@ -271,9 +271,11 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           birth_date: string | null
           created_at: string | null
           display_name: string | null
+          fitness_goals: string[] | null
           gender: string | null
           goal: string | null
           height: number | null
@@ -294,9 +296,11 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           birth_date?: string | null
           created_at?: string | null
           display_name?: string | null
+          fitness_goals?: string[] | null
           gender?: string | null
           goal?: string | null
           height?: number | null
@@ -317,9 +321,11 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           birth_date?: string | null
           created_at?: string | null
           display_name?: string | null
+          fitness_goals?: string[] | null
           gender?: string | null
           goal?: string | null
           height?: number | null
