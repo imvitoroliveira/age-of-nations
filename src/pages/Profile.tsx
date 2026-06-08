@@ -97,22 +97,6 @@ export default function Profile() {
     });
   };
 
-  const toggleGoal = (goal: string) => {
-    setFitnessGoals(prev => 
-      prev.includes(goal) 
-        ? prev.filter(g => g !== goal) 
-        : [...prev, goal]
-    );
-  };
-
-  const goalsOptions = [
-    { value: "Emagrecimento", label: "🔥 Emagrecimento" },
-    { value: "Ganho de Massa", label: "💪 Ganho de Massa" },
-    { value: "Condicionamento", label: "⚡ Condicionamento" },
-    { value: "Saúde", label: "🌿 Saúde e Bem-estar" },
-    { value: "Flexibilidade", label: "🧘 Flexibilidade" },
-    { value: "Resistência", label: "🏃 Resistência" }
-  ];
 
   const handleLinkPartner = () => {
     if (!partnerCode.trim()) {
@@ -271,43 +255,17 @@ export default function Profile() {
           </div>
 
           <section className="space-y-4">
-            <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
-              <Target size={14} className="text-indigo-500" /> Objetivos Fitness
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {goalsOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => toggleGoal(option.value)}
-                  className={`p-3 rounded-xl border text-sm font-bold transition-all text-left flex items-center gap-2 ${
-                    fitnessGoals.includes(option.value)
-                      ? "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400"
-                      : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500 hover:border-indigo-100"
-                  }`}
-                >
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                    fitnessGoals.includes(option.value) ? "bg-indigo-500 border-indigo-500" : "border-slate-200"
-                  }`}>
-                    {fitnessGoals.includes(option.value) && <Check size={10} className="text-white" />}
-                  </div>
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-4">
             <div className="flex justify-between items-center ml-1">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                <Target size={14} className="text-indigo-500" /> Objetivo Personalizado
+                <Target size={14} className="text-indigo-500" /> Seu Objetivo de Treino
               </label>
+              <span className="text-[10px] font-bold text-slate-400">{customGoal.length}/150</span>
             </div>
             <textarea 
               value={customGoal}
-              onChange={(e) => setCustomGoal(e.target.value)}
-              placeholder="O que você deseja alcançar com seus treinos?"
-              rows={2}
+              onChange={(e) => setCustomGoal(e.target.value.slice(0, 150))}
+              placeholder="Descreva detalhadamente o que você deseja alcançar..."
+              rows={3}
               className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all resize-none"
             />
           </section>

@@ -292,7 +292,7 @@ export type Database = {
           theme_preference: string | null
           tracking_code: string | null
           updated_at: string | null
-          username: string
+          username: string | null
           weight_kg: number | null
         }
         Insert: {
@@ -318,7 +318,7 @@ export type Database = {
           theme_preference?: string | null
           tracking_code?: string | null
           updated_at?: string | null
-          username: string
+          username?: string | null
           weight_kg?: number | null
         }
         Update: {
@@ -344,7 +344,7 @@ export type Database = {
           theme_preference?: string | null
           tracking_code?: string | null
           updated_at?: string | null
-          username?: string
+          username?: string | null
           weight_kg?: number | null
         }
         Relationships: [
