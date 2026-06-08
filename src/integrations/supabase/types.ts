@@ -523,8 +523,10 @@ export type Database = {
       find_profile_by_code: {
         Args: { search_code: string }
         Returns: {
+          avatar_url: string
           display_name: string
           id: string
+          username: string
         }[]
       }
       generate_pairing_code: { Args: never; Returns: string }
