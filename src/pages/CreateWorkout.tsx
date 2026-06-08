@@ -12,11 +12,12 @@ export default function CreateWorkout() {
   const { data: profile } = useProfile();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [assignedTo, setAssignedTo] = useState(""); // Default to empty, will set to self in useEffect
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [exercises, setExercises] = useState([
-    { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "" }
+    { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "", video_url: "" }
   ]);
 
   useState(() => {
@@ -30,7 +31,7 @@ export default function CreateWorkout() {
   }, [profile, assignedTo]);
 
   const addExercise = () => {
-    setExercises([...exercises, { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "" }]);
+    setExercises([...exercises, { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "", video_url: "" }]);
   };
 
   const removeExercise = (index: number) => {
@@ -57,7 +58,7 @@ export default function CreateWorkout() {
 
     setIsSubmitting(true);
     try {
-      await workoutService.createWorkoutPlan(name, description, assignedTo, exercises as any);
+      await workoutService.createWorkoutPlan(name, description, assignedTo, exercises as any, videoUrl);
       toast.success("Plano de treino criado!");
       navigate('/workouts');
     } catch (error: any) {
@@ -95,6 +96,13 @@ export default function CreateWorkout() {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all resize-none"
             rows={2}
+          />
+          <input 
+            type="text"
+            placeholder="URL do vídeo do treino (opcional)"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
           />
         </section>
 
@@ -194,6 +202,17 @@ export default function CreateWorkout() {
                       className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 text-center font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Vídeo da Execução (URL)</label>
+                  <input 
+                    type="text"
+                    placeholder="https://youtube.com/..."
+                    value={ex.video_url}
+                    onChange={(e) => updateExercise(index, 'video_url', e.target.value)}
+                    className="w-full rounded-xl bg-white dark:bg-slate-800 p-4 text-sm font-medium text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
+                  />
                 </div>
               </motion.div>
             ))}
