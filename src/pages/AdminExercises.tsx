@@ -6,11 +6,12 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 
-const VideoPlayer = ({ src, name, description, onDelete }: { 
+const VideoPlayer = ({ src, name, description, onDelete, canDelete }: { 
   src: string; 
   name: string; 
   description: string;
   onDelete: () => void;
+  canDelete: boolean;
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -64,17 +65,19 @@ const VideoPlayer = ({ src, name, description, onDelete }: {
         )}
       </div>
 
-      <div className="absolute top-2 right-2 z-20 flex gap-2">
-        <button 
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-rose-500 transition-all opacity-0 group-hover:opacity-100"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
+      {canDelete && (
+        <div className="absolute top-2 right-2 z-20 flex gap-2">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-rose-500 transition-all opacity-0 group-hover:opacity-100"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
 
       <div className="absolute top-2 left-2 z-20 px-2 py-1 rounded-md bg-black/40 backdrop-blur-sm text-[8px] font-bold text-white uppercase tracking-wider">
         VÍDEO
@@ -92,10 +95,17 @@ export default function AdminExercises() {
   const [exercises, setExercises] = useState<ExerciseLibrary[]>([]);
   const [loading, setLoading] = useState(true);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
+    loadUser();
     loadExercises();
   }, []);
+
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    setCurrentUser(data.user);
+  };
 
   const loadExercises = async () => {
     try {
@@ -273,6 +283,7 @@ export default function AdminExercises() {
                   name={ex.name}
                   description={ex.description || ""}
                   onDelete={() => deleteExercise(ex.id, ex.video_url)}
+                  canDelete={currentUser?.id === ex.created_by}
                 />
               ) : (
                 <motion.div 
@@ -288,14 +299,16 @@ export default function AdminExercises() {
                     <h3 className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">{ex.name}</h3>
                   </div>
 
-                  <div className="absolute top-2 right-2 z-20">
-                    <button 
-                      onClick={() => deleteExercise(ex.id, ex.video_url)}
-                      className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+                  {currentUser?.id === ex.created_by && (
+                    <div className="absolute top-2 right-2 z-20">
+                      <button 
+                        onClick={() => deleteExercise(ex.id, ex.video_url)}
+                        className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )
             ))}

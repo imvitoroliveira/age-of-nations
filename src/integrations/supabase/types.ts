@@ -224,6 +224,7 @@ export type Database = {
       exercise_library: {
         Row: {
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           name: string
@@ -232,6 +233,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           name: string
@@ -240,6 +242,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           name?: string
