@@ -4,6 +4,7 @@ import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { useAchievements } from "@/hooks/useAchievements";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
+import { PartnerActivityMonitor } from "@/components/dashboard/PartnerActivityMonitor";
 import { useQuery } from "@tanstack/react-query";
 import { profileService } from "@/services/profile.service";
 import { useDashboardData } from "@/hooks/useDashboardData";
