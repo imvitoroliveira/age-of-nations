@@ -2,6 +2,8 @@ import { useMeasurements } from "@/hooks/useMeasurements";
 import { useProfile } from "@/hooks/useProfile";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Scale, Ruler, TrendingUp, TrendingDown, Plus, X } from "lucide-react";
+import { workoutSessionService } from "@/services/workoutSession.service";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -19,6 +21,12 @@ export default function Progress() {
     hip_cm: ""
   });
 
+  const { data: sessions } = useQuery({
+    queryKey: ['workout_sessions', profile?.id],
+    queryFn: () => profile?.id ? workoutSessionService.getSessions(profile.id) : Promise.resolve([]),
+    enabled: !!profile?.id
+  });
+
   useEffect(() => {
     if (profile?.last_measurement_date) {
       const lastDate = new Date(profile.last_measurement_date);
@@ -33,6 +41,35 @@ export default function Progress() {
       setShowReminder(true);
     }
   }, [profile, measurements]);
+
+  const weeklyWorkoutData = (() => {
+    if (!sessions || sessions.length === 0) return [];
+    
+    const weeks: Record<string, number> = {};
+    const now = new Date();
+    
+    // Get last 4 weeks
+    for (let i = 0; i < 4; i++) {
+      const label = `S${4-i}`;
+      weeks[label] = 0;
+    }
+
+    sessions.forEach(session => {
+      if (!session.finished_at) return;
+      const sessionDate = new Date(session.finished_at);
+      const diffDays = Math.floor((now.getTime() - sessionDate.getTime()) / (1000 * 3600 * 24));
+      
+      if (diffDays <= 28) {
+        const weekIdx = 4 - Math.floor(diffDays / 7);
+        if (weekIdx >= 1 && weekIdx <= 4) {
+          const label = `S${weekIdx}`;
+          weeks[label] = (weeks[label] || 0) + 1;
+        }
+      }
+    });
+
+    return Object.entries(weeks).map(([name, value]) => ({ w: name, v: value })).sort((a, b) => a.w.localeCompare(b.w));
+  })();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,7 +231,7 @@ export default function Progress() {
           <h4 className="mb-6 font-bold">Treinos por Semana</h4>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[{w: 'S1', v: 4}, {w: 'S2', v: 5}, {w: 'S3', v: 3}, {w: 'S4', v: 5}]}>
+              <BarChart data={weeklyWorkoutData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                 <XAxis dataKey="w" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94A3B8' }} />
                 <YAxis hide />
