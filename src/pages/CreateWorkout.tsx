@@ -308,16 +308,14 @@ export default function CreateWorkout() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Vídeo da Execução (URL)</label>
-                  <input 
-                    type="text"
-                    placeholder="https://youtube.com/..."
-                    value={ex.video_url}
-                    onChange={(e) => updateExercise(index, 'video_url', e.target.value)}
-                    className="w-full rounded-xl bg-white dark:bg-slate-800 p-4 text-sm font-medium text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700"
-                  />
-                </div>
+                {ex.video_url && (
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50">
+                    <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                      Vídeo de execução vinculado
+                    </span>
+                  </div>
+                )}
               </motion.div>
             ))}
 
