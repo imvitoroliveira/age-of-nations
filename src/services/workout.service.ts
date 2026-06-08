@@ -10,9 +10,13 @@ export type ExerciseLibrary = any; // Will be Database['public']['Tables']['exer
 
 export const workoutService = {
   async getWorkoutPlans(): Promise<WorkoutPlan[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
     const { data, error } = await supabase
       .from('workout_plans')
       .select('*, exercises(*)')
+      .eq('assigned_to', user.id)
       .order('created_at', { ascending: false });
     
     if (error) {
