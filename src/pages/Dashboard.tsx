@@ -4,6 +4,7 @@ import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { useAchievements } from "@/hooks/useAchievements";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
+import { PartnerActivityMonitor } from "@/components/dashboard/PartnerActivityMonitor";
 import { useQuery } from "@tanstack/react-query";
 import { profileService } from "@/services/profile.service";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -176,6 +177,11 @@ export default function Dashboard() {
         <motion.div variants={item} className="space-y-8">
           {isPartnerProfileLoading || isPartnerStatsLoading ? (
             <div className="h-64 bg-slate-200 dark:bg-slate-800 rounded-[2.5rem] animate-pulse" />
+          ) : profile?.partner_id ? (
+            <PartnerActivityMonitor 
+              partnerId={profile.partner_id} 
+              partnerName={partnerProfile?.display_name || undefined} 
+            />
           ) : (
             <PartnerStatusCard 
               name={partnerProfile?.display_name || "Parceiro"}

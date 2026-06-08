@@ -8,16 +8,11 @@ export function useWorkoutPlans() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
       
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('partner_id')
-        .eq('id', user.id)
-        .single();
-
+      // We only want to see plans assigned to the current user
       const { data, error } = await supabase
         .from('workout_plans')
         .select('*, exercises(*)')
-        .or(`assigned_to.eq.${user.id}${profile?.partner_id ? `,assigned_to.eq.${profile.partner_id}` : ''}`)
+        .eq('assigned_to', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
