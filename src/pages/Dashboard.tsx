@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock } from "lucide-react";
+import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
@@ -8,9 +8,9 @@ import { profileService } from "@/services/profile.service";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { workoutService } from "@/services/workout.service";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -20,9 +20,9 @@ const container = {
   }
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
 };
 
 export default function Dashboard() {
