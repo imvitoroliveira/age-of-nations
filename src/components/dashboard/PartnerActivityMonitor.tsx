@@ -42,9 +42,9 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
         plans?.forEach(p => {
           allActivities.push({
             id: p.id,
-            name: (p.name as string) || "Treino",
+            name: (p.name as any) || "Treino",
             completed: false,
-            timestamp: p.created_at,
+            timestamp: p.created_at || new Date().toISOString(),
             type: 'workout_created'
           });
         });
@@ -53,7 +53,7 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
           const planName = (s as any).workout_plans?.name || "Treino";
           allActivities.push({
             id: s.id,
-            name: (planName as string) || "Treino",
+            name: (planName as any) || "Treino",
             completed: true,
             timestamp: s.finished_at || new Date().toISOString(),
             type: 'workout_completed'
