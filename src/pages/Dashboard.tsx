@@ -126,8 +126,7 @@ export default function Dashboard() {
 
       <div className="grid gap-8 lg:grid-cols-3">
         <motion.div variants={item} className="lg:col-span-2 space-y-8">
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2.2rem] opacity-0 group-hover:opacity-10 transition duration-1000 group-hover:duration-200 blur"></div>
+          <div className="relative">
             {nextWorkout ? (
               <TodayWorkoutCard 
                 title={nextWorkout.name}
