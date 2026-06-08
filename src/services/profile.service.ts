@@ -40,7 +40,7 @@ export const profileService = {
     return data;
   },
 
-  async linkPartner(userId: string, pairingCode: string): Promise<void> {
+  async linkPartner(_userId: string, pairingCode: string): Promise<void> {
     const { error } = await supabase.rpc('link_partner', { pairing_code: pairingCode });
 
     if (error) {
