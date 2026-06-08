@@ -50,6 +50,9 @@
     --card-foreground: 210 40% 98%;
     --border: 217 32% 17%;
     --ring: 238 83% 66%;
+    --input: 217 32% 17%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
   }
 
   body {
@@ -60,14 +63,23 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
   }
+
+  /* Accessibility: Focus visible styling */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
 }
 
 @layer components {
   .glass {
-    @apply bg-white/50 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+    @apply bg-white/50 dark:bg-slate-950/50 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
   }
   
   .card-premium {
-    @apply rounded-[2rem] bg-card p-8 border border-white/10 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)];
+    @apply rounded-[2rem] bg-card p-8 border border-slate-200 dark:border-white/5 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05)] transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)];
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-slate-200 dark:bg-slate-800 rounded-lg;
   }
 }

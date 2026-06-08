@@ -1,10 +1,11 @@
 import { useProfile } from "@/hooks/useProfile";
-import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target } from "lucide-react";
+import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "@/components/ThemeProvider";
+import { motion } from "framer-motion";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [resetMode, setResetMode] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [copied, setCopied] = useState(false);
   
   const { 
     data: profile, 
@@ -20,10 +22,10 @@ export default function Profile() {
     linkPartner, 
     isLinking, 
     unlinkPartner, 
-    isUnlinking 
+    isUnlinking,
+    isLoading
   } = useProfile();
 
-  // Local state for form fields
   const [displayName, setDisplayName] = useState("");
   const [height, setHeight] = useState("");
   const [initialWeight, setInitialWeight] = useState("");
@@ -49,6 +51,13 @@ export default function Profile() {
       toast.info("Defina sua nova senha abaixo.");
     }
   }, [searchParams]);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    toast.success("Código copiado!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleUpdatePassword = async () => {
     if (newPassword.length < 6) {
@@ -91,215 +100,225 @@ export default function Profile() {
     setPartnerCode("");
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-8 max-w-2xl mx-auto pb-20 animate-pulse">
+        <div className="flex justify-between items-center">
+          <div className="h-10 w-48 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+          <div className="h-10 w-24 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+        </div>
+        <div className="h-[600px] w-full bg-slate-200 dark:bg-slate-800 rounded-[2.5rem]" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6 max-w-2xl mx-auto pb-20">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-8 max-w-2xl mx-auto pb-28 md:pb-12"
+    >
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold font-display text-foreground">Configurações do Perfil</h2>
+        <h2 className="text-4xl font-bold font-display tracking-tight text-slate-900 dark:text-white">Perfil</h2>
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2 text-destructive font-bold transition-colors hover:bg-destructive/20"
+          aria-label="Sair da conta"
+          className="flex items-center gap-2 rounded-2xl bg-red-50 dark:bg-red-950/30 px-5 py-2.5 text-red-600 dark:text-red-400 font-bold transition-all hover:bg-red-100 dark:hover:bg-red-950/50"
         >
           <LogOut size={18} />
           Sair
         </button>
       </div>
 
-      <div className="rounded-3xl bg-card p-8 shadow-lg border border-border">
-        {/* Theme Toggler */}
-        <div className="mb-8 p-4 bg-muted/30 rounded-2xl flex items-center justify-between">
-          <span className="font-bold text-sm">Tema do Aplicativo</span>
-          <div className="flex bg-muted rounded-lg p-1">
-            <button 
-              onClick={() => setTheme("light")}
-              className={`p-2 rounded-md transition-all ${theme === "light" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
-              title="Claro"
-            >
-              <Sun size={18} />
-            </button>
-            <button 
-              onClick={() => setTheme("system")}
-              className={`p-2 rounded-md transition-all ${theme === "system" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
-              title="Sistema"
-            >
-              <Monitor size={18} />
-            </button>
-            <button 
-              onClick={() => setTheme("dark")}
-              className={`p-2 rounded-md transition-all ${theme === "dark" ? "bg-card shadow-sm text-primary" : "text-muted-foreground"}`}
-              title="Escuro"
-            >
-              <Moon size={18} />
-            </button>
+      <div className="card-premium space-y-10">
+        {/* Theme Selector */}
+        <section aria-labelledby="theme-heading">
+          <div className="flex items-center justify-between mb-4">
+            <h3 id="theme-heading" className="text-sm font-bold uppercase tracking-widest text-slate-400">Aparência</h3>
           </div>
-        </div>
+          <div className="grid grid-cols-3 gap-3 p-1.5 bg-slate-50 dark:bg-slate-900 rounded-[1.2rem] border border-slate-100 dark:border-slate-800">
+            {[
+              { id: 'light', icon: Sun, label: 'Claro' },
+              { id: 'system', icon: Monitor, label: 'Sistema' },
+              { id: 'dark', icon: Moon, label: 'Escuro' }
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id as any)}
+                aria-pressed={theme === t.id}
+                className={`flex flex-col items-center gap-2 py-3 rounded-xl transition-all font-bold text-xs ${
+                  theme === t.id 
+                    ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm" 
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                }`}
+              >
+                <t.icon size={18} />
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Account Tracking Code */}
+        <section aria-labelledby="tracking-heading">
+          <div className="p-6 bg-indigo-50 dark:bg-indigo-950/30 rounded-[1.8rem] border border-indigo-100 dark:border-indigo-900/50">
+             <div className="flex items-center justify-between mb-4">
+                <h3 id="tracking-heading" className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-500">Seu Código de Rastreio</h3>
+                <SparklesIcon className="text-indigo-400 h-4 w-4" />
+             </div>
+             <div className="flex items-center justify-between">
+                <div className="text-3xl font-mono font-bold tracking-tighter text-indigo-600 dark:text-indigo-400">
+                   {profile?.tracking_code || "---"}
+                </div>
+                <button 
+                  onClick={() => profile?.tracking_code && copyToClipboard(profile.tracking_code)}
+                  className="p-3 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-900/50 hover:scale-110 active:scale-90 transition-all text-indigo-600 dark:text-indigo-400"
+                >
+                   {copied ? <Check size={20} /> : <Copy size={20} />}
+                </button>
+             </div>
+             <p className="text-[10px] text-indigo-400/80 mt-4 font-semibold italic">Compartilhe este código com seu parceiro para vincularem suas contas.</p>
+          </div>
+        </section>
 
         {resetMode && (
-          <div className="mb-8 p-6 bg-primary/5 rounded-2xl border-2 border-primary/20 animate-in fade-in slide-in-from-top-4">
-            <h4 className="font-bold flex items-center gap-2 mb-4">
-              <Key size={18} className="text-primary" />
-              Redefinir Senha
+          <section className="p-6 bg-slate-900 rounded-[1.8rem] border border-indigo-500/30 animate-in zoom-in-95 duration-500">
+            <h4 className="font-bold text-white flex items-center gap-2 mb-6">
+              <Key size={18} className="text-indigo-400" />
+              Nova Senha
             </h4>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-4">
               <input 
                 type="password" 
-                placeholder="Nova senha" 
-                className="flex-1 rounded-xl bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2 text-foreground"
+                placeholder="Mínimo 6 caracteres" 
+                className="flex-1 rounded-xl bg-slate-800 px-5 py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-700 font-medium"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
               <button 
                 onClick={handleUpdatePassword}
-                className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20"
+                className="rounded-xl bg-indigo-600 px-8 py-4 font-bold text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all"
               >
-                 Atualizar
+                 Redefinir
               </button>
             </div>
-          </div>
+          </section>
         )}
 
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-foreground flex items-center gap-1">
-              <User size={16} className="text-primary" /> Nome de usuário
+        <div className="space-y-8">
+          <section className="space-y-4">
+            <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+              <User size={14} className="text-indigo-500" /> Nome Público
             </label>
             <input 
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Ex: João Silva"
-              className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+              placeholder="Como quer aparecer?"
+              className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
             />
-          </div>
+          </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-foreground flex items-center gap-1">
-                <Ruler size={16} className="text-primary" /> Altura (cm)
+          <div className="grid grid-cols-2 gap-6">
+            <section className="space-y-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+                <Ruler size={14} className="text-indigo-500" /> Altura (cm)
               </label>
               <input 
                 type="number"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
                 placeholder="175"
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-foreground flex items-center gap-1">
-                <Weight size={16} className="text-primary" /> Peso (kg)
+            </section>
+            <section className="space-y-4">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+                <Weight size={14} className="text-indigo-500" /> Peso (kg)
               </label>
               <input 
                 type="number"
                 step="0.1"
                 value={initialWeight}
                 onChange={(e) => setInitialWeight(e.target.value)}
-                className="w-full rounded-2xl bg-muted p-4 text-lg font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
                 placeholder="80.0"
               />
-            </div>
+            </section>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-foreground flex items-center gap-1">
-              <Target size={16} className="text-primary" /> Objetivo
+          <section className="space-y-4">
+            <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+              <Target size={14} className="text-indigo-500" /> Objetivo Fitness
             </label>
             <select 
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
-              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
+              className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-lg font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 appearance-none transition-all cursor-pointer"
             >
-              <option value="">Selecione um objetivo</option>
-              <option value="Emagrecimento">Emagrecimento</option>
-              <option value="Ganho de Massa">Ganho de Massa</option>
-              <option value="Condicionamento">Condicionamento Físico</option>
-            <option value="Saúde">Saúde e Bem-estar</option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-foreground flex items-center gap-1">
-              Gênero
-            </label>
-            <select 
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground appearance-none"
-            >
-              <option value="">Selecione</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Feminino">Feminino</option>
-              <option value="Outro">Outro</option>
+              <option value="">Escolha um foco</option>
+              <option value="Emagrecimento">🔥 Emagrecimento</option>
+              <option value="Ganho de Massa">💪 Ganho de Massa</option>
+              <option value="Condicionamento">⚡ Condicionamento</option>
+              <option value="Saúde">🌿 Saúde e Bem-estar</option>
             </select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-foreground flex items-center gap-1">
-              Data de Nascimento
-            </label>
-            <input 
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full rounded-2xl bg-muted p-4 font-bold outline-none focus:ring-2 focus:ring-primary text-foreground"
-            />
-          </div>
-        </div>
+          </section>
         </div>
 
-        <div className="mt-10 pt-10 border-t border-border space-y-4">
-          <h4 className="font-bold text-foreground">Vínculo de Casal</h4>
+        <section className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
+          <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+             <Heart className="text-indigo-500" size={18} />
+             Parceiro Fitness
+          </h4>
           {profile?.partner_id ? (
-            <div className="flex items-center justify-between rounded-2xl bg-accent/10 p-4 border-2 border-accent/20">
-               <div className="flex items-center gap-3">
-                 <Heart className="text-accent fill-accent" size={20} />
-                 <span className="font-bold text-foreground">Conectado(a)</span>
+            <div className="flex items-center justify-between rounded-3xl bg-indigo-50 dark:bg-indigo-900/20 p-6 border border-indigo-100 dark:border-indigo-900/30 group">
+               <div className="flex items-center gap-4">
+                 <div className="h-12 w-12 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center shadow-sm">
+                   <Heart className="text-indigo-500 fill-indigo-500 group-hover:scale-110 transition-transform" size={24} />
+                 </div>
+                 <div>
+                    <span className="font-bold text-slate-900 dark:text-white block">Status: Conectado</span>
+                    <span className="text-xs text-indigo-400 font-bold uppercase tracking-wider">Modo Dupla Ativo</span>
+                 </div>
                </div>
                <button 
                 disabled={isUnlinking}
                 onClick={() => profile.partner_id && unlinkPartner(profile.partner_id)}
-                className="text-sm font-bold text-destructive hover:underline disabled:opacity-50"
+                className="text-sm font-bold text-red-500 hover:text-red-600 disabled:opacity-50"
                >
                  {isUnlinking ? "Desvinculando..." : "Desvincular"}
                </button>
             </div>
           ) : (
-            <div className="rounded-2xl border-2 border-dashed border-muted p-6 text-center">
-              <p className="text-sm text-muted-foreground mb-4">Você ainda não vinculou um parceiro.</p>
-              <div className="flex gap-2">
+            <div className="rounded-3xl border-2 border-dashed border-slate-100 dark:border-slate-800 p-8 text-center space-y-6">
+              <p className="text-sm font-medium text-slate-400">Vincule seu parceiro para treinar juntos e comparar o progresso em tempo real.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input 
                   type="text" 
                   placeholder="Código do parceiro" 
                   value={partnerCode}
                   onChange={(e) => setPartnerCode(e.target.value)}
-                  className="flex-1 rounded-xl bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2 text-foreground"
+                  className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-900 px-5 py-4 text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white"
                 />
                 <button 
                   disabled={isLinking}
                   onClick={handleLinkPartner}
-                  className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-lg shadow-primary/20 disabled:opacity-50"
+                  className="rounded-xl bg-indigo-600 px-6 py-4 font-bold text-white shadow-lg shadow-indigo-500/20 disabled:opacity-50 hover:bg-indigo-700 transition-all"
                 >
-                   {isLinking ? "..." : "Vincular"}
+                   {isLinking ? "Vinculando..." : "Vincular Agora"}
                 </button>
-              </div>
-              <div className="mt-4 p-3 bg-muted/50 rounded-xl inline-block">
-                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">
-                  Seu código para compartilhar:
-                </p>
-                <span className="text-primary font-mono font-bold select-all text-lg">
-                  {profile?.pairing_code || "---"}
-                </span>
               </div>
             </div>
           )}
-        </div>
+        </section>
 
         <button 
           onClick={handleSaveProfile}
           disabled={isUpdating}
-          className="mt-10 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary p-4 font-bold text-white shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 p-5 font-bold text-white shadow-xl shadow-indigo-600/30 transition-all hover:bg-indigo-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50"
         >
           {isUpdating ? (
-            "Salvando..."
+            "Processando..."
           ) : (
             <>
               <Save size={20} />
@@ -308,7 +327,20 @@ export default function Profile() {
           )}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
+function SparklesIcon(props: any) {
+  return (
+    <svg 
+      {...props}
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor" 
+      strokeWidth={2.5}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+    </svg>
+  );
+}
