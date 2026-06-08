@@ -185,13 +185,51 @@ export default function CreateWorkout() {
                   <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-700">
                     <Dumbbell size={18} />
                   </div>
-                  <input 
-                    type="text"
-                    placeholder="Nome do Exercício"
-                    value={ex.name}
-                    onChange={(e) => updateExercise(index, 'name', e.target.value)}
-                    className="flex-1 bg-transparent text-lg font-bold outline-none text-slate-900 dark:text-white"
-                  />
+                  <div className="flex-1 relative">
+                    <input 
+                      type="text"
+                      placeholder="Nome do Exercício"
+                      value={ex.name}
+                      onChange={(e) => {
+                        updateExercise(index, 'name', e.target.value);
+                        setSearchTerm(e.target.value);
+                        setActiveExerciseIndex(index);
+                      }}
+                      onFocus={() => {
+                        setActiveExerciseIndex(index);
+                        setSearchTerm(ex.name);
+                      }}
+                      className="w-full bg-transparent text-lg font-bold outline-none text-slate-900 dark:text-white"
+                    />
+                    
+                    <AnimatePresence>
+                      {activeExerciseIndex === index && searchTerm.length > 0 && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute left-0 right-0 top-full mt-2 z-50 max-h-60 overflow-y-auto rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 scrollbar-hide"
+                        >
+                          {filteredLibrary.length > 0 ? (
+                            filteredLibrary.map((libEx) => (
+                              <button
+                                key={libEx.id}
+                                onClick={() => selectFromLibrary(libEx)}
+                                className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
+                              >
+                                <Search size={14} className="text-slate-400" />
+                                <span className="font-bold text-slate-700 dark:text-slate-200">{libEx.name}</span>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="p-4 text-xs font-bold text-slate-400 text-center uppercase tracking-widest">
+                              Nenhum exercício encontrado
+                            </div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                   <button 
                     onClick={() => removeExercise(index)}
                     className="p-2 text-slate-300 hover:text-red-500 transition-colors"
