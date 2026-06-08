@@ -112,7 +112,7 @@ export default function AdminExercises() {
   };
 
   return (
-    <div className="space-y-8 max-w-2xl mx-auto pb-28 md:pb-12">
+    <div className="space-y-8 max-w-4xl mx-auto pb-28 md:pb-12">
       <div className="flex items-center gap-4">
         <button 
           onClick={() => navigate(-1)}
@@ -192,7 +192,7 @@ export default function AdminExercises() {
             <p className="text-slate-400 font-medium">Nenhum exercício cadastrado.</p>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {exercises.map((ex) => (
               <motion.div 
                 layout
