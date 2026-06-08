@@ -209,21 +209,19 @@ export default function CreateWorkout() {
                     </button>
                   </div>
                   
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setActiveExerciseIndex(index);
-                      setSearchTerm("");
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all border border-indigo-100 dark:border-indigo-500/20"
-                  >
-                    <Search size={14} />
-                    Adicionar da biblioteca
-                  </button>
-                </div>
-                  
                   <div className="relative">
-                    
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setActiveExerciseIndex(index);
+                        setSearchTerm("");
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all border border-indigo-100 dark:border-indigo-500/20"
+                    >
+                      <Search size={14} />
+                      Adicionar da biblioteca
+                    </button>
+
                     <AnimatePresence>
                       {activeExerciseIndex === index && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
@@ -295,6 +293,7 @@ export default function CreateWorkout() {
                       )}
                     </AnimatePresence>
                   </div>
+                </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
