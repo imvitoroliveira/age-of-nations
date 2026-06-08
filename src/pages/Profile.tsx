@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check, Calendar, Users } from "lucide-react";
+import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check, Calendar, Users, Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
