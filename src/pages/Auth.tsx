@@ -9,8 +9,8 @@ import * as z from "zod";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().optional(),
-  name: z.string().optional(),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional().or(z.literal("")),
+  name: z.string().min(2, "Nome muito curto").optional().or(z.literal("")),
   partnerCode: z.string().optional(),
 });
 

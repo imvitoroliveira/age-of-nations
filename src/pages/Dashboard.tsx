@@ -29,8 +29,16 @@ export default function Dashboard() {
   const nextWorkout = workoutPlans?.[0];
 
   const weeklyProgress = [
-    { name: 'Completed', value: stats?.weeklyCount || 0, fill: 'var(--color-accent)' },
-    { name: 'Remaining', value: Math.max(0, (stats?.weeklyGoal || 5) - (stats?.weeklyCount || 0)), fill: '#E2E8F0' }
+    { 
+      name: 'Completed', 
+      value: stats?.weeklyCount || 0, 
+      fill: 'hsl(var(--primary))' 
+    },
+    { 
+      name: 'Remaining', 
+      value: Math.max(0, (stats?.weeklyGoal || 5) - (stats?.weeklyCount || 0)), 
+      fill: 'hsl(var(--muted))' 
+    }
   ];
 
   return (
