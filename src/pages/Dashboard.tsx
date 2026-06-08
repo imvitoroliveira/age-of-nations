@@ -11,7 +11,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { workoutService } from "@/services/workout.service";
 import { motion, Variants } from "framer-motion";
-import { useTheme } from "@/components/ThemeProvider";
+
 
 const container: Variants = {
   hidden: { opacity: 0 },
@@ -30,7 +30,6 @@ const item: Variants = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: stats, isLoading: isStatsLoading } = useDashboardData(profile?.id ?? undefined);
   const { data: partnerStats, isLoading: isPartnerStatsLoading } = useDashboardData(profile?.partner_id ?? undefined);

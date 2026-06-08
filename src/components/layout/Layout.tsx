@@ -2,7 +2,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import { Home, Dumbbell, LineChart, Award, User, Plus, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
 import { useState } from "react";
 
@@ -16,8 +16,8 @@ const navItems = [
 
 export default function Layout() {
   const { data: profile } = useProfile();
-  const { theme, setTheme } = useTheme();
-  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const { theme } = useTheme();
+  const [showThemeMenu] = useState(false);
   
   return (
     <div className="min-h-screen bg-background selection:bg-primary/10">
