@@ -13,16 +13,12 @@ export default function CreateWorkout() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-  const [assignedTo, setAssignedTo] = useState(""); // Default to empty, will set to self in useEffect
+  const [assignedTo, setAssignedTo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [exercises, setExercises] = useState([
     { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "", video_url: "" }
   ]);
-
-  useState(() => {
-    if (profile) setAssignedTo(profile.id);
-  });
 
   useEffect(() => {
     if (profile && !assignedTo) {
