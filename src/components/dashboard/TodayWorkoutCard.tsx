@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Play, Dumbbell } from "lucide-react";
+import { Play, Dumbbell, Zap } from "lucide-react";
 
 interface TodayWorkoutCardProps {
   title: string;
@@ -11,22 +11,34 @@ interface TodayWorkoutCardProps {
 export function TodayWorkoutCard({ title, exercisesCount, duration, onStart }: TodayWorkoutCardProps) {
   return (
     <motion.div 
-      whileHover={{ y: -4 }}
-      className="rounded-3xl bg-surface p-6 text-white shadow-xl"
+      className="card-premium relative overflow-hidden group bg-slate-950 text-white border-0"
     >
-      <div className="mb-4 flex items-center justify-between">
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider">Treino de Hoje</span>
-        <Dumbbell className="text-primary" />
+      <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+        <Dumbbell size={120} className="rotate-12" />
       </div>
-      <h3 className="mb-2 text-2xl font-bold font-display">{title}</h3>
-      <p className="mb-6 text-white/60">{exercisesCount} exercícios • {duration} aprox.</p>
-      <button 
-        onClick={onStart}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary p-4 font-bold text-white transition-all active:scale-95"
-      >
-        <Play size={20} fill="currentColor" />
-        Iniciar Treino
-      </button>
+      
+      <div className="relative z-10">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400">Workout of the Day</span>
+          </div>
+          <Zap className="text-white/20" size={20} />
+        </div>
+        
+        <h3 className="mb-2 text-4xl font-bold font-display tracking-tight leading-none group-hover:translate-x-1 transition-transform duration-500">{title}</h3>
+        <p className="mb-10 text-slate-400 font-medium">{exercisesCount} exercícios • {duration} aprox.</p>
+        
+        <button 
+          onClick={onStart}
+          className="flex items-center gap-3 rounded-2xl bg-white px-8 py-4 font-bold text-slate-950 shadow-xl shadow-white/5 transition-all hover:scale-[1.02] active:scale-95 hover:shadow-white/10"
+        >
+          <Play size={18} fill="currentColor" />
+          <span className="tracking-tight">Iniciar Sessão</span>
+        </button>
+      </div>
+
+      <div className="absolute bottom-0 left-0 h-1 w-0 bg-indigo-500 group-hover:w-full transition-all duration-1000" />
     </motion.div>
   );
 }
