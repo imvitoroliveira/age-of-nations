@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { workoutService, ExerciseLibrary } from "@/services/workout.service";
 import { ChevronLeft, Trash2, Save, Video, Dumbbell, Loader2 } from "lucide-react";
