@@ -27,7 +27,7 @@ export const workoutService = {
     name: string, 
     description: string, 
     assignedTo: string, 
-    exercises: Omit<Exercise, 'id' | 'created_at' | 'workout_plan_id'>[],
+    exercises: any[],
     videoUrl?: string
   ) {
     const { data: userData } = await supabase.auth.getUser();

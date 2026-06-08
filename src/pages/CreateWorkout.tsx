@@ -66,9 +66,11 @@ export default function CreateWorkout() {
   };
 
   const updateExercise = (index: number, field: string, value: any) => {
-    const newExercises = [...exercises];
-    (newExercises[index] as any)[field] = value;
-    setExercises(newExercises);
+    setExercises(prev => {
+      const newExercises = [...prev];
+      newExercises[index] = { ...newExercises[index], [field]: value };
+      return newExercises;
+    });
   };
 
   const handleSubmit = async () => {
@@ -77,14 +79,25 @@ export default function CreateWorkout() {
       return;
     }
 
-    if (exercises.some(ex => !ex.name.trim())) {
-      toast.error("Todos os exercícios precisam de um nome.");
+    if (exercises.some(ex => !ex.name || !ex.name.trim())) {
+      toast.error("Todos os exercícios precisam ter um nome selecionado.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await workoutService.createWorkoutPlan(name, description, assignedTo, exercises as any, videoUrl);
+      const formattedExercises = exercises.map(ex => ({
+        name: ex.name,
+        sets: Number(ex.sets) || 0,
+        reps: String(ex.reps || ""),
+        weight_kg: Number(ex.weight_kg) || 0,
+        notes: ex.notes || "",
+        video_url: ex.video_url || "",
+        order_index: 0, // Will be set by service
+        rest_seconds: 60 // Default rest
+      }));
+
+      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, videoUrl);
       toast.success("Plano de treino criado!");
       navigate('/workouts');
     } catch (error: any) {
