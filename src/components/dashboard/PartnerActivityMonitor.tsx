@@ -42,7 +42,7 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
         plans?.forEach(p => {
           allActivities.push({
             id: p.id,
-            name: p.name || "Treino",
+            name: (p.name as string) || "Treino",
             completed: false,
             timestamp: p.created_at,
             type: 'workout_created'
