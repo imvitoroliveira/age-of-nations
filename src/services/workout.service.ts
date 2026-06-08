@@ -1,7 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { Database } from "@/integrations/supabase/types";
 
-export type WorkoutPlan = Database['public']['Tables']['workout_plans']['Row'];
+export type WorkoutPlan = Database['public']['Tables']['workout_plans']['Row'] & {
+  exercises?: Database['public']['Tables']['exercises']['Row'][];
+};
 export type Exercise = Database['public']['Tables']['exercises']['Row'];
 export type ExerciseLibrary = any; // Will be Database['public']['Tables']['exercise_library']['Row']
 
