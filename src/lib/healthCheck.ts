@@ -5,26 +5,33 @@ export async function checkSystemHealth() {
     database: false,
     auth: false,
     connectivity: false,
-    tables: {} as Record<string, boolean>
+    tables: {
+      profiles: false,
+      workout_plans: false,
+      workout_sessions: false,
+      achievements: false
+    } as Record<string, boolean>
   };
 
   try {
-    // 1. Check connectivity and auth
     await supabase.auth.getSession();
     results.connectivity = true;
     results.auth = true;
 
-    // 2. Check essential tables
-    const tablesToCheck = ['profiles', 'workout_plans', 'workout_sessions', 'achievements'];
+    // Check tables one by one to avoid TS issues with record keys if strict
+    const { error: pError } = await supabase.from('profiles').select('id').limit(1);
+    results.tables.profiles = !pError;
     
-    for (const table of tablesToCheck) {
-      // Using query to check table accessibility
-      const { error } = await supabase.from(table).select('id').limit(1);
-      results.tables[table] = !error;
-      if (error) console.warn(`Health Check: Table ${table} error:`, error);
-    }
+    const { error: wError } = await supabase.from('workout_plans').select('id').limit(1);
+    results.tables.workout_plans = !wError;
 
-    results.database = Object.values(results.tables).some(v => v);
+    const { error: sError } = await supabase.from('workout_sessions').select('id').limit(1);
+    results.tables.workout_sessions = !sError;
+
+    const { error: aError } = await supabase.from('achievements').select('id').limit(1);
+    results.tables.achievements = !aError;
+
+    results.database = results.tables.profiles || results.tables.workout_plans;
     
     console.log("System Health Report:", results);
     return results;
