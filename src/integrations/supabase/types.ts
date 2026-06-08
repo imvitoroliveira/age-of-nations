@@ -287,6 +287,7 @@ export type Database = {
           partner_name: string | null
           premium_until: string | null
           theme_preference: string | null
+          tracking_code: string | null
           updated_at: string | null
           username: string
           weight_kg: number | null
@@ -309,6 +310,7 @@ export type Database = {
           partner_name?: string | null
           premium_until?: string | null
           theme_preference?: string | null
+          tracking_code?: string | null
           updated_at?: string | null
           username: string
           weight_kg?: number | null
@@ -331,6 +333,7 @@ export type Database = {
           partner_name?: string | null
           premium_until?: string | null
           theme_preference?: string | null
+          tracking_code?: string | null
           updated_at?: string | null
           username?: string
           weight_kg?: number | null
@@ -525,6 +528,7 @@ export type Database = {
         }[]
       }
       generate_pairing_code: { Args: never; Returns: string }
+      generate_tracking_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
