@@ -53,7 +53,7 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
           const planName = (s as any).workout_plans?.name || "Treino";
           allActivities.push({
             id: s.id,
-            name: planName,
+            name: (planName as string) || "Treino",
             completed: true,
             timestamp: s.finished_at || new Date().toISOString(),
             type: 'workout_completed'
