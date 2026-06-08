@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Mail, Lock, User as UserIcon, ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { Mail, Lock, User as UserIcon, ArrowRight, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -24,7 +24,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { register, handleSubmit, setValue, clearErrors, formState: { errors } } = useForm<AuthFormData>({
+  const { register, handleSubmit, setValue, clearErrors } = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
@@ -70,7 +70,7 @@ export default function Auth() {
 
     try {
       if (mode === "login") {
-        const { error, data: signInData } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: data.email.trim(),
           password,
         });
@@ -160,10 +160,10 @@ export default function Auth() {
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 mb-6 shadow-xl shadow-indigo-600/20">
               <Sparkles className="text-white" size={24} />
             </div>
-            <h1 className="text-4xl font-bold text-white tracking-tight mb-3">
+            <h1 className="text-4xl font-bold text-white tracking-tight mb-3 font-display">
               {mode === "login" ? "Bem-vindo de volta" : mode === "signup" ? "Comece sua jornada" : "Recupere sua senha"}
             </h1>
-            <p className="text-slate-400 font-medium">
+            <p className="text-slate-400 font-medium tracking-tight">
               {mode === "login" ? "Entre para continuar seus treinos em dupla." : mode === "signup" ? "Crie sua conta e conecte-se com seu parceiro." : "Enviaremos um link para resetar sua senha."}
             </p>
           </div>
@@ -177,14 +177,14 @@ export default function Auth() {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-2"
                 >
-                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Nome Completo</label>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1">Nome Completo</label>
                   <div className="relative group">
                     <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={20} />
                     <input
                       {...register("name")}
                       type="text"
                       placeholder="Como quer ser chamado?"
-                      className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all"
+                      className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all placeholder:text-slate-600 font-medium"
                     />
                   </div>
                 </motion.div>
@@ -192,14 +192,14 @@ export default function Auth() {
             </AnimatePresence>
             
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">E-mail</label>
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 ml-1">E-mail</label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors" size={20} />
                 <input
                   {...register("email")}
                   type="email"
                   placeholder="exemplo@email.com"
-                  className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all"
+                  className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all placeholder:text-slate-600 font-medium"
                 />
               </div>
             </div>
@@ -207,9 +207,9 @@ export default function Auth() {
             {mode !== "forgot_password" && (
               <div className="space-y-2">
                 <div className="flex justify-between items-center ml-1">
-                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Senha</label>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Senha</label>
                   {mode === "login" && (
-                    <button type="button" onClick={() => switchMode("forgot_password")} className="text-xs font-bold text-indigo-500 hover:text-indigo-400">Esqueceu?</button>
+                    <button type="button" onClick={() => switchMode("forgot_password")} className="text-[10px] font-bold uppercase tracking-wider text-indigo-500 hover:text-indigo-400">Esqueceu?</button>
                   )}
                 </div>
                 <div className="relative group">
@@ -218,7 +218,7 @@ export default function Auth() {
                     {...register("password")}
                     type="password"
                     placeholder="••••••••"
-                    className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all"
+                    className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 pl-12 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 text-white transition-all placeholder:text-slate-600 font-medium"
                   />
                 </div>
               </div>
@@ -242,21 +242,21 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-indigo-600 p-4 font-bold text-white shadow-xl shadow-indigo-600/20 transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 group"
+              className="w-full rounded-2xl bg-indigo-600 p-4 font-bold text-white shadow-xl shadow-indigo-600/20 transition-all hover:bg-indigo-700 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 group mt-4"
             >
               {loading ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               ) : (
                 <>
-                  <span>{mode === "login" ? "Entrar na Conta" : mode === "signup" ? "Criar Minha Conta" : "Enviar Link"}</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  <span className="tracking-tight text-lg">{mode === "login" ? "Entrar na Conta" : mode === "signup" ? "Criar Minha Conta" : "Enviar Link"}</span>
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </>
               )}
             </button>
           </form>
 
           <div className="mt-10 pt-10 border-t border-slate-900 text-center">
-             <p className="text-slate-500 font-medium">
+             <p className="text-slate-500 font-medium tracking-tight">
                {mode === "login" ? "Ainda não tem conta?" : "Já possui uma conta?"}
                <button 
                  onClick={() => switchMode(mode === "login" ? "signup" : "login")}
@@ -273,19 +273,19 @@ export default function Auth() {
         <img 
           src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80" 
           alt="Fitness" 
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60 scale-105 hover:scale-100 transition-transform duration-[2s]"
+          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 scale-105 hover:scale-100 transition-transform duration-[2s]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-indigo-950/20 to-transparent" />
         <div className="absolute bottom-20 left-20 right-20">
            <motion.div
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.5, duration: 1 }}
            >
-             <h2 className="text-5xl font-bold text-white leading-tight font-display mb-6">A evolução é <br/><span className="text-indigo-400">melhor em dupla.</span></h2>
+             <h2 className="text-6xl font-bold text-white leading-none font-display mb-8 tracking-tighter">A evolução é <br/><span className="text-indigo-400">melhor em dupla.</span></h2>
              <div className="flex gap-4">
-                <div className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest">Performance</div>
-                <div className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-widest">Conexão</div>
+                <div className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.2em]">Performance</div>
+                <div className="px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.2em]">Conexão</div>
              </div>
            </motion.div>
         </div>
