@@ -44,7 +44,7 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
-    <ThemeProvider defaultTheme="system" storageKey="fitcouple-theme">
+    <ThemeProvider storageKey="fitcouple-theme">
       <QueryClientProvider client={queryClient}>
         <App />
         <Toaster position="top-center" richColors />
@@ -52,4 +52,3 @@ createRoot(document.getElementById("root")!).render(
     </ThemeProvider>
   </BrowserRouter>
 );
-
