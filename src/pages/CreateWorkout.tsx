@@ -97,7 +97,7 @@ export default function CreateWorkout() {
         rest_seconds: 60 // Default rest
       }));
 
-      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, videoUrl);
+      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, "");
       toast.success("Plano de treino criado!");
       navigate('/workouts');
     } catch (error: any) {
