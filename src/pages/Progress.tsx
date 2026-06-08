@@ -50,14 +50,12 @@ export default function Progress() {
     
     // Get last 4 weeks
     for (let i = 0; i < 4; i++) {
-      const d = new Date();
-      d.setDate(now.getDate() - (i * 7));
-      const weekNum = Math.ceil((d.getDate() + 1) / 7); // Simple week estimation
       const label = `S${4-i}`;
       weeks[label] = 0;
     }
 
     sessions.forEach(session => {
+      if (!session.finished_at) return;
       const sessionDate = new Date(session.finished_at);
       const diffDays = Math.floor((now.getTime() - sessionDate.getTime()) / (1000 * 3600 * 24));
       
