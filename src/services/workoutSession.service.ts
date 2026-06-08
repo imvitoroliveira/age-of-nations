@@ -15,5 +15,16 @@ export const workoutSessionService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async getSessions(userId: string) {
+    const { data, error } = await supabase
+      .from('workout_sessions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('finished_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   }
 };
