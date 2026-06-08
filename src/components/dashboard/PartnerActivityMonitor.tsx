@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { CheckCircle2, Circle, Clock, Dumbbell } from "lucide-react";
+import { CheckCircle2, Clock, Dumbbell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface PartnerActivity {
@@ -42,7 +42,7 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
         plans?.forEach(p => {
           allActivities.push({
             id: p.id,
-            name: p.name,
+            name: p.name || "Treino",
             completed: false,
             timestamp: p.created_at,
             type: 'workout_created'
@@ -55,7 +55,7 @@ export function PartnerActivityMonitor({ partnerId, partnerName }: { partnerId?:
             id: s.id,
             name: planName,
             completed: true,
-            timestamp: s.finished_at,
+            timestamp: s.finished_at || new Date().toISOString(),
             type: 'workout_completed'
           });
         });
