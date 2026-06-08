@@ -18,30 +18,17 @@ export const measurementService = {
     return data || [];
   },
 
-  async addMeasurement(measurement: Partial<Omit<Measurement, 'id' | 'user_id' | 'recorded_at'>>): Promise<Measurement | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Usuário não autenticado");
-
-    const { data, error } = await supabase
-      .from('body_measurements')
-      .insert({
-        ...measurement,
-        user_id: user.id
-      })
-      .select()
-      .single();
+  async addMeasurement(measurement: Partial<Omit<Measurement, 'id' | 'user_id' | 'recorded_at'>>): Promise<void> {
+    const { error } = await supabase.rpc('add_body_measurement' as any, {
+      weight_kg_param: measurement.weight_kg ?? 0,
+      waist_cm_param: measurement.waist_cm ?? null,
+      thigh_cm_param: measurement.thigh_cm ?? null,
+      hip_cm_param: measurement.hip_cm ?? null,
+    });
 
     if (error) {
-      console.error("Error adding measurement:", error);
+      console.error("Error adding measurement via RPC:", error);
       throw error;
     }
-
-    // Update last_measurement_date in profile
-    await supabase
-      .from('profiles')
-      .update({ last_measurement_date: new Date().toISOString() })
-      .eq('id', user.id);
-
-    return data;
   }
 };
