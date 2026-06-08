@@ -3,6 +3,8 @@ import { Database } from "@/integrations/supabase/types";
 
 export type WorkoutPlan = Database['public']['Tables']['workout_plans']['Row'];
 export type Exercise = Database['public']['Tables']['exercises']['Row'];
+export type ExerciseLibrary = any; // Will be Database['public']['Tables']['exercise_library']['Row']
+
 
 export const workoutService = {
   async getWorkoutPlans(): Promise<WorkoutPlan[]> {
@@ -60,5 +62,58 @@ export const workoutService = {
     }
 
     return plan;
+  },
+
+  async getExerciseLibrary(): Promise<ExerciseLibrary[]> {
+    const { data, error } = await supabase
+      .from('exercise_library' as any)
+      .select('*')
+      .order('name', { ascending: true });
+    
+    if (error) {
+      console.error("Error fetching exercise library:", error);
+      return [];
+    }
+    
+    return data || [];
+  },
+
+  async addToExerciseLibrary(name: string, description: string, videoUrl: string) {
+    const { data, error } = await supabase
+      .from('exercise_library' as any)
+      .insert({ name, description, video_url: videoUrl } as any)
+      .select()
+      .single();
+
+
+    if (error) throw error;
+    return data;
+  },
+
+  async uploadExerciseVideo(file: File): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('exercise-videos')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // Since the bucket is private, we store the file path and will generate a signed URL when needed
+    // or we can try to return the path and handle it in the component.
+    // For simplicity, let's return the path and have a helper to get the signed URL.
+    return filePath;
+  },
+
+  async getExerciseVideoUrl(path: string): Promise<string> {
+    const { data, error } = await supabase.storage
+      .from('exercise-videos')
+      .createSignedUrl(path, 3600); // 1 hour expiration
+
+    if (error) throw error;
+    return data.signedUrl;
   }
+
 };
