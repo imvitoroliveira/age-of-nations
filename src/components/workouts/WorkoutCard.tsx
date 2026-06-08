@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Users, ChevronRight, Play } from "lucide-react";
+import { User, Users, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { WorkoutPlan } from "@/services/workout.service";
 
