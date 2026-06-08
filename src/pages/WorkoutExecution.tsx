@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { ChevronLeft, ChevronRight, Check, Timer, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Timer, X, PlayCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -109,6 +109,18 @@ export default function WorkoutExecution() {
               <h1 className="text-4xl font-bold font-display">{currentExercise?.name}</h1>
               <p className="mt-2 text-white/60">{currentExercise?.notes || "Mantenha a postura e respiração controlada."}</p>
             </div>
+
+            {currentExercise?.video_url && (
+              <a 
+                href={currentExercise.video_url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mb-8 flex items-center gap-3 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all"
+              >
+                <PlayCircle size={24} />
+                <span className="font-bold text-sm">Ver vídeo de execução</span>
+              </a>
+            )}
 
             <div className="space-y-4">
               {completedSets.map((done, idx) => (
