@@ -186,46 +186,86 @@ export default function CreateWorkout() {
                     <Dumbbell size={18} />
                   </div>
                   <div className="flex-1 relative">
-                    <input 
-                      type="text"
-                      placeholder="Nome do Exercício"
-                      value={ex.name}
-                      onChange={(e) => {
-                        updateExercise(index, 'name', e.target.value);
-                        setSearchTerm(e.target.value);
+                    <div 
+                      className="w-full cursor-pointer group/name"
+                      onClick={() => {
                         setActiveExerciseIndex(index);
+                        setSearchTerm("");
                       }}
-                      onFocus={() => {
-                        setActiveExerciseIndex(index);
-                        setSearchTerm(ex.name);
-                      }}
-                      className="w-full bg-transparent text-lg font-bold outline-none text-slate-900 dark:text-white"
-                    />
+                    >
+                      {ex.name ? (
+                        <div className="flex flex-col">
+                          <span className="text-lg font-bold text-slate-900 dark:text-white group-hover/name:text-indigo-500 transition-colors">
+                            {ex.name}
+                          </span>
+                          <span className="text-[10px] font-black uppercase tracking-tighter text-indigo-500/50">Clique para alterar</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-slate-400 group-hover/name:text-indigo-400 transition-colors">
+                          <Search size={16} />
+                          <span className="text-lg font-bold italic">Selecionar da biblioteca...</span>
+                        </div>
+                      )}
+                    </div>
                     
                     <AnimatePresence>
-                      {activeExerciseIndex === index && searchTerm.length > 0 && (
+                      {activeExerciseIndex === index && (
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="absolute left-0 right-0 top-full mt-2 z-50 max-h-60 overflow-y-auto rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700 scrollbar-hide"
+                          className="absolute left-0 right-0 top-full mt-2 z-50 overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-2xl border border-slate-100 dark:border-slate-700"
                         >
-                          {filteredLibrary.length > 0 ? (
-                            filteredLibrary.map((libEx) => (
-                              <button
-                                key={libEx.id}
-                                onClick={() => selectFromLibrary(libEx)}
-                                className="w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
-                              >
-                                <Search size={14} className="text-slate-400" />
-                                <span className="font-bold text-slate-700 dark:text-slate-200">{libEx.name}</span>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="p-4 text-xs font-bold text-slate-400 text-center uppercase tracking-widest">
-                              Nenhum exercício encontrado
+                          <div className="p-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                            <div className="relative">
+                              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                              <input 
+                                autoFocus
+                                type="text"
+                                placeholder="Buscar exercício..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-800 text-sm font-bold outline-none border border-slate-100 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all"
+                              />
                             </div>
-                          )}
+                          </div>
+                          
+                          <div className="max-h-60 overflow-y-auto scrollbar-hide">
+                            {filteredLibrary.length > 0 ? (
+                              filteredLibrary.map((libEx) => (
+                                <button
+                                  key={libEx.id}
+                                  onClick={() => selectFromLibrary(libEx)}
+                                  className="w-full flex items-center gap-3 p-4 text-left hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
+                                >
+                                  <div className="h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400">
+                                    <Dumbbell size={14} />
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-slate-700 dark:text-slate-200">{libEx.name}</div>
+                                    <div className="text-[10px] text-slate-400 line-clamp-1">{libEx.description}</div>
+                                  </div>
+                                </button>
+                              ))
+                            ) : (
+                              <div className="p-8 text-center">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Nenhum exercício encontrado</p>
+                                <button 
+                                  onClick={() => navigate('/admin-exercises')}
+                                  className="mt-2 text-xs font-black text-indigo-500 hover:underline"
+                                >
+                                  CADASTRAR NOVO
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <button 
+                            onClick={() => setActiveExerciseIndex(null)}
+                            className="w-full p-3 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-t border-slate-100 dark:border-slate-700 transition-colors"
+                          >
+                            Fechar
+                          </button>
                         </motion.div>
                       )}
                     </AnimatePresence>
