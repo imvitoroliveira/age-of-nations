@@ -149,7 +149,7 @@ export default function WorkoutExecution() {
         {currentIdx === exercises.length - 1 ? (
           <button
             onClick={handleFinish}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-accent p-4 font-bold text-text"
+            className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 p-4 font-bold text-white shadow-lg shadow-emerald-500/20 active:scale-95 transition-transform"
           >
             <Check size={20} />
             Finalizar

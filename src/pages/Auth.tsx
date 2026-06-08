@@ -9,8 +9,8 @@ import * as z from "zod";
 
 const authSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres").optional().or(z.literal("")),
-  name: z.string().min(2, "Nome muito curto").optional().or(z.literal("")),
+  password: z.string().optional().or(z.literal("")),
+  name: z.string().optional().or(z.literal("")),
   partnerCode: z.string().optional(),
 });
 
@@ -59,7 +59,7 @@ export default function Auth() {
     const name = (data.name ?? "").trim();
 
     if (mode !== "forgot_password" && password.length < 6) {
-      toast.error("Informe sua senha para continuar.");
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
@@ -79,7 +79,6 @@ export default function Auth() {
         
         if (error) {
           console.error("Erro no login:", error);
-          // Adicionando feedback específico para erros comuns
           if (error.message.includes("Invalid login credentials") || error.message.includes("Invalid email")) {
             throw new Error("E-mail ou senha incorretos.");
           }
@@ -100,11 +99,9 @@ export default function Auth() {
           localStorage.removeItem(SAVED_LOGIN_KEY);
         }
         
-        // Garante que a sessão seja persistida antes de qualquer redirecionamento
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           toast.success("Bem-vindo de volta!");
-          // O Redirecionamento é feito pelo App.tsx baseado na sessão
         } else {
           console.warn("Sessão não encontrada após login");
           toast.error("Erro ao iniciar sessão. Tente novamente.");
@@ -124,24 +121,24 @@ export default function Auth() {
         
         if (error) {
           console.error("Erro no cadastro:", error);
+          if (error.message.includes("User already registered")) {
+            throw new Error("Este e-mail já está cadastrado. Tente fazer login.");
+          }
           throw error;
         }
         
         console.log("Cadastro bem-sucedido:", signUpData);
         
         if (signUpData.user) {
-          // Criar perfil com retry manual caso necessário, ou apenas logar
-          const { error: profileError } = await supabase.from('profiles').upsert([
-            {
+          try {
+            await supabase.from('profiles').upsert({
               id: signUpData.user.id,
               username: name || data.email.split('@')[0],
               display_name: name,
-            }
-          ], { onConflict: 'id' });
-          
-          if (profileError) {
-            console.error("Erro ao criar perfil:", profileError);
-            // Mesmo com erro no perfil, a conta foi criada
+              pairing_code: Math.random().toString(36).substring(2, 8).toUpperCase(),
+            }, { onConflict: 'id' });
+          } catch (e) {
+            console.error("Erro na lógica de perfil pós-cadastro:", e);
           }
         }
         

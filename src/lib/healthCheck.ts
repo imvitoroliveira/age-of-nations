@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
 
 export async function checkSystemHealth() {
   const results = {
@@ -10,18 +9,17 @@ export async function checkSystemHealth() {
   };
 
   try {
-    // 1. Check connectivity
-    const start = Date.now();
-    const { data: { session } } = await supabase.auth.getSession();
+    // 1. Check connectivity and auth
+    await supabase.auth.getSession();
     results.connectivity = true;
-    results.auth = true; // If we can call getSession, auth module is loaded
+    results.auth = true;
 
     // 2. Check essential tables
     const tablesToCheck = ['profiles', 'workout_plans', 'workout_sessions', 'achievements'];
     
     for (const table of tablesToCheck) {
       const { error } = await supabase.from(table).select('count', { count: 'exact', head: true });
-      results.tables[table] = !error || error.code !== 'PGRST116'; // Not found error code is different usually
+      results.tables[table] = !error;
       if (error) console.warn(`Health Check: Table ${table} error:`, error);
     }
 
