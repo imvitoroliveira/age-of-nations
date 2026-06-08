@@ -221,6 +221,33 @@ export type Database = {
           },
         ]
       }
+      exercise_library: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       exercises: {
         Row: {
           created_at: string | null
