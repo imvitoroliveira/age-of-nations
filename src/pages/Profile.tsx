@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check } from "lucide-react";
+import { User, LogOut, Heart, Save, Key, Moon, Sun, Monitor, Ruler, Weight, Target, Copy, Check, Calendar, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -253,6 +253,36 @@ export default function Profile() {
               />
             </section>
           </div>
+256: 
+257:           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+258:             <section className="space-y-4">
+259:               <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+260:                 <Calendar size={14} className="text-indigo-500" /> Data de Nascimento
+261:               </label>
+262:               <input 
+263:                 type="date"
+264:                 value={birthDate}
+265:                 onChange={(e) => setBirthDate(e.target.value)}
+266:                 className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all [color-scheme:light] dark:[color-scheme:dark]"
+267:               />
+268:             </section>
+269:             <section className="space-y-4">
+270:               <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+271:                 <Users size={14} className="text-indigo-500" /> Gênero
+272:               </label>
+273:               <select 
+274:                 value={gender}
+275:                 onChange={(e) => setGender(e.target.value)}
+276:                 className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-xl font-bold outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all appearance-none cursor-pointer"
+277:               >
+278:                 <option value="" disabled>Selecione...</option>
+279:                 <option value="Masculino">Masculino</option>
+280:                 <option value="Feminino">Feminino</option>
+281:                 <option value="Outro">Outro</option>
+282:                 <option value="Prefiro não dizer">Prefiro não dizer</option>
+283:               </select>
+284:             </section>
+285:           </div>
 
           <section className="space-y-4">
             <div className="flex justify-between items-center ml-1">
