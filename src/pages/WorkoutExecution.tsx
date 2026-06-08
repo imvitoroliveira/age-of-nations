@@ -111,15 +111,27 @@ export default function WorkoutExecution() {
             </div>
 
             {currentExercise?.video_url && (
-              <a 
-                href={currentExercise.video_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mb-8 flex items-center gap-3 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all"
-              >
-                <PlayCircle size={24} />
-                <span className="font-bold text-sm">Ver vídeo de execução</span>
-              </a>
+              <div className="mb-8 overflow-hidden rounded-2xl bg-black border border-white/5 shadow-2xl">
+                <video 
+                  src={currentExercise.video_url.startsWith('http') ? currentExercise.video_url : undefined} 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-48 object-cover"
+                  onLoadStart={(e) => {
+                    // If it's a storage path, we'd need to sign it here. 
+                    // For now, let's assume it's a URL or handle signing if it looks like a path.
+                    if (!currentExercise.video_url.startsWith('http')) {
+                      import('@/services/workout.service').then(({ workoutService }) => {
+                        workoutService.getExerciseVideoUrl(currentExercise.video_url).then(url => {
+                          (e.target as HTMLVideoElement).src = url;
+                        });
+                      });
+                    }
+                  }}
+                />
+              </div>
             )}
 
             <div className="space-y-4">
