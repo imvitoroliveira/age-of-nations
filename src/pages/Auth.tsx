@@ -135,7 +135,7 @@ export default function Auth() {
               id: signUpData.user.id,
               username: name || data.email.split('@')[0],
               display_name: name,
-              pairing_code: Math.random().toString(36).substring(2, 8).toUpperCase(),
+              // tracking_code is handled by DB trigger automatically
             }, { onConflict: 'id' });
           } catch (e) {
             console.error("Erro na lógica de perfil pós-cadastro:", e);
