@@ -274,6 +274,7 @@ export type Database = {
           bio: string | null
           birth_date: string | null
           created_at: string | null
+          custom_fitness_goal: string | null
           display_name: string | null
           fitness_goals: string[] | null
           gender: string | null
@@ -299,6 +300,7 @@ export type Database = {
           bio?: string | null
           birth_date?: string | null
           created_at?: string | null
+          custom_fitness_goal?: string | null
           display_name?: string | null
           fitness_goals?: string[] | null
           gender?: string | null
@@ -324,6 +326,7 @@ export type Database = {
           bio?: string | null
           birth_date?: string | null
           created_at?: string | null
+          custom_fitness_goal?: string | null
           display_name?: string | null
           fitness_goals?: string[] | null
           gender?: string | null
