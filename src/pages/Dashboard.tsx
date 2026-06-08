@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus } from "lucide-react";
+import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus, Moon } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { useAchievements } from "@/hooks/useAchievements";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
@@ -10,6 +10,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { workoutService } from "@/services/workout.service";
 import { motion, Variants } from "framer-motion";
+import { useTheme } from "@/components/ThemeProvider";
 
 const container: Variants = {
   hidden: { opacity: 0 },
@@ -28,6 +29,7 @@ const item: Variants = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const { data: profile, isLoading: isProfileLoading } = useProfile();
   const { data: stats, isLoading: isStatsLoading } = useDashboardData(profile?.id ?? undefined);
   const { data: partnerStats, isLoading: isPartnerStatsLoading } = useDashboardData(profile?.partner_id ?? undefined);
@@ -111,9 +113,14 @@ export default function Dashboard() {
         </div>
         <button 
           aria-label="Ativar reforço"
+          onClick={() => {
+            const themes = ['light', 'dark', 'system'];
+            const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
+            setTheme(nextTheme as any);
+          }}
           className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all focus-visible:ring-2 focus-visible:ring-primary"
         >
-          <Zap size={20} className="text-indigo-600" />
+          {theme === 'dark' ? <Moon size={20} className="text-indigo-400" /> : <Zap size={20} className="text-indigo-600" />}
         </button>
       </motion.header>
 
