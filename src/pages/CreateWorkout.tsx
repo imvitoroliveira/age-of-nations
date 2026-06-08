@@ -15,6 +15,9 @@ export default function CreateWorkout() {
   const [videoUrl, setVideoUrl] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseLibrary[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number | null>(null);
 
   const [exercises, setExercises] = useState([
     { name: "", sets: 3, reps: "12", weight_kg: 0, notes: "", video_url: "" }
