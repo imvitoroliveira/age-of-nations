@@ -1,8 +1,10 @@
 import { Plus, Dumbbell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { WorkoutCard } from "@/components/workouts/WorkoutCard";
 import { useWorkoutPlans } from "@/hooks/useWorkoutPlans";
 
 export default function Workouts() {
+  const navigate = useNavigate();
   const { data: plans, isLoading } = useWorkoutPlans();
 
   return (
@@ -12,7 +14,10 @@ export default function Workouts() {
           <h2 className="text-3xl font-bold font-display">Meus Treinos</h2>
           <p className="text-text-muted">Gerencie seus planos e os do seu parceiro.</p>
         </div>
-        <button className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 transition-all active:scale-95">
+        <button 
+          onClick={() => navigate("/workouts/create")}
+          className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30 transition-all active:scale-95"
+        >
           <Plus size={24} />
         </button>
       </div>
