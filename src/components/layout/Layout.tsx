@@ -2,7 +2,7 @@ import { Outlet, NavLink } from "react-router-dom";
 import { Home, Dumbbell, LineChart, Award, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
-
+import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
@@ -14,72 +14,105 @@ const navItems = [
 
 export default function Layout() {
   const { data: profile } = useProfile();
+  
   return (
-    <div className="min-h-screen pb-20 md:pb-0 md:pl-64">
+    <div className="min-h-screen bg-background selection:bg-primary/10">
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 hidden h-full w-64 flex-col bg-surface p-6 text-white md:flex">
-        <div className="mb-10 flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary" />
-          <h1 className="text-xl font-bold font-display">FitCouple</h1>
+      <aside className="fixed left-0 top-0 hidden h-full w-72 flex-col bg-slate-950 p-8 text-white md:flex z-50">
+        <div className="mb-12 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <Plus className="text-white" size={24} />
+          </div>
+          <h1 className="text-2xl font-bold font-display tracking-tight text-white">FitCouple</h1>
         </div>
         
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-3">
           {navItems.filter(item => !item.isFab).map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-xl px-4 py-3 transition-colors",
-                  isActive ? "bg-primary text-white" : "hover:bg-white/10 text-white/70"
+                  "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300",
+                  isActive 
+                    ? "bg-white/10 text-white shadow-sm" 
+                    : "text-slate-400 hover:text-white hover:bg-white/5"
                 )
               }
             >
-              <item.icon size={20} />
-              <span className="font-medium">{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  <item.icon size={22} className={cn("transition-transform duration-300 group-hover:scale-110", isActive && "text-indigo-400")} />
+                  <span className="font-semibold tracking-wide">{item.label}</span>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeNav"
+                      className="ml-auto h-2 w-2 rounded-full bg-indigo-500"
+                    />
+                  )}
+                </>
+              )}
             </NavLink>
           ))}
           <NavLink
             to="/achievements"
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3 transition-colors",
-                isActive ? "bg-primary text-white" : "hover:bg-white/10 text-white/70"
+                "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300",
+                isActive 
+                  ? "bg-white/10 text-white shadow-sm" 
+                  : "text-slate-400 hover:text-white hover:bg-white/5"
               )
             }
           >
-            <Award size={20} />
-            <span className="font-medium">Conquistas</span>
+             {({ isActive }) => (
+                <>
+                  <Award size={22} className={cn("transition-transform duration-300 group-hover:scale-110", isActive && "text-indigo-400")} />
+                  <span className="font-semibold tracking-wide">Conquistas</span>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeNav"
+                      className="ml-auto h-2 w-2 rounded-full bg-indigo-500"
+                    />
+                  )}
+                </>
+              )}
           </NavLink>
         </nav>
 
-        <NavLink 
-          to="/profile"
-          className={({ isActive }) => cn(
-            "mt-auto flex items-center gap-3 rounded-2xl p-4 transition-colors",
-            isActive ? "bg-white/10" : "bg-white/5 hover:bg-white/10"
-          )}
-        >
-          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30">
-            {profile?.display_name ? (
-              <span className="font-bold text-primary">{profile.display_name.charAt(0)}</span>
-            ) : (
-              <User className="text-primary" />
+        <div className="mt-auto">
+          <NavLink 
+            to="/profile"
+            className={({ isActive }) => cn(
+              "flex items-center gap-4 rounded-[1.5rem] p-4 transition-all duration-300 border border-white/5",
+              isActive ? "bg-white/10 border-white/10" : "bg-white/5 hover:bg-white/10"
             )}
-          </div>
-          <div className="overflow-hidden">
-            <p className="truncate text-sm font-bold text-white">{profile?.display_name || profile?.username || "Usuário"}</p>
-            <p className="text-xs text-white/50">Ver perfil</p>
-          </div>
-        </NavLink>
+          >
+            <div className="h-12 w-12 rounded-xl bg-indigo-500/20 flex items-center justify-center shrink-0 border border-indigo-500/30 overflow-hidden">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover" />
+              ) : (
+                <span className="font-bold text-indigo-400 text-lg">{(profile?.display_name || profile?.username || "U").charAt(0)}</span>
+              )}
+            </div>
+            <div className="overflow-hidden">
+              <p className="truncate text-sm font-bold text-white">{profile?.display_name || profile?.username || "Usuário"}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Premium Member</p>
+            </div>
+          </NavLink>
+        </div>
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 z-50 flex w-full items-center justify-around bg-card p-3 shadow-up md:hidden border-t border-border">
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-slate-950/90 backdrop-blur-2xl p-2 rounded-[2.5rem] shadow-2xl border border-white/10 md:hidden w-[90%] max-w-sm">
         {navItems.map((item) => {
           if (item.isFab) {
             return (
-              <NavLink key={item.path} to={item.path} className="relative -top-8 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-card transition-transform active:scale-90">
+              <NavLink 
+                key={item.path} 
+                to={item.path} 
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 ring-4 ring-slate-950/50 transition-transform active:scale-90"
+              >
                 <Plus size={32} />
               </NavLink>
             );
@@ -90,22 +123,32 @@ export default function Layout() {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "relative flex flex-col items-center gap-1 transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  "relative flex-1 flex flex-col items-center justify-center h-12 rounded-2xl transition-all duration-300",
+                  isActive ? "text-indigo-400" : "text-slate-500"
                 )
               }
             >
-              <item.icon size={24} />
-              <span className="text-[10px] font-medium">{item.label}</span>
-              {/* Active Indicator could be added here with motion.div */}
+              {({ isActive }) => (
+                <>
+                  <item.icon size={22} className={cn("transition-transform", isActive && "scale-110")} />
+                  {isActive && (
+                    <motion.div 
+                      layoutId="mobileNavIndicator"
+                      className="absolute -bottom-1 h-1 w-4 rounded-full bg-indigo-400"
+                    />
+                  )}
+                </>
+              )}
             </NavLink>
           );
         })}
       </nav>
 
       {/* Content */}
-      <main className="mx-auto max-w-5xl p-4 md:p-8">
-        <Outlet />
+      <main className="md:pl-72 min-h-screen">
+        <div className="mx-auto max-w-6xl px-6 py-10 md:px-12 md:py-16">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
