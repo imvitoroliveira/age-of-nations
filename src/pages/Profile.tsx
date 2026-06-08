@@ -127,15 +127,25 @@ export default function Profile() {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-4xl font-bold font-display tracking-tight text-slate-900 dark:text-white">Perfil</h2>
-        <button 
-          onClick={handleLogout}
-          aria-label="Sair da conta"
-          className="flex items-center gap-2 rounded-2xl bg-red-50 dark:bg-red-950/30 px-5 py-2.5 text-red-600 dark:text-red-400 font-bold transition-all hover:bg-red-100 dark:hover:bg-red-950/50"
-        >
-          <LogOut size={18} />
-          Sair
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => navigate('/admin/exercises')}
+            className="flex items-center gap-2 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 px-5 py-2.5 text-indigo-600 dark:text-indigo-400 font-bold transition-all hover:bg-indigo-100 dark:hover:bg-indigo-950/50"
+          >
+            <Dumbbell size={18} />
+            Biblioteca
+          </button>
+          <button 
+            onClick={handleLogout}
+            aria-label="Sair da conta"
+            className="flex items-center gap-2 rounded-2xl bg-red-50 dark:bg-red-950/30 px-5 py-2.5 text-red-600 dark:text-red-400 font-bold transition-all hover:bg-red-100 dark:hover:bg-red-950/50"
+          >
+            <LogOut size={18} />
+            Sair
+          </button>
+        </div>
       </div>
+
 
       <div className="card-premium space-y-10">
         {/* Theme Selector */}
