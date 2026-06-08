@@ -18,7 +18,8 @@ export async function checkSystemHealth() {
     const tablesToCheck = ['profiles', 'workout_plans', 'workout_sessions', 'achievements'];
     
     for (const table of tablesToCheck) {
-      const { error } = await supabase.from(table).select('count', { count: 'exact', head: true });
+      // Using query to check table accessibility
+      const { error } = await supabase.from(table).select('id').limit(1);
       results.tables[table] = !error;
       if (error) console.warn(`Health Check: Table ${table} error:`, error);
     }
