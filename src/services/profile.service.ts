@@ -49,7 +49,7 @@ export const profileService = {
     }
   },
 
-  async unlinkPartner(userId: string, partnerId: string): Promise<void> {
+  async unlinkPartner(_userId: string, partnerId: string): Promise<void> {
     const { error } = await supabase.rpc('unlink_partner', { partner_id_param: partnerId });
 
     if (error) {
