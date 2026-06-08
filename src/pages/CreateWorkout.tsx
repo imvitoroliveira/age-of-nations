@@ -92,7 +92,9 @@ export default function CreateWorkout() {
         reps: String(ex.reps || ""),
         weight_kg: Number(ex.weight_kg) || 0,
         notes: ex.notes || "",
-        video_url: ex.video_url || ""
+        video_url: ex.video_url || "",
+        order_index: 0, // Will be set by service
+        rest_seconds: 60 // Default rest
       }));
 
       await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, videoUrl);
