@@ -13,14 +13,26 @@ export function useDashboardData(userId: string | undefined) {
       const end = endOfWeek(now, { weekStartsOn: 1 });
 
       // 1. Weekly workout count
-      const { count: weeklyCount, error: countError } = await supabase
+      const { data: weeklySessions, error: countError } = await supabase
         .from('workout_sessions')
-        .select('*', { count: 'exact', head: true })
+        .select('*')
         .eq('user_id', userId)
         .gte('finished_at', start.toISOString())
         .lte('finished_at', end.toISOString());
 
       if (countError) throw countError;
+
+      const weeklyCount = weeklySessions?.length || 0;
+
+      // 1b. Total active time (duration_minutes sum)
+      const { data: allSessions } = await supabase
+        .from('workout_sessions')
+        .select('duration_minutes')
+        .eq('user_id', userId);
+      
+      const totalMinutes = allSessions?.reduce((acc, s) => acc + (s.duration_minutes || 0), 0) || 0;
+      const totalHours = (totalMinutes / 60).toFixed(1);
+
 
       // 2. Trained today?
       const today = new Date();
@@ -63,11 +75,12 @@ export function useDashboardData(userId: string | undefined) {
         }
       }
 
-      return {
-        weeklyCount: weeklyCount || 0,
+        weeklyCount: weeklyCount,
         weeklyGoal: 5,
         streak: streak,
-        trainedToday: (todayCount || 0) > 0
+        trainedToday: (todayCount || 0) > 0,
+        totalActiveTime: `${totalHours}h`,
+        weeklySessionDays: weeklySessions?.map(s => new Date(s.finished_at!).getDay()) || []
       };
     },
     enabled: !!userId

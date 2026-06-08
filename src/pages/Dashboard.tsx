@@ -156,7 +156,7 @@ export default function Dashboard() {
                   <Clock size={24} />
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">12.5h</div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats?.totalActiveTime || "0h"}</div>
                   <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-3">Total Ativo</div>
                 </div>
              </div>
@@ -190,13 +190,15 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              <span>Seg</span>
-              <span className="text-indigo-600 dark:text-indigo-400">Ter</span>
-              <span>Qua</span>
-              <span>Qui</span>
-              <span>Sex</span>
-              <span>Sab</span>
-              <span>Dom</span>
+              {[1, 2, 3, 4, 5, 6, 0].map((day) => {
+                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+                const isCompleted = stats?.weeklySessionDays?.includes(day);
+                return (
+                  <span key={day} className={isCompleted ? "text-indigo-600 dark:text-indigo-400" : ""}>
+                    {days[day]}
+                  </span>
+                );
+              })}
             </div>
           </div>
         </motion.div>
