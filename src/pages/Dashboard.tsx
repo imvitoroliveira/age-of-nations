@@ -131,8 +131,8 @@ export default function Dashboard() {
             {nextWorkout ? (
               <TodayWorkoutCard 
                 title={nextWorkout.name}
-                exercisesCount={5}
-                duration="45 min"
+                exercisesCount={nextWorkout.exercises?.length || 0}
+                duration={`${(nextWorkout.exercises?.length || 0) * 8} min`}
                 onStart={() => navigate(`/workout-execution/${nextWorkout.id}`)}
               />
             ) : (
