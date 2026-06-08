@@ -538,6 +538,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_body_measurement: {
+        Args: {
+          hip_cm_param?: number
+          thigh_cm_param?: number
+          waist_cm_param?: number
+          weight_kg_param: number
+        }
+        Returns: undefined
+      }
       find_profile_by_code: {
         Args: { search_code: string }
         Returns: {
@@ -549,6 +558,8 @@ export type Database = {
       }
       generate_pairing_code: { Args: never; Returns: string }
       generate_tracking_code: { Args: never; Returns: string }
+      link_partner: { Args: { pairing_code: string }; Returns: undefined }
+      unlink_partner: { Args: { partner_id_param: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
