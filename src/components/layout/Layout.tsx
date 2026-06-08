@@ -3,7 +3,7 @@ import { Home, Dumbbell, LineChart, Award, User, Plus, Sun } from "lucide-react"
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
 import { motion } from "framer-motion";
-import { useState } from "react";
+
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
