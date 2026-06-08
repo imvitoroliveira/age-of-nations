@@ -197,27 +197,10 @@ export default function AdminExercises() {
               <motion.div 
                 layout
                 key={ex.id}
-                className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col gap-4 group"
+                className="relative rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex flex-col group aspect-[9/16]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-500">
-                    <Dumbbell size={24} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-slate-900 dark:text-white truncate">{ex.name}</h3>
-                    <p className="text-sm text-slate-400 line-clamp-1">{ex.description}</p>
-                  </div>
-
-                  <button 
-                    onClick={() => deleteExercise(ex.id, ex.video_url)}
-                    className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-
-                {signedUrls[ex.id] && (
-                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-100 dark:border-slate-800">
+                {signedUrls[ex.id] ? (
+                  <div className="absolute inset-0 z-0">
                     <video 
                       src={signedUrls[ex.id]} 
                       muted
@@ -226,9 +209,35 @@ export default function AdminExercises() {
                       playsInline
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-black/50 backdrop-blur-sm text-[10px] font-bold text-white uppercase tracking-wider">
-                      Sem Áudio
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+                    <Dumbbell className="text-slate-300 dark:text-slate-700" size={48} />
+                  </div>
+                )}
+
+                <div className="absolute inset-x-0 bottom-0 p-4 z-10 space-y-1">
+                  <h3 className="font-bold text-white text-sm line-clamp-1 drop-shadow-md">{ex.name}</h3>
+                  {ex.description && (
+                    <p className="text-[10px] text-white/70 line-clamp-2 leading-tight drop-shadow-md">
+                      {ex.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="absolute top-2 right-2 z-20 flex gap-2">
+                  <button 
+                    onClick={() => deleteExercise(ex.id, ex.video_url)}
+                    className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+
+                {signedUrls[ex.id] && (
+                  <div className="absolute top-2 left-2 z-20 px-2 py-1 rounded-md bg-black/40 backdrop-blur-sm text-[8px] font-bold text-white uppercase tracking-wider">
+                    VÍDEO
                   </div>
                 )}
               </motion.div>
