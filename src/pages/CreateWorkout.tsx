@@ -12,7 +12,7 @@ export default function CreateWorkout() {
   const { data: profile } = useProfile();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+  
   const [assignedTo, setAssignedTo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseLibrary[]>([]);
