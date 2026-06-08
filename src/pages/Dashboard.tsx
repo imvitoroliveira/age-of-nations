@@ -142,8 +142,8 @@ export default function Dashboard() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Sem treinos para hoje</h3>
                 <p className="text-slate-500 max-w-[200px] mx-auto mb-6 font-medium">Que tal planejar sua próxima sessão?</p>
                 <button 
-                  onClick={() => navigate('/workouts')}
-                  className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all hover:scale-[1.02]"
+                  onClick={() => navigate('/workouts/create')}
+                  className="px-8 py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all hover:scale-[1.02] relative z-10"
                 >
                   Criar Plano
                 </button>
