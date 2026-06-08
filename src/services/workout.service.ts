@@ -3,6 +3,7 @@ import { Database } from "@/integrations/supabase/types";
 
 export type WorkoutPlan = Database['public']['Tables']['workout_plans']['Row'];
 export type Exercise = Database['public']['Tables']['exercises']['Row'];
+export type ExerciseLibrary = Database['public']['Tables']['exercise_library']['Row'];
 
 export const workoutService = {
   async getWorkoutPlans(): Promise<WorkoutPlan[]> {
@@ -60,5 +61,48 @@ export const workoutService = {
     }
 
     return plan;
+  },
+
+  async getExerciseLibrary(): Promise<ExerciseLibrary[]> {
+    const { data, error } = await supabase
+      .from('exercise_library')
+      .select('*')
+      .order('name', { ascending: true });
+    
+    if (error) {
+      console.error("Error fetching exercise library:", error);
+      return [];
+    }
+    
+    return data || [];
+  },
+
+  async addToExerciseLibrary(name: string, description: string, videoUrl: string) {
+    const { data, error } = await supabase
+      .from('exercise_library')
+      .insert({ name, description, video_url: videoUrl })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async uploadExerciseVideo(file: File): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('exercise-videos')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('exercise-videos')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
   }
 };

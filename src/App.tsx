@@ -9,6 +9,8 @@ import Achievements from "@/pages/Achievements";
 import Layout from "@/components/layout/Layout";
 import WorkoutExecution from "@/pages/WorkoutExecution";
 import CreateWorkout from "@/pages/CreateWorkout";
+import AdminExercises from "@/pages/AdminExercises";
+
 
 function App() {
   const { session, loading } = useSession();
@@ -23,7 +25,9 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/workouts" element={<Workouts />} />
         <Route path="/workouts/create" element={<CreateWorkout />} />
+        <Route path="/admin/exercises" element={<AdminExercises />} />
         <Route path="/progress" element={<Progress />} />
+
         <Route path="/achievements" element={<Achievements />} />
         <Route path="/profile" element={<Profile />} />
       </Route>
