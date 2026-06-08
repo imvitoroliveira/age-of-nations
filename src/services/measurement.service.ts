@@ -19,11 +19,11 @@ export const measurementService = {
   },
 
   async addMeasurement(measurement: Partial<Omit<Measurement, 'id' | 'user_id' | 'recorded_at'>>): Promise<void> {
-    const { error } = await supabase.rpc('add_body_measurement', {
-      weight_kg_param: measurement.weight_kg,
-      waist_cm_param: measurement.waist_cm || null,
-      thigh_cm_param: measurement.thigh_cm || null,
-      hip_cm_param: measurement.hip_cm || null,
+    const { error } = await supabase.rpc('add_body_measurement' as any, {
+      weight_kg_param: measurement.weight_kg ?? 0,
+      waist_cm_param: measurement.waist_cm ?? null,
+      thigh_cm_param: measurement.thigh_cm ?? null,
+      hip_cm_param: measurement.hip_cm ?? null,
     });
 
     if (error) {
