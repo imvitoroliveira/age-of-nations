@@ -295,6 +295,8 @@ export default function Profile() {
                 </button>
               ))}
             </div>
+          </section>
+
           <section className="space-y-4">
             <div className="flex justify-between items-center ml-1">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
