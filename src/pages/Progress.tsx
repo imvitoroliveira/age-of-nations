@@ -107,7 +107,7 @@ export default function Progress() {
             <span className="text-[10px] font-bold text-text-muted uppercase">Peso Atual</span>
           </div>
           <p className="text-3xl font-bold">
-            {measurements?.[measurements.length - 1]?.weight_kg || "---"} 
+            {measurements?.[measurements.length - 1]?.weight_kg || profile?.initial_weight || "---"} 
             <span className="text-sm font-medium text-text-muted ml-1">kg</span>
           </p>
           {measurements && measurements.length > 1 && (

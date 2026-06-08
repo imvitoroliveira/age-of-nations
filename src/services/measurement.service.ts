@@ -18,7 +18,7 @@ export const measurementService = {
     return data || [];
   },
 
-  async addMeasurement(measurement: Omit<Measurement, 'id' | 'user_id' | 'recorded_at'>): Promise<Measurement | null> {
+  async addMeasurement(measurement: Partial<Omit<Measurement, 'id' | 'user_id' | 'recorded_at'>>): Promise<Measurement | null> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Usuário não autenticado");
 
