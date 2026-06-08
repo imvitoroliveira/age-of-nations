@@ -3,7 +3,8 @@ import { Database } from "@/integrations/supabase/types";
 
 export type WorkoutPlan = Database['public']['Tables']['workout_plans']['Row'];
 export type Exercise = Database['public']['Tables']['exercises']['Row'];
-export type ExerciseLibrary = Database['public']['Tables']['exercise_library']['Row'];
+export type ExerciseLibrary = any; // Will be Database['public']['Tables']['exercise_library']['Row']
+
 
 export const workoutService = {
   async getWorkoutPlans(): Promise<WorkoutPlan[]> {
@@ -65,7 +66,7 @@ export const workoutService = {
 
   async getExerciseLibrary(): Promise<ExerciseLibrary[]> {
     const { data, error } = await supabase
-      .from('exercise_library')
+      .from('exercise_library' as any)
       .select('*')
       .order('name', { ascending: true });
     
@@ -79,10 +80,11 @@ export const workoutService = {
 
   async addToExerciseLibrary(name: string, description: string, videoUrl: string) {
     const { data, error } = await supabase
-      .from('exercise_library')
-      .insert({ name, description, video_url: videoUrl })
+      .from('exercise_library' as any)
+      .insert({ name, description, video_url: videoUrl } as any)
       .select()
       .single();
+
 
     if (error) throw error;
     return data;

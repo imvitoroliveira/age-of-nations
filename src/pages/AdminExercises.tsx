@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { workoutService, ExerciseLibrary } from "@/services/workout.service";
-import { ChevronLeft, Plus, Trash2, Save, Video, Dumbbell, Loader2 } from "lucide-react";
+import { ChevronLeft, Trash2, Save, Video, Dumbbell, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -70,9 +70,10 @@ export default function AdminExercises() {
   const deleteExercise = async (id: string, videoUrl?: string | null) => {
     try {
       const { error } = await supabase
-        .from('exercise_library')
+        .from('exercise_library' as any)
         .delete()
         .eq('id', id);
+
 
       if (error) throw error;
 
