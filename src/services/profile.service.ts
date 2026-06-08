@@ -41,54 +41,21 @@ export const profileService = {
   },
 
   async linkPartner(userId: string, pairingCode: string): Promise<void> {
-    // Find the partner using the secure RPC function
-    const { data: partners, error: partnerError } = await supabase
-      .rpc('find_profile_by_code', { search_code: pairingCode });
+    const { error } = await supabase.rpc('link_partner', { pairing_code: pairingCode });
 
-    if (partnerError || !partners || partners.length === 0) {
-      console.error("Error finding partner:", partnerError);
-      throw new Error("Código de parceiro inválido.");
+    if (error) {
+      console.error("Error linking partner:", error);
+      throw new Error(error.message || "Erro ao vincular parceiro.");
     }
-
-    const partner = partners[0];
-
-
-    if (partner.id === userId) {
-      throw new Error("Você não pode se vincular a si mesmo.");
-    }
-
-    // Update current user's partner_id
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ partner_id: partner.id })
-      .eq('id', userId);
-
-    if (updateError) {
-      console.error("Error linking partner:", updateError);
-      throw updateError;
-    }
-
-    // Reciprocally update partner's partner_id
-    await supabase
-      .from('profiles')
-      .update({ partner_id: userId })
-      .eq('id', partner.id);
   },
 
   async unlinkPartner(userId: string, partnerId: string): Promise<void> {
-    // Unlink current user
-    const { error: error1 } = await supabase
-      .from('profiles')
-      .update({ partner_id: null })
-      .eq('id', userId);
+    const { error } = await supabase.rpc('unlink_partner', { partner_id_param: partnerId });
 
-    if (error1) throw error1;
-
-    // Unlink partner
-    await supabase
-      .from('profiles')
-      .update({ partner_id: null })
-      .eq('id', partnerId);
+    if (error) {
+      console.error("Error unlinking partner:", error);
+      throw new Error(error.message || "Erro ao desvincular parceiro.");
+    }
   }
 };
 
