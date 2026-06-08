@@ -284,6 +284,7 @@ export type Database = {
           id: string
           initial_weight: number | null
           is_premium: boolean | null
+          last_measurement_date: string | null
           pairing_code: string | null
           parent_pin: string | null
           partner_id: string | null
@@ -310,6 +311,7 @@ export type Database = {
           id: string
           initial_weight?: number | null
           is_premium?: boolean | null
+          last_measurement_date?: string | null
           pairing_code?: string | null
           parent_pin?: string | null
           partner_id?: string | null
@@ -336,6 +338,7 @@ export type Database = {
           id?: string
           initial_weight?: number | null
           is_premium?: boolean | null
+          last_measurement_date?: string | null
           pairing_code?: string | null
           parent_pin?: string | null
           partner_id?: string | null
