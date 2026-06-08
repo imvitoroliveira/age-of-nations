@@ -75,6 +75,7 @@ export function useDashboardData(userId: string | undefined) {
         }
       }
 
+      return {
         weeklyCount: weeklyCount,
         weeklyGoal: 5,
         streak: streak,

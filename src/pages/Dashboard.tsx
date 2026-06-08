@@ -1,6 +1,7 @@
 import { useProfile } from "@/hooks/useProfile";
 import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
+import { useAchievements } from "@/hooks/useAchievements";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
 import { useQuery } from "@tanstack/react-query";
@@ -41,6 +42,9 @@ export default function Dashboard() {
     queryKey: ['workout_plans'],
     queryFn: () => workoutService.getWorkoutPlans()
   });
+
+  const { allAchievements, unlocked } = useAchievements();
+  const unlockedAchievements = allAchievements?.filter(a => unlocked?.includes(a.id)) || [];
 
   const isDataLoading = isProfileLoading || isStatsLoading || isWorkoutPlansLoading;
 
@@ -218,24 +222,26 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex min-w-[140px] flex-col items-center gap-4 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 p-6 border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <div className="relative">
-                <div className="h-16 w-16 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-                   <Award size={32} className="text-indigo-500 group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                {i === 1 && (
+          {unlockedAchievements?.length ? (
+            unlockedAchievements.map((achievement: any) => (
+              <div key={achievement.id} className="flex min-w-[140px] flex-col items-center gap-4 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 p-6 border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div className="relative">
+                  <div className="h-16 w-16 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
+                    <Award size={32} className="text-indigo-500 group-hover:scale-110 transition-transform duration-500" />
+                  </div>
                   <div className="absolute -top-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
                     <Zap size={10} className="text-white" fill="currentColor" />
                   </div>
-                )}
+                </div>
+                <div className="text-center">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">{achievement.title}</p>
+                  <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Conquistado</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Primeiro Passo</p>
-                <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Completado</p>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="text-sm text-slate-400 font-medium py-4">Complete treinos para desbloquear conquistas!</div>
+          )}
         </div>
       </motion.div>
     </motion.div>
