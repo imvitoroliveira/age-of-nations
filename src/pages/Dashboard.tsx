@@ -1,5 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Award } from "lucide-react";
+import { Flame, Award, ArrowUpRight, Trophy, Zap, Clock, Plus } from "lucide-react";
 import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { TodayWorkoutCard } from "@/components/dashboard/TodayWorkoutCard";
 import { PartnerStatusCard } from "@/components/dashboard/PartnerStatusCard";
@@ -8,6 +8,22 @@ import { profileService } from "@/services/profile.service";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { workoutService } from "@/services/workout.service";
+import { motion, Variants } from "framer-motion";
+
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -32,89 +48,162 @@ export default function Dashboard() {
     { 
       name: 'Completed', 
       value: stats?.weeklyCount || 0, 
-      fill: 'hsl(var(--primary))' 
+      fill: 'var(--color-primary)' 
     },
     { 
       name: 'Remaining', 
       value: Math.max(0, (stats?.weeklyGoal || 5) - (stats?.weeklyCount || 0)), 
-      fill: 'hsl(var(--muted))' 
+      fill: 'rgba(99, 102, 241, 0.1)' 
     }
   ];
 
   return (
-    <div className="space-y-6 pb-20">
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary">
-            <span className="text-xl font-bold text-primary">{(profile?.display_name || profile?.username || "U").charAt(0)}</span>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold font-display text-foreground">Olá, {profile?.display_name || profile?.username || "atleta"}!</h2>
-            <div className="flex items-center gap-1 text-orange-500">
-              <Flame size={16} fill="currentColor" />
-              <span className="text-sm font-bold">{stats?.streak || 0} dias seguidos</span>
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-10 pb-28 md:pb-12"
+    >
+      <motion.header variants={item} className="flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <div className="relative">
+            <div className="h-16 w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-100 dark:border-indigo-800/50 shadow-sm overflow-hidden group">
+               {profile?.avatar_url ? (
+                 <img src={profile.avatar_url} alt="Profile" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+               ) : (
+                 <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{(profile?.display_name || profile?.username || "U").charAt(0)}</span>
+               )}
+            </div>
+            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-lg bg-orange-500 border-4 border-background flex items-center justify-center">
+              <Flame size={12} className="text-white" fill="currentColor" />
             </div>
           </div>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+              Olá, <span className="text-indigo-600 dark:text-indigo-400">{profile?.display_name || profile?.username || "atleta"}</span>!
+            </h2>
+            <p className="text-slate-500 font-medium mt-0.5">Sua meta semanal está 60% concluída.</p>
+          </div>
         </div>
-      </header>
+        <button className="hidden sm:flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+          <Zap size={20} className="text-indigo-600" />
+        </button>
+      </motion.header>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {nextWorkout ? (
-          <TodayWorkoutCard 
-            title={nextWorkout.name}
-            exercisesCount={5} // This could also be dynamic if we query exercises
-            duration="45 min"
-            onStart={() => navigate(`/workout-execution/${nextWorkout.id}`)}
-          />
-        ) : (
-          <div className="rounded-3xl bg-card p-6 shadow-lg border border-border flex flex-col items-center justify-center text-center">
-            <p className="text-muted-foreground mb-4">Nenhum treino disponível.</p>
-            <button 
-              onClick={() => navigate('/workouts')}
-              className="text-primary font-bold hover:underline"
-            >
-              Criar Plano de Treino
-            </button>
-          </div>
-        )}
-
-        <PartnerStatusCard 
-          name={partnerProfile?.display_name || "Parceiro"}
-          trainedToday={partnerStats?.trainedToday || false}
-        />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-3xl bg-card p-6 shadow-lg border border-border md:col-span-1">
-          <h4 className="mb-2 font-bold text-foreground">Progresso Semanal</h4>
-          <div className="h-40 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="100%" barSize={10} data={weeklyProgress}>
-                <RadialBar dataKey="value" cornerRadius={5} />
-              </RadialBarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="text-center text-sm font-medium text-muted-foreground">{stats?.weeklyCount || 0} de {stats?.weeklyGoal || 5} treinos feitos</p>
-        </div>
-
-        <div className="rounded-3xl bg-card p-6 shadow-lg border border-border md:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
-            <h4 className="font-bold text-foreground">Últimas Conquistas</h4>
-            <Award className="text-accent" size={20} />
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex min-w-[120px] flex-col items-center gap-2 rounded-2xl bg-muted p-4 border border-border">
-                <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
-                   <Award size={24} className="text-accent" />
+      <div className="grid gap-8 lg:grid-cols-3">
+        <motion.div variants={item} className="lg:col-span-2 space-y-8">
+          <div className="relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2.2rem] opacity-0 group-hover:opacity-10 transition duration-1000 group-hover:duration-200 blur"></div>
+            {nextWorkout ? (
+              <TodayWorkoutCard 
+                title={nextWorkout.name}
+                exercisesCount={5}
+                duration="45 min"
+                onStart={() => navigate(`/workout-execution/${nextWorkout.id}`)}
+              />
+            ) : (
+              <div className="card-premium h-full flex flex-col items-center justify-center text-center py-12">
+                <div className="h-16 w-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                  <Plus size={32} className="text-slate-400" />
                 </div>
-                <span className="text-center text-[10px] font-bold uppercase text-foreground">Badge {i}</span>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Sem treinos para hoje</h3>
+                <p className="text-slate-500 max-w-[200px] mx-auto mb-6">Que tal planejar sua próxima sessão?</p>
+                <button 
+                  onClick={() => navigate('/workouts')}
+                  className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-colors"
+                >
+                  Criar Plano
+                </button>
               </div>
-            ))}
+            )}
           </div>
-        </div>
+
+          <div className="grid grid-cols-2 gap-6">
+             <div className="card-premium flex flex-col justify-between group">
+                <div className="h-12 w-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-500 mb-4 transition-transform group-hover:scale-110">
+                  <Flame size={24} fill="currentColor" />
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats?.streak || 0}</div>
+                  <div className="text-sm font-medium text-slate-500 mt-1">Dias de Fogo</div>
+                </div>
+             </div>
+             <div className="card-premium flex flex-col justify-between group">
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-500 mb-4 transition-transform group-hover:scale-110">
+                  <Clock size={24} />
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white leading-none">12.5h</div>
+                  <div className="text-sm font-medium text-slate-500 mt-1">Total Ativo</div>
+                </div>
+             </div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={item} className="space-y-8">
+          <PartnerStatusCard 
+            name={partnerProfile?.display_name || "Parceiro"}
+            trainedToday={partnerStats?.trainedToday || false}
+          />
+          
+          <div className="card-premium overflow-hidden group">
+            <div className="flex items-center justify-between mb-8">
+              <h4 className="font-bold text-lg text-slate-900 dark:text-white">Status Semanal</h4>
+              <ArrowUpRight className="text-slate-300 group-hover:text-indigo-500 transition-colors" size={20} />
+            </div>
+            <div className="relative h-48 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadialBarChart cx="50%" cy="50%" innerRadius="70%" outerRadius="100%" barSize={12} data={weeklyProgress} startAngle={90} endAngle={450}>
+                  <RadialBar dataKey="value" cornerRadius={6} />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white">{stats?.weeklyCount || 0}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Treinos</span>
+              </div>
+            </div>
+            <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-widest">
+              <span>Seg</span>
+              <span className="text-indigo-600">Ter</span>
+              <span>Qua</span>
+              <span>Qui</span>
+              <span>Sex</span>
+              <span>Sab</span>
+              <span>Dom</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </div>
+
+      <motion.div variants={item} className="card-premium">
+        <div className="mb-8 flex items-center justify-between">
+          <h4 className="font-bold text-xl text-slate-900 dark:text-white flex items-center gap-3">
+            <Trophy className="text-orange-400" size={24} />
+            Conquistas de Elite
+          </h4>
+          <button onClick={() => navigate('/achievements')} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">Ver todas</button>
+        </div>
+        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex min-w-[140px] flex-col items-center gap-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6 border border-slate-100 dark:border-slate-800 group hover:bg-white dark:hover:bg-slate-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+              <div className="relative">
+                <div className="h-16 w-16 rounded-full bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
+                   <Award size={32} className="text-indigo-500 group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                {i === 1 && (
+                  <div className="absolute -top-1 -right-1 h-5 w-5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center">
+                    <Zap size={10} className="text-white" fill="currentColor" />
+                  </div>
+                )}
+              </div>
+              <div className="text-center">
+                <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">Primeiro Passo</p>
+                <p className="text-[10px] text-slate-400 mt-1 font-medium">Completado</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
-
