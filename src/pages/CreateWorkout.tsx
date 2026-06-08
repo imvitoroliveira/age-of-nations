@@ -12,7 +12,7 @@ export default function CreateWorkout() {
   const { data: profile } = useProfile();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
+  
   const [assignedTo, setAssignedTo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [exerciseLibrary, setExerciseLibrary] = useState<ExerciseLibrary[]>([]);
@@ -97,7 +97,7 @@ export default function CreateWorkout() {
         rest_seconds: 60 // Default rest
       }));
 
-      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, videoUrl);
+      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, "");
       toast.success("Plano de treino criado!");
       navigate('/workouts');
     } catch (error: any) {
@@ -135,13 +135,6 @@ export default function CreateWorkout() {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all resize-none"
             rows={2}
-          />
-          <input 
-            type="text"
-            placeholder="URL do vídeo do treino (opcional)"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            className="w-full rounded-2xl bg-slate-50 dark:bg-slate-900 p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500 text-slate-900 dark:text-white border border-slate-100 dark:border-slate-800 transition-all"
           />
         </section>
 
@@ -194,33 +187,44 @@ export default function CreateWorkout() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 space-y-4"
               >
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-700">
-                    <Dumbbell size={18} />
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center text-indigo-500 shadow-sm border border-slate-100 dark:border-slate-700 shrink-0">
+                      <Dumbbell size={18} />
+                    </div>
+                    <div className="flex-1 relative">
+                      <input 
+                        type="text"
+                        placeholder="Nome do exercício"
+                        value={ex.name}
+                        onChange={(e) => updateExercise(index, 'name', e.target.value)}
+                        className="w-full rounded-xl bg-white dark:bg-slate-800 p-3 font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1 relative">
+                  
+                  <div className="flex items-center gap-2">
                     <button 
                       type="button"
-                      className="w-full text-left group/name"
                       onClick={() => {
                         setActiveExerciseIndex(index);
                         setSearchTerm("");
                       }}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-xs hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-all border border-indigo-100 dark:border-indigo-500/20 whitespace-nowrap"
                     >
-                      {ex.name ? (
-                        <div className="flex flex-col">
-                          <span className="text-lg font-bold text-slate-900 dark:text-white group-hover/name:text-indigo-500 transition-colors">
-                            {ex.name}
-                          </span>
-                          <span className="text-[10px] font-black uppercase tracking-tighter text-indigo-500/50">Clique para alterar</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-slate-400 group-hover/name:text-indigo-400 transition-colors">
-                          <Search size={16} />
-                          <span className="text-lg font-bold italic">Selecionar da biblioteca...</span>
-                        </div>
-                      )}
+                      <Search size={14} />
+                      Adicionar da biblioteca
                     </button>
+                    
+                    <button 
+                      onClick={() => removeExercise(index)}
+                      className="p-3 text-slate-300 hover:text-rose-500 transition-colors bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                  
+                  <div className="relative">
                     
                     <AnimatePresence>
                       {activeExerciseIndex === index && (
@@ -293,12 +297,6 @@ export default function CreateWorkout() {
                       )}
                     </AnimatePresence>
                   </div>
-                  <button 
-                    onClick={() => removeExercise(index)}
-                    className="p-2 text-slate-300 hover:text-rose-500 transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
