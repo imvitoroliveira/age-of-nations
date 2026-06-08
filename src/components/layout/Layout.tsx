@@ -1,8 +1,10 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { Home, Dumbbell, LineChart, Award, User, Plus } from "lucide-react";
+import { Home, Dumbbell, LineChart, Award, User, Plus, Moon, Sun, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/useProfile";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/components/ThemeProvider";
+import { useState } from "react";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
@@ -14,6 +16,8 @@ const navItems = [
 
 export default function Layout() {
   const { data: profile } = useProfile();
+  const { theme, setTheme } = useTheme();
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   
   return (
     <div className="min-h-screen bg-background selection:bg-primary/10">
@@ -33,7 +37,7 @@ export default function Layout() {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300",
+                  "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                   isActive 
                     ? "bg-white/10 text-white shadow-sm" 
                     : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -58,7 +62,7 @@ export default function Layout() {
             to="/achievements"
             className={({ isActive }) =>
               cn(
-                "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300",
+                "group flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                 isActive 
                   ? "bg-white/10 text-white shadow-sm" 
                   : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -80,11 +84,60 @@ export default function Layout() {
           </NavLink>
         </nav>
 
-        <div className="mt-auto">
+        <div className="mt-auto space-y-4">
+          {/* Quick Theme Toggle */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowThemeMenu(!showThemeMenu)}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all text-slate-400 hover:text-white border border-white/5"
+              aria-label="Alternar tema"
+              aria-haspopup="true"
+              aria-expanded={showThemeMenu}
+            >
+              <div className="flex items-center gap-3 font-semibold text-sm">
+                {theme === 'dark' ? <Moon size={18} /> : theme === 'light' ? <Sun size={18} /> : <Monitor size={18} />}
+                <span>Tema</span>
+              </div>
+              <Plus size={16} className={cn("transition-transform", showThemeMenu && "rotate-45")} />
+            </button>
+            
+            <AnimatePresence>
+              {showThemeMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute bottom-full left-0 w-full mb-2 p-1.5 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col gap-1"
+                >
+                  {[
+                    { id: 'light', icon: Sun, label: 'Claro' },
+                    { id: 'dark', icon: Moon, label: 'Escuro' },
+                    { id: 'system', icon: Monitor, label: 'Sistema' }
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setTheme(t.id as any);
+                        setShowThemeMenu(false);
+                      }}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
+                        theme === t.id ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                      )}
+                    >
+                      <t.icon size={16} />
+                      {t.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <NavLink 
             to="/profile"
             className={({ isActive }) => cn(
-              "flex items-center gap-4 rounded-[1.5rem] p-4 transition-all duration-300 border border-white/5",
+              "flex items-center gap-4 rounded-[1.5rem] p-4 transition-all duration-300 border border-white/5 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
               isActive ? "bg-white/10 border-white/10" : "bg-white/5 hover:bg-white/10"
             )}
           >
@@ -95,7 +148,7 @@ export default function Layout() {
                 <span className="font-bold text-indigo-400 text-lg">{(profile?.display_name || profile?.username || "U").charAt(0)}</span>
               )}
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden text-left">
               <p className="truncate text-sm font-bold text-white">{profile?.display_name || profile?.username || "Usuário"}</p>
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Premium Member</p>
             </div>
@@ -104,14 +157,18 @@ export default function Layout() {
       </aside>
 
       {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-slate-950/90 backdrop-blur-2xl p-2 rounded-[2.5rem] shadow-2xl border border-white/10 md:hidden w-[90%] max-w-sm">
+      <nav 
+        aria-label="Navegação móvel"
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-slate-950/90 backdrop-blur-2xl p-2 rounded-[2.5rem] shadow-2xl border border-white/10 md:hidden w-[90%] max-w-sm"
+      >
         {navItems.map((item) => {
           if (item.isFab) {
             return (
               <NavLink 
                 key={item.path} 
                 to={item.path} 
-                className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 ring-4 ring-slate-950/50 transition-transform active:scale-90"
+                aria-label="Novo treino rápido"
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-xl shadow-indigo-600/30 ring-4 ring-slate-950/50 transition-transform active:scale-90 outline-none focus-visible:ring-indigo-500"
               >
                 <Plus size={32} />
               </NavLink>
@@ -123,7 +180,7 @@ export default function Layout() {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "relative flex-1 flex flex-col items-center justify-center h-12 rounded-2xl transition-all duration-300",
+                  "relative flex-1 flex flex-col items-center justify-center h-12 rounded-2xl transition-all duration-300 outline-none focus-visible:bg-white/10",
                   isActive ? "text-indigo-400" : "text-slate-500"
                 )
               }
@@ -137,6 +194,7 @@ export default function Layout() {
                       className="absolute -bottom-1 h-1 w-4 rounded-full bg-indigo-400"
                     />
                   )}
+                  <span className="sr-only">{item.label}</span>
                 </>
               )}
             </NavLink>
