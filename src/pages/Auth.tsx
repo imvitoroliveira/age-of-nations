@@ -84,10 +84,7 @@ export default function Auth() {
         }
         
         if (rememberMe) {
-          localStorage.setItem(
-            SAVED_LOGIN_KEY,
-            JSON.stringify({ email: data.email.trim(), password })
-          );
+          localStorage.setItem(SAVED_LOGIN_KEY, data.email.trim());
         } else {
           localStorage.removeItem(SAVED_LOGIN_KEY);
         }
