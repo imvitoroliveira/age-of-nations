@@ -23,7 +23,8 @@ export const workoutService = {
     name: string, 
     description: string, 
     assignedTo: string, 
-    exercises: Omit<Exercise, 'id' | 'created_at' | 'workout_plan_id'>[]
+    exercises: Omit<Exercise, 'id' | 'created_at' | 'workout_plan_id'>[],
+    videoUrl?: string
   ) {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error("Não autenticado");
@@ -36,6 +37,7 @@ export const workoutService = {
         description,
         created_by: userData.user.id,
         assigned_to: assignedTo,
+        video_url: videoUrl,
       })
       .select()
       .single();
