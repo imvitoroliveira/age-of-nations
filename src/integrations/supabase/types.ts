@@ -231,6 +231,7 @@ export type Database = {
           reps: string
           rest_seconds: number | null
           sets: number
+          video_url: string | null
           weight_kg: number | null
           workout_plan_id: string
         }
@@ -243,6 +244,7 @@ export type Database = {
           reps: string
           rest_seconds?: number | null
           sets: number
+          video_url?: string | null
           weight_kg?: number | null
           workout_plan_id: string
         }
@@ -255,6 +257,7 @@ export type Database = {
           reps?: string
           rest_seconds?: number | null
           sets?: number
+          video_url?: string | null
           weight_kg?: number | null
           workout_plan_id?: string
         }
@@ -442,6 +445,7 @@ export type Database = {
           muscle_groups: string[] | null
           name: string
           updated_at: string | null
+          video_url: string | null
         }
         Insert: {
           assigned_to: string
@@ -453,6 +457,7 @@ export type Database = {
           muscle_groups?: string[] | null
           name: string
           updated_at?: string | null
+          video_url?: string | null
         }
         Update: {
           assigned_to?: string
@@ -464,6 +469,7 @@ export type Database = {
           muscle_groups?: string[] | null
           name?: string
           updated_at?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
