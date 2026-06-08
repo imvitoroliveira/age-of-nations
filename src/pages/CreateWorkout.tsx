@@ -66,9 +66,11 @@ export default function CreateWorkout() {
   };
 
   const updateExercise = (index: number, field: string, value: any) => {
-    const newExercises = [...exercises];
-    (newExercises[index] as any)[field] = value;
-    setExercises(newExercises);
+    setExercises(prev => {
+      const newExercises = [...prev];
+      newExercises[index] = { ...newExercises[index], [field]: value };
+      return newExercises;
+    });
   };
 
   const handleSubmit = async () => {
