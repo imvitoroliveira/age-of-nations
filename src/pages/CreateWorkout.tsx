@@ -86,7 +86,16 @@ export default function CreateWorkout() {
 
     setIsSubmitting(true);
     try {
-      await workoutService.createWorkoutPlan(name, description, assignedTo, exercises as any, videoUrl);
+      const formattedExercises = exercises.map(ex => ({
+        name: ex.name,
+        sets: Number(ex.sets) || 0,
+        reps: String(ex.reps || ""),
+        weight_kg: Number(ex.weight_kg) || 0,
+        notes: ex.notes || "",
+        video_url: ex.video_url || ""
+      }));
+
+      await workoutService.createWorkoutPlan(name, description, assignedTo, formattedExercises, videoUrl);
       toast.success("Plano de treino criado!");
       navigate('/workouts');
     } catch (error: any) {
